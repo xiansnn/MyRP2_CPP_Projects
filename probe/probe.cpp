@@ -10,12 +10,12 @@ Probe::Probe(uint channel_)
     gpio_set_dir(this->_gpio, GPIO_OUT);
 }
 /// @brief
-inline void Probe::hi()
+void Probe::hi()
 {
     gpio_put(this->_gpio, 1);
 }
 /// @brief
-inline void Probe::lo()
+void Probe::lo()
 {
     gpio_put(this->_gpio, 0);
 }
