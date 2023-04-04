@@ -1,9 +1,8 @@
-
 #include "include/probe.h"
 #include "pico/time.h"
 
-/// @brief 
-/// @return 
+/// @brief
+/// @return
 int main()
 {
 
