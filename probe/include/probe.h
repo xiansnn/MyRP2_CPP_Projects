@@ -1,0 +1,18 @@
+#ifndef PROBE_H
+#define PROBE_H
+
+#include "pico/stdlib.h"
+
+class Probe
+{
+private:
+    uint _gpio;
+    constexpr static int _channel_map[8] = {27, 16, 17, 18, 19, 20, 21, 26};
+
+public:
+    Probe(uint channel_);
+    void hi();
+    void lo();
+};
+
+#endif
