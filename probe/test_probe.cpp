@@ -26,6 +26,7 @@ int main()
             sleep_us(10);
             probes[i]->lo();
         }
+        sleep_us(2000);
     }
     return 0;
 }
