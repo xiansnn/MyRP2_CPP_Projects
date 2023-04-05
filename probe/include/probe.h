@@ -7,7 +7,7 @@ class Probe
 {
 private:
     uint _gpio;
-    constexpr static int _channel_map[8] = {27, 16, 17, 18, 19, 20, 21, 26};
+    constexpr static int _channel_map[8] = {6, 7, 8, 9, 16, 17, 21, 26};
 
 public:
     Probe(uint channel_);
