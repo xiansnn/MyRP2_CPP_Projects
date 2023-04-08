@@ -1,10 +1,6 @@
 include_directories(include/*.h)
 
 
-#add_executable(mpu6050_i2c
-#       mpu6050_i2c.c
-#        )
-
 add_executable(mpu6050
         mpu6050.cpp
         test_mpu6050.cpp
