@@ -15,7 +15,7 @@
 #define LED_PIN PICO_DEFAULT_LED_PIN
 #endif
 
-#define CURRENT_DHT_PIN 9 // to be changed to the actual gpio pin
+#define CURRENT_DHT_PIN 16 // to be changed to the actual gpio pin
 
 int main()
 {
