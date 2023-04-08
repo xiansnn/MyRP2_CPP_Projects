@@ -22,4 +22,6 @@ add_compile_options(-Wall
 
 add_subdirectory(dht11)
 add_subdirectory(probe)
+add_subdirectory(bus_scan)
+add_subdirectory(mpu6050_i2c)
 
