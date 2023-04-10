@@ -10,7 +10,7 @@
 //---define MPU config---
 //-----------------------
 #define MPU_ADDR 0x68  // assuming AD0 pin is low
-// define MPU sensors sample rate
+// define sensors sample rate
 #define SAMPLE_RATE 50.0 // in Hz
 #define SMPLRT_DIV_RA 0x19
 // config FSYNC and DLPF config
@@ -19,11 +19,11 @@
 #define CONFIG_FSYNC_DISABLED 0x0
 #define CONFIG_DLPF_DISABLED 0x0
 #define GYRO_OUT_RATE 8000 // assuming DLPF is disabled,//
-// config Gyro
+// config Gyro self test and full scale
 #define GYRO_CONFIG_RA 0x1B
-// config Accelerator
+// config Accelerator self test and full scale
 #define ACCEL_CONFIG_RA 0x1C// define MPU clock source
-// cofig FIFO
+// config which sensors are loaded into FIFO
 #define FIFO_EN_RA 0x23 // a 1024-byte FIFO
 // #define FIFO_EN_VALUE FIFO_EN_TEMP_FIFO_EN | ALL_GYRO | FIFO_EN_ACCEL_FIFO_EN
 #define FIFO_EN_VALUE FIFO_EN_TEMP_FIFO_EN | FIFO_EN_ACCEL_FIFO_EN | ALL_GYRO
@@ -36,10 +36,32 @@
 #define FIFO_EN_SLV2_FIFO_EN 0x04
 #define FIFO_EN_SLV1_FIFO_EN 0x02
 #define FIFO_EN_SLV0_FIFO_EN 0x01
-// config Interrupt
+// config Interrupt pin mode and I2C ByPass enable
+#define INT_PIN_CFG_RA 0x37
+#define INT_PIN_CFG_INT_LEVEL 0x80
+#define INT_PIN_CFG_INT_OPEN 0x40
+#define INT_PIN_CFG_LATCH_INT_EN 0x20
+#define INT_PIN_CFG_INT_RD_CLEAR 0x10
+#define INT_PIN_CFG_FSYNC_INT_LEVEL 0x08
+#define INT_PIN_CFG_FSYNC_INT_EN 0x04
+#define INT_PIN_CFG_I2C_BYPASS_EN 0x02
+// config Interrupt enable
+#define INT_ENABLE_RA 0x38
+#define INT_ENABLE_FIFO_OFLOW_EN 0x10
+#define INT_ENABLE_I2C_MST_INT_EN 0x08
+#define INT_ENABLE_DATA_RDY_EN 0x01
+// read Interrupt status
 #define INT_STATUS_RA 0x3A
+#define INT_STATUS_FIFO_OFLOW_INT 0x10
+#define INT_STATUS_I2C_MST_INT 0x08
+#define INT_STATUS_DATA_RDY_INT 0x01
 // measures registers
 #define ACCEL_XOUT_H_RA 0x3B // the first data serves as a base for all MPU measures
+// signal path reset
+#define SIGNAL_PATH_RESET_RA 0x68
+#define SIGNAL_PATH_RESET_GYRO_RESET 0x04
+#define SIGNAL_PATH_RESET_ACCEL_RESET 0x02
+#define SIGNAL_PATH_RESET_TEMP_RESET 0x01
 // config FIFO, I2C, signal path
 #define USER_CTRL_RA 0x6A
 #define USER_CTRL_FIFO_EN 0x40
