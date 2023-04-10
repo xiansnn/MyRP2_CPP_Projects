@@ -1,115 +1,97 @@
-#include "include/mpu6050.h"
+#include "mpu6050.h"
 #include "pico/stdlib.h"
+#include "config_MPU6050.h"
 
-MPU6050::MPU6050(i2c_bus_data_t i2c_bus_data, uint8_t addr, float sample_rate)
+MPU6050::MPU6050()
 {
-    this->i2c_bus_data = i2c_bus_data;
-    this->address = addr;
-    this->sample_rate = sample_rate;
-    i2c_init(this->i2c_bus_data.i2c, I2C_SPEED);
-    gpio_set_function(this->i2c_bus_data.scl_gpio, GPIO_FUNC_I2C);
-    gpio_set_function(this->i2c_bus_data.sda_gpio, GPIO_FUNC_I2C);
-    gpio_pull_up(this->i2c_bus_data.sda_gpio);
-    gpio_pull_up(this->i2c_bus_data.scl_gpio);
+    this->sample_rate = SAMPLE_RATE;
+    i2c_init(I2C_BUS, I2C_SPEED);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C_SCL);
+    gpio_pull_up(I2C_SDA);
     this->init_mpu();
-    this->setSampleRate(this->sample_rate);
-    this->setGyroResolution(GYRO_FULL_SCALE_RANGE::_250);
-    this->setGResolution(ACCEL_FULL_SCALE_RANGE::_2);
+    this->set_sample_rate(this->sample_rate);
+    this->set_gyro_resolution(GYRO_FULL_SCALE_RANGE::_250);
+    this->set_accel_resolution(ACCEL_FULL_SCALE_RANGE::_2);
+    this->reset_enable_FIFO();
+    this->config_FIFO();
 }
 void MPU6050::init_mpu()
 {
-    uint8_t write_buf[2] = {};
-    uint8_t read_buf[2] = {};
-
-// hardware reset device
-#define PWR_MGMT_1_RA 0x6B
-    write_buf[0] = PWR_MGMT_1_RA;
-// init clock source
-#define PWR_MGMT_1_CLKSEL_INTERNAL 0x00
-#define PWR_MGMT_1_CLKSEL_X_PLL 0x01
-#define PWR_MGMT_1_CLKSEL_Y_PLL 0x02
-#define PWR_MGMT_1_CLKSEL_Z_PLL 0x03
-    write_buf[1] = PWR_MGMT_1_CLKSEL_Y_PLL;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
-// set FSYNC and DLPF config
-#define CONFIG_RA 0x1A
-#define CONFIG_FSYNC_DISABLED 0x0
-#define CONFIG_DLPF_DISABLED 0x0
-    write_buf[0] = CONFIG_RA;
-    write_buf[1] = CONFIG_FSYNC_DISABLED | CONFIG_DLPF_DISABLED;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
-// WHO_AM_I
-#define WHO_AM_I_RA 0x75
-    read_buf[0] = WHO_AM_I_RA;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, true);
-    i2c_read_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, false);
+    // config clock source
+    this->single_byte_write(PWR_MGMT_1_RA, PWR_MGMT_1_CLKSEL );
+    // config FSYNC and DLPF config
+    this->single_byte_write(CONFIG_RA, CONFIG_FSYNC_DLPF );
+    // WHO_AM_I
+    uint8_t addr;
+    this->single_byte_read(WHO_AM_I_RA,&addr);
 }
 
-void MPU6050::setSampleRate(float rate)
+uint8_t MPU6050::single_byte_write(uint8_t reg_addr, uint8_t reg_value)
 {
-// gyro output rate = 8000Hz when DLPF is disabled
-// sample rate = gyro output rate /(1+SMPLRT_DIV)
-#define SMPLRT_DIV_RA 0x19
-#define GYRO_OUT_RATE 8000 // assuming DLPF is disabled,
-    uint8_t write_buf[2] = {};
+    uint8_t write_buf[] = {reg_addr, reg_value};
+    uint8_t nb = i2c_write_blocking(I2C_BUS, MPU_ADDR, write_buf, 2, false);
+    return nb;
+}
+
+uint8_t MPU6050::single_byte_read(uint8_t reg_addr, uint8_t * dest)
+{
+    uint8_t read_buf[]{reg_addr};
+    i2c_write_blocking(I2C_BUS, MPU_ADDR, read_buf, 1, true);
+     uint8_t nb = i2c_read_blocking(I2C_BUS, MPU_ADDR, dest, 1, false);
+    return nb;
+}
+
+uint8_t MPU6050::burst_byte_read(uint8_t reg_addr, uint8_t *dest, uint8_t len)
+{
+    i2c_write_blocking(I2C_BUS, MPU_ADDR, &reg_addr, 1, true);
+    uint8_t nb = i2c_read_blocking(I2C_BUS, MPU_ADDR, dest, len, false);
+    return nb;
+}
+
+void MPU6050::set_sample_rate(float rate)
+{
+    // gyro output rate = 8000Hz when DLPF is disabled
+    // sample rate = gyro output rate /(1+SMPLRT_DIV)
     uint8_t sample_div = int((8000 / rate) - 1);
     this->sample_rate = GYRO_OUT_RATE / (1 + sample_div);
-    write_buf[0] = SMPLRT_DIV_RA;
-    write_buf[1] = sample_div;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
+    this->single_byte_write(SMPLRT_DIV_RA, sample_div );
 }
 
-void MPU6050::setGyroResolution(GYRO_FULL_SCALE_RANGE range)
+void MPU6050::set_gyro_resolution(GYRO_FULL_SCALE_RANGE range)
 {
-#define GYRO_CONFIG_RA 0x1B
     gyro_scale_t range_map = this->gyro_conversion[range];
-    uint8_t gyro_scale_code = range_map.gyro_scale_code;
-    uint16_t gyro_scale_value = range_map.gyro_scale_value;
-    this->gyro_factor = (float)gyro_scale_value / 32768.;
-    uint8_t write_buf[2] = {};
-    write_buf[0] = GYRO_CONFIG_RA;
-    write_buf[1] = gyro_scale_code << 3;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
+    uint8_t max_gyro_code = range_map.max_gyro_code <<3;
+    uint16_t max_gyro_value = range_map.max_gyro_value;
+    this->gyro_factor = (float)max_gyro_value / 32768.;
+    this->single_byte_write(GYRO_CONFIG_RA, max_gyro_code );
+
 }
 
-void MPU6050::setGResolution(ACCEL_FULL_SCALE_RANGE range)
+void MPU6050::set_accel_resolution(ACCEL_FULL_SCALE_RANGE range)
 {
-#define ACCEL_CONFIG_RA 0x1C
     g_scale_t range_map = this->g_conversion[range];
-    uint8_t g_scale_code = range_map.g_range_code;
+    uint8_t g_scale_code = range_map.max_g_code <<3;
     uint8_t g_scale_value = range_map.max_g_value;
     this->acceleration_factor = (float)g_scale_value / 32768;
-    uint8_t write_buf[2] = {};
-    write_buf[0] = ACCEL_CONFIG_RA;
-    write_buf[1] = g_scale_code << 3;
+    this->single_byte_write(ACCEL_CONFIG_RA, g_scale_code);
 
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
 }
 
-uint8_t MPU6050::read_MPU_register(uint8_t reg_addr)
+MPUData_t MPU6050::read_MPU_measure_from_registers()
 {
-    uint8_t read_buf[] = {reg_addr};
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, true);
-    i2c_read_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, false);
-    return read_buf[0];
-}
-
-MPUData_t MPU6050::readDataFromRegister()
-{
-    RawData_t raw_data = this->readRawData();
+    RawData_t raw_data = this->read_registers_raw_data();
     MPUData_t data;
-    this->convertData(& data, &raw_data);
+    this->convertData(&data, &raw_data);
     return data;
 }
 
-RawData_t MPU6050::readRawData()
+RawData_t MPU6050::read_registers_raw_data()
 {
-#define ACCEL_XOUT_H 0x3B // the first data serves as a base for all MPU measures
-    uint8_t read_buf[14] = {};
+    uint8_t read_buf[14];
     RawData_t measures;
-    read_buf[0] = ACCEL_XOUT_H;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, true);
-    i2c_read_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 14, false);
+    this->burst_byte_read(ACCEL_XOUT_H_RA, read_buf, 14);
     measures.g_x = (read_buf[0] << 8) + read_buf[1];
     measures.g_y = (read_buf[2] << 8) + read_buf[3];
     measures.g_z = (read_buf[4] << 8) + read_buf[5];
@@ -119,6 +101,22 @@ RawData_t MPU6050::readRawData()
     measures.gyro_z = (read_buf[12] << 8) + read_buf[13];
     return measures;
 }
+
+RawData_t MPU6050::read_FIFO_raw_data()
+{
+    uint8_t read_buf[14];
+    RawData_t measures;
+    this->burst_byte_read(FIFO_R_W_RA, read_buf, 14);
+    measures.g_x = (read_buf[0] << 8) + read_buf[1];
+    measures.g_y = (read_buf[2] << 8) + read_buf[3];
+    measures.g_z = (read_buf[4] << 8) + read_buf[5];
+    measures.temp_out = (read_buf[6] << 8) + read_buf[7];
+    measures.gyro_x = (read_buf[8] << 8) + read_buf[9];
+    measures.gyro_y = (read_buf[10] << 8) + read_buf[11];
+    measures.gyro_z = (read_buf[12] << 8) + read_buf[13];
+    return measures;
+}
+
 
 void MPU6050::convertData(MPUData_t *data, RawData_t *raw)
 {
@@ -131,57 +129,36 @@ void MPU6050::convertData(MPUData_t *data, RawData_t *raw)
     data->temp_out = raw->temp_out * this->temperature_gain + this->temperature_offset;
 }
 
-void MPU6050::resetFIFO()
+void MPU6050::reset_enable_FIFO()
 {
-#define USER_CTRL_RA 0x6A
-#define USER_CTRL_FIFO_EN 0x40
-#define USER_CTRL_I2C_MST_EN 0x20
-#define USER_CTRL_I2C_IF_DIS 0x10 // MPU6000 only
-#define USER_CTRL_FIFO_RESET 0x04
-#define USER_CTRL_I2C_MST_RESET 0x02
-#define USER_CTRL_SIG_COND_RESET 0x01
-    uint8_t write_buf[2] = {};
-    write_buf[0] = USER_CTRL_RA;
-    write_buf[1] = 0x0; // reset all bits
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
-    write_buf[1] = USER_CTRL_FIFO_RESET;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
-    write_buf[1] = USER_CTRL_FIFO_EN;
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
+    this->single_byte_write(USER_CTRL_RA, 0x0) ;// reset all bits
+    this->single_byte_write(USER_CTRL_RA, USER_CTRL_FIFO_RESET) ;
+    this->single_byte_write(USER_CTRL_RA, USER_CTRL_FIFO_EN) ;
 }
 
-void MPU6050::enableFIFO()
+void MPU6050::config_FIFO()
 {
-#define FIFO_EN_RA 0x23
-#define FIFO_EN_TEMP_FIFO_EN 0x80
-#define FIFO_EN_XG_FIFO_EN 0x40
-#define FIFO_EN_YG_FIFO_EN 0x20
-#define FIFO_EN_ZG_FIFO_EN 0x10
-#define FIFO_EN_ACCEL_FIFO_EN 0x08
-#define FIFO_EN_SLV2_FIFO_EN 0x04
-#define FIFO_EN_SLV1_FIFO_EN 0x02
-#define FIFO_EN_SLV0_FIFO_EN 0x01
-    uint8_t write_buf[2] = {};
-    write_buf[0] = FIFO_EN_RA;
-    write_buf[1] = 0xF8; // write all MPU data into FIFO, assuming no external sensor
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, write_buf, 2, false);
+    this->single_byte_write(FIFO_EN_RA, FIFO_EN_VALUE);// write all MPU data into FIFO, assuming no external sensor
 }
 
-uint MPU6050::readFIFOcount()
+uint16_t MPU6050::read_FIFO_count()
 {
-    return uint();
+    uint8_t read_buf[2] = {FIFO_COUNT_H_RA};
+    this->burst_byte_read(FIFO_COUNT_H_RA,read_buf,2);
+    return (read_buf[0]<<8) + read_buf[1];
 }
 
-MPUData MPU6050::readDataFromFIFO()
+MPUData MPU6050::read_MPU_measure_from_FIFO()
 {
-    return MPUData();
+    RawData_t raw_data = this->read_FIFO_raw_data();
+    MPUData_t data;
+    this->convertData(&data, &raw_data);
+    return data;
 }
 
-uint8_t MPU6050::readInterruptStatus()
+uint8_t MPU6050::read_interrupt_status()
 {
-#define INT_STATUS_RA 0x3A
-    uint8_t read_buf[] = {INT_STATUS_RA};
-    i2c_write_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, true);
-    i2c_read_blocking(this->i2c_bus_data.i2c, this->address, read_buf, 1, false);
-    return read_buf[0];
+    uint8_t read_buf;
+    this->single_byte_read(INT_STATUS_RA, & read_buf);
+    return read_buf;
 }

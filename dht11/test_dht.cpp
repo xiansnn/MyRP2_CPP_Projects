@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "include/dht11.h"
+#include "dht11.h"
 
 #ifdef PICO_DEFAULT_LED_PIN
 #define LED_PIN PICO_DEFAULT_LED_PIN

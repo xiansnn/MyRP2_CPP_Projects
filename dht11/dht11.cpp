@@ -11,7 +11,7 @@
 
 #include "pico/time.h"
 
-#include "include/dht11.h"
+#include "dht11.h"
 
 /// @brief
 /// @param gpio_in_

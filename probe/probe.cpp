@@ -1,4 +1,4 @@
-#include "include/probe.h"
+#include "probe.h"
 #include "hardware/gpio.h"
 
 /// @brief
