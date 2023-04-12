@@ -2,8 +2,8 @@
 //--------------------
 #define I2C_BUS i2c0
 // #define I2C_BUS i2c1
-#define I2C_SPEED 100000 // I2C STANDARD-MODE
-// #define I2C_SPEED 400000 // I2C FAST-MODE
+// #define I2C_SPEED 100000 // I2C STANDARD-MODE
+#define I2C_SPEED 400000 // I2C FAST-MODE
 #define I2C_SDA 8 // gpio pin on MakerFab Primer Board
 #define I2C_SCL 9 // gpio pin on MakerFab Primer Board
 
@@ -15,18 +15,14 @@
 #define SMPLRT_DIV_RA 0x19
 // config FSYNC and DLPF config
 #define CONFIG_RA 0x1A
-#define CONFIG_FSYNC_DLPF CONFIG_FSYNC_DISABLED | CONFIG_DLPF_DISABLED
-#define CONFIG_FSYNC_DISABLED 0x0
-#define CONFIG_DLPF_DISABLED 0x0
-#define GYRO_OUT_RATE 8000 // assuming DLPF is disabled,//
 // config Gyro self test and full scale
 #define GYRO_CONFIG_RA 0x1B
 // config Accelerator self test and full scale
 #define ACCEL_CONFIG_RA 0x1C// define MPU clock source
 // config which sensors are loaded into FIFO
 #define FIFO_EN_RA 0x23 // a 1024-byte FIFO
-// #define FIFO_EN_VALUE FIFO_EN_TEMP_FIFO_EN | ALL_GYRO | FIFO_EN_ACCEL_FIFO_EN
-#define FIFO_EN_VALUE FIFO_EN_TEMP_FIFO_EN | FIFO_EN_ACCEL_FIFO_EN | ALL_GYRO
+#define FIFO_EN_VALUE ALL_GYRO | FIFO_EN_ACCEL_FIFO_EN
+// #define FIFO_EN_VALUE FIFO_EN_TEMP_FIFO_EN | FIFO_EN_ACCEL_FIFO_EN | ALL_GYRO
 #define ALL_GYRO FIFO_EN_XG_FIFO_EN | FIFO_EN_YG_FIFO_EN | FIFO_EN_ZG_FIFO_EN
 #define FIFO_EN_TEMP_FIFO_EN 0x80
 #define FIFO_EN_XG_FIFO_EN 0x40
@@ -57,6 +53,7 @@
 #define INT_STATUS_DATA_RDY_INT 0x01
 // measures registers
 #define ACCEL_XOUT_H_RA 0x3B // the first data serves as a base for all MPU measures
+#define TEMP_OUT_H_RA 0x41
 // signal path reset
 #define SIGNAL_PATH_RESET_RA 0x68
 #define SIGNAL_PATH_RESET_GYRO_RESET 0x04
@@ -72,7 +69,7 @@
 #define USER_CTRL_SIG_COND_RESET 0x01
 // config power, reset, sleep mode
 #define PWR_MGMT_1_RA 0x6B
-#define PWR_MGMT_1_CLKSEL PWR_MGMT_1_CLKSEL_Z_PLL
+#define PWR_MGMT_1_CLKSEL PWR_MGMT_1_CLKSEL_INTERNAL
 #define PWR_MGMT_1_CLKSEL_INTERNAL 0x00
 #define PWR_MGMT_1_CLKSEL_X_PLL 0x01
 #define PWR_MGMT_1_CLKSEL_Y_PLL 0x02
