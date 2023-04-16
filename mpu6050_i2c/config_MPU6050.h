@@ -3,8 +3,9 @@
 
 #include "register_address_MPU6050.h"
 
-//----------------------------------------------------I2C bus config---
-//---------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//                             I2C bus config
+//-----------------------------------------------------------------------------
 // set I2C channel 0 or 1
 #define I2C_BUS i2c0
 // #define I2C_BUS i2c1
@@ -15,11 +16,11 @@
 #define I2C_SDA 8 // gpio pin on MakerFab Primer Board
 #define I2C_SCL 9 // gpio pin on MakerFab Primer Board
 
-//-------------------------------------------------define MPU config---
-//---------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//                               MPU config
 #define MPU_ADDR 0x68    // assuming AD0 pin is low
-#define SAMPLE_RATE 50.0 // set sensors sample rate in Hz
-
+#define SAMPLE_RATE 100.0 // set sensors sample rate in Hz
+//-----------------------------------------------------------------------------
 
 // ==== Register 26 0x1A– Configuration
 #define CONFIG EXT_SYNC_SET | DLPF_CODE
@@ -65,36 +66,29 @@
 #define GYRO_FULL_SCALE_RANGE 250  // values in { 250, 500, 1000, 2000} DPS
 #if (GYRO_FULL_SCALE_RANGE == 250)
 #define GYRO_CONFIG 0x00 << 3
-#define GYRO_FULL_SCALE_VALUE 250
 #elif (GYRO_FULL_SCALE_RANGE == 500)
 #define GYRO_CONFIG 0x01 << 3
-#define GYRO_FULL_SCALE_VALUE 500
 #elif (GYRO_FULL_SCALE_RANGE == 1000)
 #define GYRO_CONFIG 0x02 << 3
-#define GYRO_FULL_SCALE_VALUE 1000
 #elif (GYRO_FULL_SCALE_RANGE == 2000)
 #define GYRO_CONFIG 0x03 << 3
-#define GYRO_FULL_SCALE_VALUE 2000
 #endif
 
 // ==== Register 28 0x1C– Accelerometer Configuration 
 #define ACCEL_FULL_SCALE_RANGE 2  // values in { 2, 4, 8, 16} G
 #if (ACCEL_FULL_SCALE_RANGE == 2)
 #define ACCEL_CONFIG 0x00 << 3
-#define ACCEL_FULL_SCALE_VALUE 2
 #elif (ACCEL_FULL_SCALE_RANGE == 4)
 #define ACCEL_CONFIG 0x01 << 3
-#define ACCEL_FULL_SCALE_VALUE 4
 #elif (ACCEL_FULL_SCALE_RANGE == 8)
 #define ACCEL_CONFIG 0x02 << 3
-#define ACCEL_FULL_SCALE_VALUE 8
 #elif (ACCEL_FULL_SCALE_RANGE == 16)
 #define ACCEL_CONFIG 0x03 << 3
-#define ACCEL_FULL_SCALE_VALUE 16
 #endif
 
 // ==== Register 35 0x23– FIFO Enable : config which measures will be written into the FIFO
-#define FIFO_SELECTED_SENSOR GYRO_FIFO_EN | ACCEL_FIFO_EN
+#define FIFO_SELECTED_SENSORS GYRO_FIFO_EN | ACCEL_FIFO_EN
+// #define FIFO_SELECTED_SENSORS ACCEL_FIFO_EN
 // values to be selected :
 #define GYRO_FIFO_EN XG_FIFO_EN | YG_FIFO_EN | ZG_FIFO_EN
 #define TEMP_FIFO_EN 0x80
@@ -108,7 +102,7 @@
 // end values
 
 // ==== Register 55 0x37– INT Pin / Bypass Enable Configuration
-#define INT_PIN_CFG INT_LEVEL | INT_OPEN // Active LO, open drain, pulsed 50us, cleared by read INT status
+#define INT_PIN_CFG INT_LEVEL | LATCH_INT_EN // Active LO, open drain, pulsed 50us, cleared by read INT status
 // values to be selected :
 #define INT_LEVEL 0x80    // INT pin active LOW
 #define INT_OPEN 0x40     // INT pin open drain
@@ -152,7 +146,7 @@
 #define SIG_COND_RESET 0x01 // reset all sensors processing and registers
 
 // Register 107 0x6B– Power Management 1
-#define PWR_MGMT_1 CLKSEL_INTERNAL
+#define PWR_MGMT_1 CLKSEL_Z_PLL
 // values to be selected as CLKSEL
 #define CLKSEL_INTERNAL 0x00
 #define CLKSEL_X_PLL 0x01

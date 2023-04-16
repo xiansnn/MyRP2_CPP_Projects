@@ -35,7 +35,7 @@ class MPU6050
 private:
     float acceleration_factor{};
     float gyro_factor{};
-    float temperature_gain = (float)1 / 340;
+    float temperature_gain = 1.0 / 340.0;
     float temperature_offset = 36.53;
     float accel_x_offset {};
     float accel_y_offset {};
@@ -49,12 +49,14 @@ private:
     uint8_t burst_byte_read(uint8_t reg_addr, uint8_t *dest, uint8_t len);
     void read_registers_all_raw_data(RawData_t * raw);
     void read_FIFO_all_raw_data(RawData_t * raw);
+    void convert_raw_to_measure(RawData_t * raw, MPUData_t * measures);
 
 public:
-    void read_FIFO_g_accel_raw_data(RawData_t * raw);
     MPU6050();
-    uint8_t read_interrupt_status();
+    void read_FIFO_g_accel_raw_data(RawData_t * raw);
+    void read_FIFO_accel_raw_data(RawData_t * raw);
     uint16_t read_FIFO_count();
+    bool is_data_ready();
 
     float read_MPU_temperature();
     void read_MPU_all_measure_from_registers(MPUData_t * data);
