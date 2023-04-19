@@ -1,7 +1,21 @@
+/**
+ * @file mpu6050.cpp
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-04-18
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include "config_MPU6050.h"
 #include "mpu6050.h"
 #include "pico/stdlib.h"
 
+/**
+ * @brief Construct a new MPU6050::MPU6050 object
+ * 
+ */
 MPU6050::MPU6050()
 {
     // config I2C
@@ -37,6 +51,13 @@ MPU6050::MPU6050()
     this->calibrate();
 }
 
+/**
+ * @brief 
+ * 
+ * @param reg_addr 
+ * @param reg_value 
+ * @return uint8_t 
+ */
 uint8_t MPU6050::single_byte_write(uint8_t reg_addr, uint8_t reg_value)
 {
     uint8_t write_buf[] = {reg_addr, reg_value};

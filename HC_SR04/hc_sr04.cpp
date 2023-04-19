@@ -1,3 +1,13 @@
+/**
+ * @file hc_sr04.cpp
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-04-18
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include "hc_sr04.h"
 #include "pico/stdlib.h"
 #include "pico/stdio.h"
@@ -6,7 +16,10 @@
 #define TRIG_PIN 21
 #define ECHO_PIN 26
 
-
+/**
+ * @brief 
+ * 
+ */
 HC_SR04::HC_SR04(/* args */)
 {
     gpio_init(TRIG_PIN);
