@@ -1,23 +1,18 @@
-add_executable(pwm_example1
-    example_pwm_1.cpp
-    )
+add_executable(test_pwm
+        test_pwm.cpp
+        pwm.cpp
+        )
 
-# pull in common dependencies and additional i2c hardware support
-target_link_libraries(pwm_example1 pico_stdlib hardware_pwm)
-pico_add_extra_outputs(pwm_example1)
+target_link_libraries(test_pwm pico_stdlib hardware_pwm)
 
-add_executable(pwm_example2
-    example_pwm_2.cpp
-    )
-    target_link_libraries(pwm_example2 pico_stdlib hardware_pwm)
-    pico_add_extra_outputs(pwm_example2)
-    
+pico_add_extra_outputs(test_pwm)
 
-add_executable(pwm_example3
-    example_pwm_3.cpp
-    )
-    target_link_libraries(pwm_example3 pico_stdlib hardware_pwm)
-    pico_add_extra_outputs(pwm_example3)
-    
-# create map/bin/hex file etc.
-# pico_add_extra_outputs(mpu6050_i2c)
+add_executable(test_pwm_irq
+        test_pwm_irq.cpp
+        pwm.cpp
+        ../probe/probe.cpp
+        )
+
+target_link_libraries(test_pwm_irq pico_stdlib hardware_pwm)
+
+pico_add_extra_outputs(test_pwm_irq)
