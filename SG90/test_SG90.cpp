@@ -9,20 +9,20 @@
  *
  */
 #include "pico/stdlib.h"
-#include "../PWM/pwm.h"
+#include "../PWM/pwm_hal.h"
 
 #define CH1 8
 #define STEP_ns 1000
 #define PERIOD_us 20000
-#define PHASE_CORRECT false
+#define PHASE_CORRECT true
 
 int main(int argc, char const *argv[])
 {
-    PWM pwm = PWM(8, CH1 + 1, STEP_ns, PERIOD_us,false,false,PHASE_CORRECT);
+    PWM pwm = PWM(8, CH1 + 1, STEP_ns, PERIOD_us, PHASE_CORRECT);
 
     int pos_min = 0;   // 0°
     int pos_max = 180; // 180°
-    int pos_step = 45;  // in °
+    int pos_step = 45; // in °
     int pos = pos_min;
     float duty_cycle_min = 0.5 / 20; // => pos_min
     float duty_cycle_max = 2.5 / 20; // => pos_max
