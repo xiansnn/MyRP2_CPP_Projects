@@ -43,26 +43,18 @@ public:
 };
 
 class PWMgatedMeasure
-
 {
 private:
-    /* data */
     uint8_t slice;
-;
-
-public:
     uint measure_duration_us;
     uint resolution_ns;
-    PWMgatedMeasure
-    (
-    uint pin_gate, // must be a ch_B
-    uint resolution_ns, // min = 8ns < step_ns < max = 256 * 8ns = ca 2us
-    uint measure_duration_us
-    );
+
+public:
+    PWMgatedMeasure(uint pin_gate,      // must be a ch_B
+                    uint resolution_ns, // min = 8ns < step_ns < max = 256 * 8ns = ca 2us
+                    uint measure_duration_us);
     float measure_duty_cycle();
-    uint measure_cycles();
-
+    uint16_t count_cycles();
 };
-
 
 #endif // PWM_HAL_H

@@ -83,7 +83,7 @@ PWMgatedMeasure::PWMgatedMeasure(uint pin_gate, uint resolution_ns, uint measure
     pwm_config config = pwm_get_default_config(); // TOP default value =0xffffu  and DIV = 1
     pwm_config_set_output_polarity(&config, false, false);
     pwm_config_set_phase_correct(&config, false);
-    pwm_config_set_clkdiv_mode(&config, PWM_DIV_B_HIGH);
+    pwm_config_set_clkdiv_mode(&config, PWM_DIV_B_HIGH); // counter is gated be signal on pin ch_B
 
     this->resolution_ns = resolution_ns;
     float min_clock_step = 1000000000 / clock_get_hz(clk_sys); // in ns
@@ -95,15 +95,13 @@ PWMgatedMeasure::PWMgatedMeasure(uint pin_gate, uint resolution_ns, uint measure
 
 float PWMgatedMeasure::measure_duty_cycle()
 {
-    uint max_possible_count = this->measure_duration_us * 1000 / this->resolution_ns;
-    pwm_set_enabled(this->slice, true);
-    sleep_us(this->measure_duration_us);
-    pwm_set_enabled(this->slice, false);
-    return pwm_get_counter(this->slice) / max_possible_count;
+    float max_possible_count = this->measure_duration_us*1000 / this->resolution_ns;
+    return (float)this->count_cycles() / max_possible_count;
 }
 
-uint PWMgatedMeasure::measure_cycles()
+uint16_t PWMgatedMeasure::count_cycles()
 {
+    pwm_set_counter(this->slice, 0);
     pwm_set_enabled(this->slice, true);
     sleep_us(this->measure_duration_us);
     pwm_set_enabled(this->slice, false);
