@@ -1,4 +1,4 @@
-include_directories(include/*.h)
+include_directories(${PROJECT_SOURCE_DIR})
 
 add_executable(test_dht11
         test_dht.cpp
