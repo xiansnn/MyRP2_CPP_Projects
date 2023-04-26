@@ -9,10 +9,14 @@
  * 
  */
 #include "hc_sr04.h"
-#include "pico/stdlib.h"
 #include "pico/stdio.h"
+#include "pico/stdlib.h"
 #include <stdio.h>
 
+/**
+ * @brief 
+ * 
+ */
 #define TRIG_PIN 21
 #define ECHO_PIN 26
 
@@ -20,7 +24,7 @@
  * @brief 
  * 
  */
-HC_SR04::HC_SR04(/* args */)
+HC_SR04::HC_SR04()
 {
     gpio_init(TRIG_PIN);
     gpio_init(ECHO_PIN);
@@ -29,6 +33,10 @@ HC_SR04::HC_SR04(/* args */)
     gpio_pull_up(ECHO_PIN);
 }
 
+/**
+ * @brief 
+ * 
+ */
 void HC_SR04::trig()
 {
     gpio_put(TRIG_PIN,1);
