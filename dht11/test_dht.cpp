@@ -6,6 +6,17 @@
  * updated 2023-03-31 : xiansnn, inspired from Adafruit DHT driver
  **/
 
+/**
+ * @file test_dht.cpp
+ * @author xiansnn (xiansnn@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-04-25
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <stdio.h>
 #include <math.h>
 

@@ -1,11 +1,25 @@
+/**
+ * @file dht11.h
+ * @author xiansnn (xiansnn@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-04-25
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef DHT11_H
 #define DHT11_H
 
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
 
-#define MAX_TIMING_MEASURE 80
 
+
+/**
+ * @brief 
+ * 
+ */
 typedef struct
 {
     bool is_valid;
@@ -13,6 +27,10 @@ typedef struct
     float temp_celsius;
 } dht_reading_t;
 
+/**
+ * @brief 
+ * 
+ */
 class DHT11
 {
 private:

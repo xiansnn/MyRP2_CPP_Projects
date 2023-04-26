@@ -6,6 +6,17 @@
  * updated 2023-03-31 : xiansnn, inspired from Adafruit DHT driver
  **/
 
+/**
+ * @file dht11.cpp
+ * @author xiansnn (xiansnn@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-04-25
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <stdio.h>
 #include <math.h>
 
@@ -13,8 +24,13 @@
 
 #include "dht11.h"
 
-/// @brief
-/// @param gpio_in_
+#define MAX_TIMING_MEASURE 80
+
+/**
+ * @brief Construct a new DHT11::DHT11 object
+ * 
+ * @param gpio_in_ 
+ */
 DHT11::DHT11(uint gpio_in_)
 {
     this->gpio_in = gpio_in_;
