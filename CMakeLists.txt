@@ -20,11 +20,11 @@ add_compile_options(-Wall
         -Wno-maybe-uninitialized
         )
 
-add_subdirectory(probe)
-add_subdirectory(PWM)
-add_subdirectory(I2C)
-add_subdirectory(dht11)
-add_subdirectory(HC_SR04)
-add_subdirectory(mpu6050_i2c)
-add_subdirectory(SG90)
+add_subdirectory(dbg_probe)
+add_subdirectory(hw_PWM)
+add_subdirectory(hw_I2C)
+add_subdirectory(device_DHT11)
+add_subdirectory(device_HC_SR04)
+add_subdirectory(device_MPU6050)
+add_subdirectory(device_SG90)
 
