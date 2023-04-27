@@ -5,7 +5,7 @@
  */
 
 #include "pico/stdlib.h"
-#include "pwm_hal.h"
+#include "hw_pwm.h"
 
 /**
  * @brief 

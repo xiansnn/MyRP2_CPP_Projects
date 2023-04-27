@@ -1,4 +1,4 @@
-#include "pwm_hal.h"
+#include "hw_pwm.h"
 
 uint32_t PWM::slice_mask = 0x0;
 

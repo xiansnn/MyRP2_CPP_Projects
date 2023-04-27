@@ -12,8 +12,8 @@
 #include "pico/time.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
-#include "probe/probe.h"
-#include "pwm_hal.h"
+#include "dbg_probe/probe.h"
+#include "hw_pwm.h"
 
 #define LED_PIN 6 
 #define STEP_ns 500

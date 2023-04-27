@@ -9,8 +9,8 @@
  *
  */
 
-#if !defined(PWM_HAL_H)
-#define PWM_HAL_H
+#if !defined(HAL_PWM_H)
+#define HAL_PWM_H
 
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
@@ -57,4 +57,4 @@ public:
     uint16_t count_cycles();
 };
 
-#endif // PWM_HAL_H
+#endif // HAL_PWM_H
