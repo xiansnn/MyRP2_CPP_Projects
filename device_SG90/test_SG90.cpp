@@ -9,7 +9,7 @@
  *
  */
 #include "pico/stdlib.h"
-#include "PWM/pwm_hal.h"
+#include "hw_PWM/hw_pwm.h"
 
 #define CH1 8
 #define STEP_ns 1000
