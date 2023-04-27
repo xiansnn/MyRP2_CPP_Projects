@@ -2,8 +2,7 @@
 #define MPU6050_H
 
 #include "config_MPU6050.h"
-#include <map>
-#include "hardware/i2c.h"
+#include "pico/stdlib.h"
 
 // raw data as they are captured by sensor
 typedef struct RawData

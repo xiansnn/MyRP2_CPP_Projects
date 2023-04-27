@@ -10,7 +10,7 @@
  */
 #include "config_MPU6050.h"
 #include "mpu6050.h"
-#include "pico/stdlib.h"
+#include "hardware/i2c.h"
 
 /**
  * @brief Construct a new MPU6050::MPU6050 object
