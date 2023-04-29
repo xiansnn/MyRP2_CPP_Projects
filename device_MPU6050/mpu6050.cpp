@@ -48,7 +48,7 @@ MPU6050::MPU6050()
     this->single_byte_write(INT_PIN_CFG_RA, INT_PIN_CFG);
     // configure INT on Data ready
     this->single_byte_write(INT_ENABLE_RA, INT_ENABLE);
-    this->calibrate();
+    // this->calibrate(); 
 }
 
 /**
