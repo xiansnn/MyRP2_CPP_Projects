@@ -121,7 +121,7 @@ static void run_master() {
         hard_assert(memcmp(buf, msg + split, msg_len - split) == 0);
 
         puts("");
-        sleep_ms(2000);
+        sleep_ms(1000);
     }
 }
 
