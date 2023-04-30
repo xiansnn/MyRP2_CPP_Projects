@@ -3,7 +3,7 @@
 #include "hw_i2c.h"
 #include "probe.h"
 
-#define BAUD_RATE 50000
+#define BAUD_RATE 100*000
 #define I2C_MASTER i2c0
 #define I2C_MASTER_SDA_PIN 8
 #define I2C_MASTER_SCL_PIN 9
@@ -22,51 +22,10 @@ hw_I2C_master master = hw_I2C_master(I2C_MASTER, I2C_MASTER_SDA_PIN, I2C_MASTER_
 hw_I2C_slave slave = hw_I2C_slave(I2C_SLAVE, I2C_SLAVE_SDA_PIN, I2C_SLAVE_SCL_PIN, BAUD_RATE,
                                     SLAVE_ADDR, i2c_slave_handler);
 
-
-// The slave implements a 256 byte memory. To write a series of bytes, the master first
-// writes the memory address, followed by the data. The address is automatically incremented
-// for each byte transferred, looping back to 0 upon reaching the end. Reading is done
-// sequentially from the current memory address.
-#define MAX_SLAVE_MEMORY_SIZE 256
-static struct
-{
-    uint8_t mem[MAX_SLAVE_MEMORY_SIZE]{};
-    uint8_t mem_address;
-    bool mem_address_written;
-} context;
-
-// Our handler is called from the I2C ISR, so it must complete quickly. Blocking calls /
-// printing to stdio may interfere with interrupt handling.
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event)
 {
     pr_D4.hi();
-    switch (event)
-    {
-    case I2C_SLAVE_RECEIVE: // master has written some data
-        if (!context.mem_address_written)
-        {
-            // writes always start with the memory address
-            context.mem_address = i2c_read_byte_raw(i2c);
-            context.mem_address_written = true;
-        }
-        else
-        {
-            // save into memory
-            context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
-            context.mem_address++;
-        }
-        break;
-    case I2C_SLAVE_REQUEST: // master is requesting data
-        // load from memory
-        i2c_write_byte_raw(i2c, context.mem[context.mem_address]);
-        context.mem_address++;
-        break;
-    case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
-        context.mem_address_written = false;
-        break;
-    default:
-        break;
-    }
+    slave.slave_isr(event);
     pr_D4.lo();
 }
 
@@ -95,7 +54,7 @@ int main()
         pr_D6.hi();
         master.burst_byte_read(SLAVE_ADDR, mem_address, read_data, MAX_DATA_SIZE);
         pr_D6.lo();
-        memcpy(read_msg, read_data, msg_len);
+        memcpy(read_msg, read_data, MAX_DATA_SIZE);
         msg_len = strlen(read_msg);
         printf("Read %d char at 0x%02X: '%s'\n\n", msg_len, mem_address, read_msg);
         sleep_ms(1000);
