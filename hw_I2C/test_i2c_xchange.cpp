@@ -18,9 +18,8 @@ Probe pr_D6 = Probe(6);
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
 
-hw_I2C_master master = hw_I2C_master(I2C_MASTER, I2C_MASTER_SDA_PIN, I2C_MASTER_SCL_PIN, BAUD_RATE);
-hw_I2C_slave slave = hw_I2C_slave(I2C_SLAVE, I2C_SLAVE_SDA_PIN, I2C_SLAVE_SCL_PIN, BAUD_RATE,
-                                    SLAVE_ADDR, i2c_slave_handler);
+hw_I2C_master master = hw_I2C_master(I2C_MASTER);
+hw_I2C_slave slave = hw_I2C_slave(I2C_SLAVE, i2c_slave_handler);
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event)
 {
@@ -35,7 +34,7 @@ int main()
     printf("test I2C exchange \n");
 #define MAX_DATA_SIZE 32
 
-    for (uint8_t mem_address = 0;; mem_address = (mem_address + MAX_DATA_SIZE) % MAX_SLAVE_MEMORY_SIZE)
+    for (uint8_t mem_address = 0;; mem_address = (mem_address + MAX_DATA_SIZE) % I2C_SLAVE_MAX_MEMORY_SIZE)
     {
         uint8_t write_data[MAX_DATA_SIZE];
         char write_msg[MAX_DATA_SIZE];
