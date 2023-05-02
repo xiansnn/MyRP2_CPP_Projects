@@ -14,7 +14,7 @@ private:
     i2c_inst_t *i2c;
 
 public:
-    hw_I2C_master(i2c_inst_t *i2c);
+    hw_I2C_master(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
     int single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value);
     int burst_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t *src, uint8_t len);
     int single_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest);
@@ -25,7 +25,7 @@ public:
 
 typedef struct
 {
-    uint8_t mem[I2C_SLAVE_MAX_MEMORY_SIZE]{};
+    uint8_t mem[I2C_SLAVE_DEFAULT_MAX_MEMORY_SIZE]{};
     uint8_t mem_address = 0x00;
     bool mem_address_written = false;
 } context_t;
@@ -34,11 +34,13 @@ class hw_I2C_slave
 {
 private:
     i2c_inst_t *i2c;
+    static context_t memory;
 
 public:
     context_t context;
-    // static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
-    hw_I2C_slave(i2c_inst_t *i2c, i2c_slave_handler_t handler);
+    static void slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
+    hw_I2C_slave(i2c_inst_t *i2c, uint sda, uint scl, uint bad_rate,
+                 uint8_t slave_address, i2c_slave_handler_t handler);
     void slave_isr(i2c_slave_event_t event);
 };
 
