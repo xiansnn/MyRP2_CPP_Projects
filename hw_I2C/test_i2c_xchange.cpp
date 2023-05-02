@@ -3,15 +3,6 @@
 #include "hw_i2c.h"
 #include "probe.h"
 
-#define BAUD_RATE 100*000
-#define I2C_MASTER i2c0
-#define I2C_MASTER_SDA_PIN 8
-#define I2C_MASTER_SCL_PIN 9
-#define I2C_SLAVE i2c1
-#define I2C_SLAVE_SDA_PIN 6
-#define I2C_SLAVE_SCL_PIN 7
-#define SLAVE_ADDR 0x65
-
 Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
 Probe pr_D6 = Probe(6);
@@ -38,20 +29,20 @@ int main()
     {
         uint8_t write_data[MAX_DATA_SIZE];
         char write_msg[MAX_DATA_SIZE];
-        snprintf(write_msg, sizeof(write_msg), "Hello, slave@0x%02X mem[0x%02X]", SLAVE_ADDR, mem_address);
+        snprintf(write_msg, sizeof(write_msg), "Hello, slave@0x%02X mem[0x%02X]", I2C_SLAVE_ADDR, mem_address);
         uint8_t msg_len = strlen(write_msg);
         memcpy(write_data, write_msg, msg_len); // to convert  char[] to uint8_t[]
         // write data at mem_address
         printf("Write at 0x%02X: '%s'\n", mem_address, write_msg);
         pr_D5.hi();
-        master.burst_byte_write(SLAVE_ADDR, mem_address, write_data, msg_len);
+        master.burst_byte_write(I2C_SLAVE_ADDR, mem_address, write_data, msg_len);
         pr_D5.lo();
 
         // read from mem_address
         uint8_t read_data[MAX_DATA_SIZE];
         char read_msg[MAX_DATA_SIZE];
         pr_D6.hi();
-        master.burst_byte_read(SLAVE_ADDR, mem_address, read_data, MAX_DATA_SIZE);
+        master.burst_byte_read(I2C_SLAVE_ADDR, mem_address, read_data, MAX_DATA_SIZE);
         pr_D6.lo();
         memcpy(read_msg, read_data, MAX_DATA_SIZE);
         msg_len = strlen(read_msg);
