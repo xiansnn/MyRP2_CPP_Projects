@@ -41,20 +41,15 @@ hw_I2C_master::hw_I2C_master(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate
     i2c_init(i2c, baud_rate);
 }
 
-int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t mem_value)
-{
-    uint8_t write_buf[] = {slave_mem_addr, mem_value};
-    int nb = i2c_write_blocking(this->i2c, slave_address, write_buf, 2, false);
-    return nb;
-}
-
 /**
- * @brief Helper to blocking write a block of data starting at a slave memory address
+ * @brief Helper to write a block of data starting at a slave memory address.
+ * The size of the block can be 1  for single byte write.
+ * Write will block the processor (synchronous execution).
  * 
  * @param slave_address the slave address
  * @param slave_mem_addr the slave memory 
  * @param src the address of the block of data
- * @param len the size of the block of data
+ * @param len the size of the block of data. Can be 1 for single byte write
  * @return int Number of bytes written, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
  */
 int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, uint8_t len)
@@ -65,6 +60,15 @@ int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_add
     return nb;
 }
 
+/**
+ * @brief Helper to read a single byte of data at a slave memory address.
+ * Read will block the processor (synchronous execution).
+ * 
+ * @param slave_address the slave address
+ * @param slave_mem_addr the address of slave memory to read from
+ * @param dest Pointer to buffer to receive data
+ * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
+ */
 int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest)
 {
     uint8_t cmd_buf[]{slave_mem_addr};
@@ -73,6 +77,16 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
     return nb;
 }
 
+/**
+ * @brief Helper to read a block of data starting at a slave memory address.
+ * Read will block the processor (synchronous execution).
+ * 
+ * @param slave_address the slave address
+ * @param slave_mem_addr the starting address of slave memory to read from 
+ * @param dest Pointer to buffer to receive data
+ * @param len the size of the block of data
+ * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
+ */
 int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
 {
     uint8_t cmd_buf[]{slave_mem_addr};
