@@ -34,11 +34,9 @@ class hw_I2C_slave
 {
 private:
     i2c_inst_t *i2c;
-    static context_t memory;
 
 public:
     context_t context;
-    static void slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
     hw_I2C_slave(i2c_inst_t *i2c, uint sda, uint scl, uint bad_rate,
                  uint8_t slave_address, i2c_slave_handler_t handler);
     void slave_isr(i2c_slave_event_t event);

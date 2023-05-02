@@ -112,37 +112,6 @@ void hw_I2C_slave::slave_isr(i2c_slave_event_t event)
     }
 }
 
-void hw_I2C_slave::slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event)
-{
-    switch (event)
-    {
-    case I2C_SLAVE_RECEIVE: // master has written some data
-        if (!hw_I2C_slave::memory.mem_address_written)
-        {
-            // writes always start with the memory address
-            hw_I2C_slave::memory.mem_address = i2c_read_byte_raw(i2c1);
-            hw_I2C_slave::memory.mem_address_written = true;
-        }
-        else
-        {
-            // save into memory
-            hw_I2C_slave::memory.mem[hw_I2C_slave::memory.mem_address] = i2c_read_byte_raw(i2c1);
-            hw_I2C_slave::memory.mem_address++;
-        }
-        break;
-    case I2C_SLAVE_REQUEST: // master is requesting data
-        // load from memory
-        i2c_write_byte_raw(i2c1, hw_I2C_slave::memory.mem[hw_I2C_slave::memory.mem_address]);
-        hw_I2C_slave::memory.mem_address++;
-        break;
-    case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
-        hw_I2C_slave::memory.mem_address_written = false;
-        break;
-    default:
-        break;
-    }
-}
-
 hw_I2C_slave::hw_I2C_slave(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate,
                            uint8_t slave_address, i2c_slave_handler_t handler)
 {
