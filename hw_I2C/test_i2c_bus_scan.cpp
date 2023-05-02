@@ -46,9 +46,7 @@ int main()
     printf("test I2C bus scan : ");
     std::set<uint8_t> slave_set = master.bus_scan();
     for (auto &&i : slave_set)
-    {
         printf("0x%2x   ", i);
-    }
     printf("\n");
     master.show_bus_map();
 
