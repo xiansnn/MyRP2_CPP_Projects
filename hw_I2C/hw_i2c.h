@@ -26,7 +26,7 @@ public:
 typedef struct
 {
     uint8_t mem[I2C_SLAVE_DEFAULT_MAX_MEMORY_SIZE]{};
-    uint8_t mem_address = 0x00;
+    uint8_t mem_address = I2C_SLAVE_DEFAULT_MAX_MEMORY_SIZE-1;//init: the slave points to its last memory address
     bool mem_address_written = false;
 } context_t;
 
