@@ -1,8 +1,17 @@
+/**
+ * @file test_probe.cpp
+ * @author xiansnn (xiansnn@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-05-02
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include "probe.h"
 #include "pico/time.h"
 
-/// @brief
-/// @return
+
 int main()
 {
 
