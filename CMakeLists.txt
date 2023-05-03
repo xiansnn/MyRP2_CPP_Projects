@@ -20,11 +20,9 @@ add_compile_options(-Wall
         -Wno-maybe-uninitialized
         )
 
-add_subdirectory(dbg_probe)
-add_subdirectory(hw_PWM)
-add_subdirectory(hw_I2C)
-add_subdirectory(device_DHT11)
-add_subdirectory(device_HC_SR04)
-add_subdirectory(device_MPU6050)
-add_subdirectory(device_SG90)
+include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe)
+
+add_subdirectory(utilities)
+add_subdirectory(hw)
+add_subdirectory(device)
 

@@ -1,0 +1,4 @@
+add_subdirectory(device_DHT11)
+add_subdirectory(device_HC_SR04)
+add_subdirectory(device_MPU6050)
+add_subdirectory(device_SG90)

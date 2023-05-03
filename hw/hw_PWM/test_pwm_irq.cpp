@@ -12,10 +12,10 @@
 #include "pico/time.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
-#include "dbg_probe/probe.h"
+#include "probe.h"
 #include "hw_pwm.h"
 
-#define LED_PIN 6 
+#define PWM_OUT 6
 #define STEP_ns 500
 #define PERIOD_us 100
 #define PHASE_CORRECT false
@@ -23,39 +23,46 @@
 Probe pr_irq = Probe(4);
 Probe pr_main = Probe(5);
 
-PWM pwm = PWM(LED_PIN,LED_PIN+1,STEP_ns,PERIOD_us,PHASE_CORRECT);
+PWM pwm = PWM(PWM_OUT, PWM_OUT + 1, STEP_ns, PERIOD_us, PHASE_CORRECT);
 
-void on_pwm_wrap() {
-    pr_irq.hi();
+void on_pwm_wrap()
+{
     pwm.clear_irq();
     static bool going_up = true;
     static float duty_cycle = 0.0;
     static float duty_cycle_step = 0.01;
-    if (going_up) {
+    if (going_up)
+    {
         duty_cycle += duty_cycle_step;
-        if (duty_cycle >= 1.0) {
+        if (duty_cycle >= 1.0)
+        {
             duty_cycle = 1.0;
             going_up = false;
         }
-    } else {
+    }
+    else
+    {
         duty_cycle -= duty_cycle_step;
-        if (duty_cycle <= 0.0) {
+        if (duty_cycle <= 0.0)
+        {
+            pr_irq.hi(); // trigger placed on the start of duty cycle = 0
+            pr_irq.lo();
             duty_cycle = 0.0;
             going_up = true;
         }
     }
-    pwm.set_duty_cycle(LED_PIN+1,duty_cycle);
-    pr_irq.lo();
+    pwm.set_duty_cycle(PWM_OUT + 1, duty_cycle);
 }
 
-
-int main() {
-    pwm.set_width_nb_of_step(LED_PIN,1);
-    pwm.set_duty_cycle(LED_PIN+1, 0.01);
+int main()
+{
+    pwm.set_width_nb_of_step(PWM_OUT, 1);
+    pwm.set_duty_cycle(PWM_OUT + 1, 0.01);
     pwm.set_irq(on_pwm_wrap);
     pwm.start(true);
 
-    while (true){
+    while (true)
+    {
         pr_main.hi();
         sleep_us(10);
         pr_main.lo();

@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include "hw_pwm.h"
-#include "dbg_probe/probe.h"
+#include "probe.h"
 
 // This example drives a PWM output at a range of duty cycles, and uses
 // another PWM slice in input mode to measure the duty cycle. You'll need to
@@ -19,26 +19,6 @@ const uint MEASURE_PIN = 9; // D3
 Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
 
-// float measure_duty_cycle(uint gpio)
-// {
-//     // Only the PWM B pins can be used as inputs.
-//     assert(pwm_gpio_to_channel(gpio) == PWM_CHAN_B);
-//     uint slice_num = pwm_gpio_to_slice_num(gpio);
-
-//     // Count once for every 100 cycles the PWM B input is high
-//     pwm_config cfg = pwm_get_default_config();
-//     pwm_config_set_clkdiv_mode(&cfg, PWM_DIV_B_HIGH);
-//     pwm_config_set_clkdiv(&cfg, DIV);
-//     pwm_init(slice_num, &cfg, false);
-//     gpio_set_function(gpio, GPIO_FUNC_PWM);
-//     // start measure here
-//     pwm_set_enabled(slice_num, true);
-//     sleep_ms(MEASURE_DURATION);
-//     pwm_set_enabled(slice_num, false);
-//     float counting_rate = clock_get_hz(clk_sys) / (DIV * 1000); // in kHz
-//     float max_possible_count = counting_rate * MEASURE_DURATION;
-//     return pwm_get_counter(slice_num) / max_possible_count;
-// }
 
 const float test_duty_cycles[] = {
     0.f,

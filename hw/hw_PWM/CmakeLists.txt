@@ -1,6 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR})
-
-message("PWM msg : " ${PROJECT_SOURCE_DIR})
 
 add_library(hw_pwm  hw_pwm.cpp)
 target_link_libraries(hw_pwm pico_stdlib hardware_pwm)
