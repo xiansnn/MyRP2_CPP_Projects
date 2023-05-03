@@ -20,7 +20,8 @@ add_compile_options(-Wall
         -Wno-maybe-uninitialized
         )
 
-include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe)
+include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
+                    ${PROJECT_SOURCE_DIR}/hw)
 
 add_subdirectory(utilities)
 add_subdirectory(hw)

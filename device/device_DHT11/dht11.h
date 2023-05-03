@@ -1,13 +1,3 @@
-/**
- * @file dht11.h
- * @author xiansnn (xiansnn@hotmail.com)
- * @brief 
- * @version 0.1
- * @date 2023-04-25
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #ifndef DHT11_H
 #define DHT11_H
 
@@ -17,7 +7,7 @@
 
 
 /**
- * @brief 
+ * @brief the sensor result is given according to this structure:
  * 
  */
 typedef struct
@@ -27,10 +17,7 @@ typedef struct
     float temp_celsius;
 } dht_reading_t;
 
-/**
- * @brief 
- * 
- */
+
 class DHT11
 {
 private:

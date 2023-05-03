@@ -1,9 +1,9 @@
 /**
  * @file hc_sr04.cpp
- * @author your name (you@domain.com)
- * @brief 
+ * @author xiansnn (xiansnn@hotmail.com)
+ * @brief a class that manages ultrasonic ranging device HC_SR04
  * @version 0.1
- * @date 2023-04-18
+ * @date 2023-05-03
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -14,46 +14,50 @@
 #include <stdio.h>
 
 /**
- * @brief 
+ * @brief Construct a new hc sr04::hc sr04 object
  * 
+ * @param trig_pin the pin attached to the triggering signal
+ * @param echo_pin the pin used to measure round-trip time of ultrasonic pulses
  */
-#define TRIG_PIN 21
-#define ECHO_PIN 26
-
-/**
- * @brief 
- * 
- */
-HC_SR04::HC_SR04()
+HC_SR04::HC_SR04(uint trig_pin, uint echo_pin)
 {
-    gpio_init(TRIG_PIN);
-    gpio_init(ECHO_PIN);
-    gpio_set_dir(TRIG_PIN,GPIO_OUT);
-    gpio_set_dir(ECHO_PIN, GPIO_IN);
-    gpio_pull_up(ECHO_PIN);
+    this->trig_pin = trig_pin;
+    this->echo_pin = echo_pin;
+    gpio_init(this->trig_pin);
+    gpio_init(this->echo_pin);
+    gpio_set_dir(this->trig_pin,GPIO_OUT);
+    gpio_set_dir(this->echo_pin, GPIO_IN);
+    gpio_pull_up(this->echo_pin);
 }
 
 /**
- * @brief 
+ * @brief send a trig signal to HC_SR04
  * 
  */
 void HC_SR04::trig()
 {
-    gpio_put(TRIG_PIN,1);
+    gpio_put(this->trig_pin,1);
     sleep_us(10);
-    gpio_put(TRIG_PIN,0);
+    gpio_put(this->trig_pin,0);
 }
 
+/**
+ * @brief request a measure from HC_SR04
+ * 
+ * @return float the measured distance
+ */
 float HC_SR04::get_distance()
 {
     this->trig();
        //wait 
-    while (gpio_get(ECHO_PIN) == 0)
+    while (gpio_get(this->echo_pin) == 0)
     {
+        tight_loop_contents();
     }
     absolute_time_t start = get_absolute_time();
-    while (gpio_get(ECHO_PIN) == 1)
+    while (gpio_get(this->echo_pin) == 1)
     {
+        tight_loop_contents();
     } 
     absolute_time_t end = get_absolute_time();
     int64_t travel_time = absolute_time_diff_us(start,end);

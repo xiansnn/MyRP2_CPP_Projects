@@ -1,20 +1,13 @@
 /**
- * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- *
- * updated 2023-03-31 : xiansnn, inspired from Adafruit DHT driver
- **/
-
-/**
  * @file dht11.cpp
  * @author xiansnn (xiansnn@hotmail.com)
- * @brief 
+ * @brief a test file showing usage of DHT11 device class
+ * updated 2023-03-31 : xiansnn, inspired from Adafruit DHT driver
  * @version 0.1
  * @date 2023-04-25
- * 
- * @copyright Copyright (c) 2023
- * 
+ *
+ * @copyright Copyright (c) 2023 SPDX-License-Identifier: BSD-3-Clause
+ *
  */
 
 #include <stdio.h>
@@ -28,16 +21,19 @@
 
 /**
  * @brief Construct a new DHT11::DHT11 object
- * 
- * @param gpio_in_ 
+ *
+ * @param gpio_in_ the gpio pin attached to DHT11 device
  */
 DHT11::DHT11(uint gpio_in_)
 {
     this->gpio_in = gpio_in_;
 }
 
-/// @brief
-/// @param result
+/**
+ * @brief acces to DHT11 sensor
+ *
+ * @param result humidity and temperature measures according to dht_reading_t structure
+ */
 void DHT11::read_from_dht(dht_reading_t *result)
 {
     int data[5] = {0, 0, 0, 0, 0};
@@ -51,10 +47,10 @@ void DHT11::read_from_dht(dht_reading_t *result)
 
     // skip Start bit 80usLO + 80usHI
     while (gpio_get(this->gpio_in) == 0)
-    {
+    { tight_loop_contents();
     } // sleep_us(1) or do nothing
     while (gpio_get(this->gpio_in) == 1)
-    {
+    {tight_loop_contents();
     } // sleep_us(1) or do nothing
 
     // start data capture.  40 LO-levels + 40 HI-levels  give 80 measures as 5  8-bit words data.

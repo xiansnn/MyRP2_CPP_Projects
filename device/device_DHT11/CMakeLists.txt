@@ -1,5 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR})
-
 add_library(dht11 dht11.cpp)
 target_link_libraries(dht11 pico_stdlib)
 

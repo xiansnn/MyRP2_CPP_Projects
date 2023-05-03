@@ -4,11 +4,14 @@
 
 
 
+#define TRIG_PIN 21
+#define ECHO_PIN 26
+
 
 int main(int argc, char const *argv[])
 {
     stdio_init_all();
-    HC_SR04 ranging_device = HC_SR04();
+    HC_SR04 ranging_device = HC_SR04(TRIG_PIN, ECHO_PIN);
     float range{};
 
     while (true)

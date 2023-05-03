@@ -4,6 +4,7 @@
 #include "config_MPU6050.h"
 #include "pico/stdlib.h"
 
+
 // raw data as they are captured by sensor
 typedef struct RawData
 {

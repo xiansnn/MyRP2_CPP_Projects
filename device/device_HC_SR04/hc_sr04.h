@@ -1,36 +1,16 @@
-/**
- * @file hc_sr04.h
- * @author xiansnn (xiansnn@hotmail.com)
- * @brief 
- * @version 0.1
- * @date 2023-04-25
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #if !defined(HC_SR04_H)
 #define HC_SR04_H
 
+#include "pico/stdlib.h"
 
 class HC_SR04
 {
 private:
-/**
- * @brief 
- * 
- */
+    uint trig_pin;
+    uint echo_pin;
     void trig();
 public:
-/**
- * @brief Construct a new hc sr04 object
- * 
- */
-    HC_SR04();
-    /**
-     * @brief Get the distance object
-     * 
-     * @return float 
-     */
+    HC_SR04(uint trig_pin, uint echo_pin);
     float get_distance();
 };
 
