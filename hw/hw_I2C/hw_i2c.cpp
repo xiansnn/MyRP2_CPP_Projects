@@ -60,6 +60,13 @@ int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_add
     return nb;
 }
 
+int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value)
+{
+    uint8_t write_buf[] = {mem_addr, mem_value};
+    int nb = i2c_write_blocking(this->i2c, slave_address, write_buf, 2, false);
+    return nb;
+}
+
 /**
  * @brief Helper to read a single byte of data at a slave memory address.
  * Read will block the processor (synchronous execution).

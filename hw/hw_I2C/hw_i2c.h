@@ -16,6 +16,7 @@ private:
 public:
     hw_I2C_master(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
     int burst_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t *src, uint8_t len);
+    int single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value);
     int single_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest);
     int burst_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest, uint8_t len);
     std::set<uint8_t> bus_scan();
