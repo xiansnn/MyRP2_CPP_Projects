@@ -19,8 +19,8 @@
 
 //-----------------------------------------------------------------------------
 //                               MPU config
-#define SAMPLE_RATE 100.0 // set sensors sample rate in Hz
 //-----------------------------------------------------------------------------
+#define SAMPLE_RATE 100.0 // set sensors sample rate in Hz
 
 // ==== Register 26 0x1A– Configuration
 #define CONFIG EXT_SYNC_SET | DLPF_CODE

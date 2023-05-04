@@ -3,9 +3,12 @@
 
 #include "config_MPU6050.h"
 #include "pico/stdlib.h"
+#include "hw_I2C/hw_i2c.h"
 
-
-// raw data as they are captured by sensor
+/**
+ * @brief raw data as they are captured by sensor
+ * 
+ */
 typedef struct RawData
 {
     int16_t g_x;
@@ -17,7 +20,10 @@ typedef struct RawData
     int16_t gyro_z;
 } RawData_t;
 
-// measured sensor value after scale correction
+/**
+ * @brief measured sensor value after scale correction
+ * 
+ */
 typedef struct MPUData
 {
     float g_x;
@@ -29,10 +35,14 @@ typedef struct MPUData
     float gyro_z;
 } MPUData_t;
 
-// MPU 6050 device
+/**
+ * @brief MPU 6050 device
+ * 
+ */
 class MPU6050
 {
 private:
+    hw_I2C_master* master;
     float acceleration_factor{};
     float gyro_factor{};
     float temperature_gain = 1.0 / 340.0;
@@ -44,15 +54,12 @@ private:
     float gyro_y_offset {};
     float gyro_z_offset {};
 
-    uint8_t single_byte_write(uint8_t reg_addr, uint8_t reg_value);
-    uint8_t single_byte_read(uint8_t reg_addr, uint8_t *dest);
-    uint8_t burst_byte_read(uint8_t reg_addr, uint8_t *dest, uint8_t len);
     void read_registers_all_raw_data(RawData_t * raw);
     void read_FIFO_all_raw_data(RawData_t * raw);
     void convert_raw_to_measure(RawData_t * raw, MPUData_t * measures);
 
 public:
-    MPU6050();
+    MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
     void read_FIFO_g_accel_raw_data(RawData_t * raw);
     void read_FIFO_accel_raw_data(RawData_t * raw);
     uint16_t read_FIFO_count();

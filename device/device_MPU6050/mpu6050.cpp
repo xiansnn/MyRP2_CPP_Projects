@@ -1,81 +1,51 @@
 /**
  * @file mpu6050.cpp
  * @author xiansnn (xiansnn@hotmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2023-05-02
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 #include "config_MPU6050.h"
 #include "mpu6050.h"
-#include "hardware/i2c.h"
 
 /**
  * @brief Construct a new MPU6050::MPU6050 object
- * 
+ *
  */
-MPU6050::MPU6050()
+MPU6050::MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate)
 {
-    // config I2C
-    i2c_init(I2C_BUS, I2C_SPEED);
-    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SCL);
-    gpio_pull_up(I2C_SDA);
-    // config clock source
-    this->single_byte_write(PWR_MGMT_1_RA, PWR_MGMT_1);
+    this->master = new hw_I2C_master(i2c, sda, scl, baud_rate);
+    this->master->single_byte_write(MPU_ADDR, PWR_MGMT_1_RA, PWR_MGMT_1);
     // config FSYNC and DLPF config
-    this->single_byte_write(CONFIG_RA, CONFIG);
-    // sample rate = gyro output rate /(1+SMPLRT_DIV)
+    this->master->single_byte_write(MPU_ADDR, CONFIG_RA, CONFIG);
     uint8_t sample_div = int((GYRO_OUT_RATE / SAMPLE_RATE) - 1);
-    // this->sample_rate = GYRO_OUT_RATE / (1 + sample_div);
-    this->single_byte_write(SMPLRT_DIV_RA, sample_div);
+    this->master->single_byte_write(MPU_ADDR, SMPLRT_DIV_RA, sample_div);
     // set gyro sensor resolution
     this->gyro_factor = (float)GYRO_FULL_SCALE_RANGE / 32768.;
-    this->single_byte_write(GYRO_CONFIG_RA, GYRO_CONFIG);
+    this->master->single_byte_write(MPU_ADDR,GYRO_CONFIG_RA, GYRO_CONFIG);
     // set acceleration sensor resolution
     this->acceleration_factor = (float)ACCEL_FULL_SCALE_RANGE / 32768.;
-    this->single_byte_write(ACCEL_CONFIG_RA, ACCEL_CONFIG);
+    this->master->single_byte_write(MPU_ADDR, ACCEL_CONFIG_RA, ACCEL_CONFIG);
     // reset FIFO
-    this->single_byte_write(USER_CTRL_RA, FIFO_RESET);
+    this->master->single_byte_write(MPU_ADDR, USER_CTRL_RA, FIFO_RESET);
     // enable FIFO
-    this->single_byte_write(USER_CTRL_RA, FIFO_EN);
+    this->master->single_byte_write(MPU_ADDR, USER_CTRL_RA, FIFO_EN);
     // configure sensors to write in FIFO
-    this->single_byte_write(FIFO_EN_RA, FIFO_SELECTED_SENSORS);
+    this->master->single_byte_write(MPU_ADDR, FIFO_EN_RA, FIFO_SELECTED_SENSORS);
     // configure INT
-    this->single_byte_write(INT_PIN_CFG_RA, INT_PIN_CFG);
+    this->master->single_byte_write(MPU_ADDR, INT_PIN_CFG_RA, INT_PIN_CFG);
     // configure INT on Data ready
-    this->single_byte_write(INT_ENABLE_RA, INT_ENABLE);
-    // this->calibrate(); 
+    this->master->single_byte_write(MPU_ADDR, INT_ENABLE_RA, INT_ENABLE);
+    // this->calibrate();
 }
 
-uint8_t MPU6050::single_byte_write(uint8_t reg_addr, uint8_t reg_value)
-{
-    uint8_t write_buf[] = {reg_addr, reg_value};
-    uint8_t nb = i2c_write_blocking(I2C_BUS, MPU_ADDR, write_buf, 2, false);
-    return nb;
-}
-
-uint8_t MPU6050::single_byte_read(uint8_t reg_addr, uint8_t *dest)
-{
-    uint8_t read_buf[]{reg_addr};
-    i2c_write_blocking(I2C_BUS, MPU_ADDR, read_buf, 1, true);
-    uint8_t nb = i2c_read_blocking(I2C_BUS, MPU_ADDR, dest, 1, false);
-    return nb;
-}
-
-uint8_t MPU6050::burst_byte_read(uint8_t reg_addr, uint8_t *dest, uint8_t len)
-{
-    i2c_write_blocking(I2C_BUS, MPU_ADDR, &reg_addr, 1, true);
-    uint8_t nb = i2c_read_blocking(I2C_BUS, MPU_ADDR, dest, len, false);
-    return nb;
-}
 void MPU6050::read_registers_all_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[14];
-    this->burst_byte_read(ACCEL_XOUT_H_RA, read_buf, 14);
+    this->master->burst_byte_read(MPU_ADDR,ACCEL_XOUT_H_RA, read_buf, 14);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -88,7 +58,7 @@ void MPU6050::read_registers_all_raw_data(RawData_t *raw)
 void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[14];
-    this->burst_byte_read(FIFO_R_W_RA, read_buf, 14);
+    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 14);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -111,7 +81,7 @@ void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
 void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[12];
-    this->burst_byte_read(FIFO_R_W_RA, read_buf, 12);
+    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 12);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -122,7 +92,7 @@ void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
 void MPU6050::read_FIFO_accel_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[6];
-    this->burst_byte_read(FIFO_R_W_RA, read_buf, 6);
+    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 6);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -180,7 +150,7 @@ void MPU6050::read_MPU_all_measure_from_FIFO(MPUData_t *data)
 float MPU6050::read_MPU_temperature()
 {
     uint8_t read_buf[2];
-    this->burst_byte_read(TEMP_OUT_H_RA, read_buf, 2);
+    this->master->burst_byte_read(MPU_ADDR, TEMP_OUT_H_RA, read_buf, 2);
     int16_t temp_out = (read_buf[0] << 8) + read_buf[1];
     return (float)temp_out * this->temperature_gain + this->temperature_offset;
 }
@@ -201,13 +171,14 @@ void MPU6050::read_MPU_all_measure_from_registers(MPUData_t *data)
 uint16_t MPU6050::read_FIFO_count()
 {
     uint8_t read_buf[2] = {FIFO_COUNT_H_RA};
-    this->burst_byte_read(FIFO_COUNT_H_RA, read_buf, 2);
+    this->master->burst_byte_read(MPU_ADDR, FIFO_COUNT_H_RA, read_buf, 2);
     return (read_buf[0] << 8) + read_buf[1];
 }
 
 bool MPU6050::is_data_ready()
 {
-    uint8_t status;
-    this->single_byte_read(INT_STATUS_RA, &status);
-    return status & DATA_RDY_INT;
+    uint8_t status[1];
+    this->master->single_byte_read(MPU_ADDR,INT_STATUS_RA, status);
+
+    return status[0] & DATA_RDY_INT;
 }

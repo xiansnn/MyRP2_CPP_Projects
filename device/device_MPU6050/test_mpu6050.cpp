@@ -4,6 +4,7 @@
 #include "pico/stdio.h"
 #include <stdio.h>
 #include <math.h>
+#include "hw_I2C/hw_i2c.h"
 
 void process_data_from_register(MPU6050 mpu){
     MPUData_t measures{};
@@ -34,7 +35,8 @@ void process_raw_data_from_FIFO(MPU6050 mpu){
 int main()
 {
     stdio_init_all();
-    MPU6050 mpu = MPU6050();
+
+    MPU6050 mpu = MPU6050(I2C_BUS, I2C_SDA, I2C_SCL, I2C_SPEED);
     printf("temperature : %.2f\n",mpu.read_MPU_temperature());
     while (true)
     {
