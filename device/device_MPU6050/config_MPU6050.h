@@ -15,10 +15,10 @@
 // set I2C SDA and SCL pin
 #define I2C_SDA 8 // gpio pin on MakerFab Primer Board
 #define I2C_SCL 9 // gpio pin on MakerFab Primer Board
+#define MPU_ADDR 0x68    // assuming AD0 pin is low
 
 //-----------------------------------------------------------------------------
 //                               MPU config
-#define MPU_ADDR 0x68    // assuming AD0 pin is low
 #define SAMPLE_RATE 100.0 // set sensors sample rate in Hz
 //-----------------------------------------------------------------------------
 
