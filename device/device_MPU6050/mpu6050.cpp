@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2023
  *
  */
-#include "config_MPU6050.h"
 #include "mpu6050.h"
 
 /**
@@ -39,7 +38,8 @@ MPU6050::MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate)
     this->master->single_byte_write(MPU_ADDR, INT_PIN_CFG_RA, INT_PIN_CFG);
     // configure INT on Data ready
     this->master->single_byte_write(MPU_ADDR, INT_ENABLE_RA, INT_ENABLE);
-    // this->calibrate();
+    sleep_ms(1);
+    this->calibrate();
 }
 
 void MPU6050::read_registers_all_raw_data(RawData_t *raw)

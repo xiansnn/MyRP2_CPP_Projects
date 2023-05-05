@@ -10,8 +10,7 @@
 #define I2C_BUS i2c0
 // #define I2C_BUS i2c1
 // set I2C speed Fast or Standard
-// #define I2C_SPEED 100000 // I2C STANDARD-MODE
-#define I2C_SPEED 400000 // I2C FAST-MODE
+#define I2C_SPEED I2C_STANDARD_MODE 
 // set I2C SDA and SCL pin
 #define I2C_SDA 8 // gpio pin on MakerFab Primer Board
 #define I2C_SCL 9 // gpio pin on MakerFab Primer Board

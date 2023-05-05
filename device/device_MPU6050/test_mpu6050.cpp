@@ -1,10 +1,8 @@
 #include "mpu6050.h"
-#include "config_MPU6050.h"
 #include "pico/stdlib.h"
 #include "pico/stdio.h"
 #include <stdio.h>
 #include <math.h>
-// #include "hw_I2C/hw_i2c.h"
 
 void process_data_from_register(MPU6050 mpu){
     MPUData_t measures{};
@@ -37,7 +35,8 @@ int main()
     stdio_init_all();
 
     MPU6050 mpu = MPU6050(I2C_BUS, I2C_SDA, I2C_SCL, I2C_SPEED);
-    printf("temperature : %.2f\n",mpu.read_MPU_temperature());
+    float t = mpu.read_MPU_temperature();
+    printf("temperature : %.2f\n",t);
     while (true)
     {
         if (mpu.is_data_ready())
