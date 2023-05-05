@@ -23,6 +23,7 @@ public:
     int single_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest);
     int burst_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest, uint8_t len);
     std::set<uint8_t> bus_scan();
+    bool device_is_connected(uint8_t slave_address);
     void show_bus_map();
 };
 

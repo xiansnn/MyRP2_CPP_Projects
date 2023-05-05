@@ -1,25 +1,21 @@
 /**
  * @file hw_i2c.cpp
  * @author xiansnn (xiansnn@hotmail.com)
- * @brief this file provides an abstract view of the I2C hardware instances. 
+ * @brief this file provides an abstract view of the I2C hardware instances.
  * It must be considered as a set of helper to the official pico-sdk.
  * @version 0.1
  * @date 2023-05-02
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 #include "hw_i2c.h"
 #include <cstring>
 #include <stdio.h>
 
-
-
-
-
 /**
  * @brief Construct a new hw I2C master::hw I2C master object
- * 
+ *
  * @param i2c The I2C hardware instance. Either i2c0 or i2c1.
  * @param sda the associated SDA pin
  * @param scl the associated SCL pin
@@ -49,9 +45,9 @@ hw_I2C_master::hw_I2C_master(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate
  * @brief Helper to write a block of data starting at a slave memory address.
  * The size of the block can be 1  for single byte write.
  * Write will block the processor (synchronous execution).
- * 
+ *
  * @param slave_address the slave address
- * @param slave_mem_addr the slave memory 
+ * @param slave_mem_addr the slave memory
  * @param src the address of the block of data
  * @param len the size of the block of data. Can be 1 for single byte write
  * @return int Number of bytes written, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
@@ -74,7 +70,7 @@ int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, ui
 /**
  * @brief Helper to read a single byte of data at a slave memory address.
  * Read will block the processor (synchronous execution).
- * 
+ *
  * @param slave_address the slave address
  * @param slave_mem_addr the address of slave memory to read from
  * @param dest Pointer to buffer to receive data
@@ -91,9 +87,9 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
 /**
  * @brief Helper to read a block of data starting at a slave memory address.
  * Read will block the processor (synchronous execution).
- * 
+ *
  * @param slave_address the slave address
- * @param slave_mem_addr the starting address of slave memory to read from 
+ * @param slave_mem_addr the starting address of slave memory to read from
  * @param dest Pointer to buffer to receive data
  * @param len the size of the block of data
  * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
@@ -108,26 +104,34 @@ int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr
 
 /**
  * @brief A utility that scan the I2C bus and return the set of answering devices
- * 
+ *
  * @return std::set<uint8_t> the set of responding addresses
  */
 std::set<uint8_t> hw_I2C_master::bus_scan()
 {
     std::set<uint8_t> device_address_set;
-    int nb;
-    uint8_t rxdata;
+    // int nb;
+    // uint8_t rxdata;
     for (uint8_t addr = 0x08; addr < 0x78; addr++)
     {
-        nb = i2c_read_blocking(this->i2c,addr, &rxdata,1,false);
-        if (nb > 0)
+        // nb = i2c_read_blocking(this->i2c,addr, &rxdata,1,false);
+        if (this->device_is_connected(addr))
             device_address_set.insert(addr);
     }
     return device_address_set;
 }
 
+bool hw_I2C_master::device_is_connected(uint8_t slave_address)
+{
+    int nb;
+    uint8_t rxdata;
+    nb = i2c_read_blocking(this->i2c, slave_address, &rxdata, 1, false);
+    return (nb < 0 ? false : true);
+}
+
 /**
  * @brief a utility that provides a map of responding devices
- * 
+ *
  */
 void hw_I2C_master::show_bus_map()
 {
@@ -146,7 +150,7 @@ void hw_I2C_master::show_bus_map()
 
 /**
  * @brief this is the actual Interrupt Service Routine executed by the slave after each received data
- * 
+ *
  * @param event the type of data/command received
  */
 void hw_I2C_slave::slave_isr(i2c_slave_event_t event)
@@ -182,7 +186,7 @@ void hw_I2C_slave::slave_isr(i2c_slave_event_t event)
 
 /**
  * @brief Construct a new hw I2C slave::hw I2C slave object
- * 
+ *
  * @param i2c The I2C hardware instance. Either i2c0 or i2c1.
  * @param sda the associated SDA pin
  * @param scl the associated SCL pin
