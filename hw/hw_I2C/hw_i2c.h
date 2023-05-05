@@ -1,12 +1,15 @@
 #if !defined(HW_I2C_H)
 #define HW_I2C_H
 
-#include "i2c_bus_config.h"
-
 #include "hardware/i2c.h"
 #include "pico/i2c_slave.h"
 #include "pico/stdlib.h"
 #include <set>
+
+#define I2C_STANDARD_MODE  100*1000  // <= 100kb/s
+#define I2C_FAST_MODE      400*1000  // <= 400kb/s
+#define I2C_FAST_MODE_PLUS 1000*1000 // <= 1Mb/s
+#define I2C_SLAVE_DEFAULT_MAX_MEMORY_SIZE 256 // default value used by context_t
 
 class hw_I2C_master
 {
