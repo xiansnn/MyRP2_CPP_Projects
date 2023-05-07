@@ -1,13 +1,35 @@
 #if !defined(MPU6050_H)
 #define MPU6050_H
 
-#include "config_MPU6050.h"
 #include "pico/stdlib.h"
 #include "hw_I2C/hw_i2c.h"
+#include "config_MPU6050.h"
+
+/**
+ * @brief minimal set of MPU configuration data
+ * 
+ */
+typedef struct config_MPU6050
+{
+    uint8_t MPU_ADDR = 0x68;                   // assuming AD0 pin is low otherwise = 0x69
+    uint16_t SAMPLE_RATE = 100;                // Reg 0x19: set sensors sample rate in Hz
+    uint8_t DLPF_BW = 50;                      // Reg 0x1A: values in { 250, 200, 100, 50, 20, 10, 5}Hz
+    uint8_t EXT_SYNC = EXT_SYNC_SET_DISABLED;  // Reg 0x1A:
+    uint16_t GYRO_OUT_RATE = 1000;             // Reg 0x1A: in Hz, depending on DLPF value
+    uint16_t GYRO_FULL_SCALE_RANGE = 250;      // Reg 0x1B:values in { 250, 500, 1000, 2000} DPS
+    uint8_t ACCEL_FULL_SCALE_RANGE = 2;        // Reg 0x1C:values in { 2, 4, 8, 16} G
+    uint8_t FIFO_SELECTED_SENSORS = GYRO_FIFO_EN | ACCEL_FIFO_EN; // Reg 0x23:
+    uint8_t INT_PIN_CFG = INT_LEVEL | LATCH_INT_EN; // Reg 0x37: Active LO, open drain, pulsed 50us, cleared by read INT status
+    uint8_t INT_ENABLE = DATA_RDY_EN;          // Reg 0x38: INT each time a sensor register write occurs
+    uint8_t SIGNAL_PATH_RESET = NO_PATH_RESET; // Reg 0x68: default no reset
+    uint8_t PWR_MGMT_1 = CLKSEL_Z_PLL;         // Reg 0x6B: 
+}config_MPU6050_t;
+
+
 
 /**
  * @brief raw data as they are captured by sensor
- * 
+ *
  */
 typedef struct RawData
 {
@@ -22,7 +44,7 @@ typedef struct RawData
 
 /**
  * @brief measured sensor value after scale correction
- * 
+ *
  */
 typedef struct MPUData
 {
@@ -35,40 +57,38 @@ typedef struct MPUData
     float gyro_z;
 } MPUData_t;
 
-/**
- * @brief MPU 6050 device
- * 
- */
 class MPU6050
 {
 private:
-    hw_I2C_master* master;
+    hw_I2C_master *master;
+    config_MPU6050_t config;
     float acceleration_factor{};
     float gyro_factor{};
     float temperature_gain = 1.0 / 340.0;
     float temperature_offset = 36.53;
-    float accel_x_offset {};
-    float accel_y_offset {};
-    float accel_z_offset {};
-    float gyro_x_offset {};
-    float gyro_y_offset {};
-    float gyro_z_offset {};
+    float accel_x_offset{};
+    float accel_y_offset{};
+    float accel_z_offset{};
+    float gyro_x_offset{};
+    float gyro_y_offset{};
+    float gyro_z_offset{};
 
-    void read_registers_all_raw_data(RawData_t * raw);
-    void read_FIFO_all_raw_data(RawData_t * raw);
-    void convert_raw_to_measure(RawData_t * raw, MPUData_t * measures);
+    void read_registers_all_raw_data(RawData_t *raw);
+    void read_FIFO_all_raw_data(RawData_t *raw);
+    void convert_raw_to_measure(RawData_t *raw, MPUData_t *measures);
 
 public:
-    MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
-    void read_FIFO_g_accel_raw_data(RawData_t * raw);
-    void read_FIFO_accel_raw_data(RawData_t * raw);
+    // MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
+    MPU6050(hw_I2C_master *master, config_MPU6050_t default_config);
+    void read_FIFO_g_accel_raw_data(RawData_t *raw);
+    void read_FIFO_accel_raw_data(RawData_t *raw);
     uint16_t read_FIFO_count();
     bool is_data_ready();
 
     float read_MPU_temperature();
-    void read_MPU_all_measure_from_registers(MPUData_t * data);
-    void read_MPU_all_measure_from_FIFO(MPUData_t * data);
-    void read_MPU_g_accel_measures_from_FIFO(MPUData_t * data);
+    void read_MPU_all_measure_from_registers(MPUData_t *data);
+    void read_MPU_all_measure_from_FIFO(MPUData_t *data);
+    void read_MPU_g_accel_measures_from_FIFO(MPUData_t *data);
     void calibrate();
 };
 

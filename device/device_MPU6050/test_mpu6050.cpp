@@ -4,6 +4,21 @@
 #include <stdio.h>
 #include <math.h>
 
+//-----------------------------------------------------------------------------
+//                             I2C bus config
+#define I2C_BUS i2c0 // set I2C channel 0 or 1, SDA and SCL pins
+#define I2C_SDA 8 // gpio pin on MakerFab Primer Board
+#define I2C_SCL 9 // gpio pin on MakerFab Primer Board
+#define I2C_SPEED I2C_STANDARD_MODE // set I2C speed Fast or Standard
+//-----------------------------------------------------------------------------
+//                             MPU6050 config
+//-----------------------------------------------------------------------------
+
+config_MPU6050_t default_config{
+    .SAMPLE_RATE = 50,
+    .DLPF_BW = 20
+};
+
 void process_data_from_register(MPU6050 mpu){
     MPUData_t measures{};
     mpu.read_MPU_all_measure_from_registers(&measures);
@@ -34,7 +49,11 @@ int main()
 {
     stdio_init_all();
 
-    MPU6050 mpu = MPU6050(I2C_BUS, I2C_SDA, I2C_SCL, I2C_SPEED);
+    // create I2C bus hw peripheral
+    hw_I2C_master master = hw_I2C_master(I2C_BUS, I2C_SDA, I2C_SCL, I2C_SPEED);
+    MPU6050 mpu = MPU6050( &master , default_config  );
+
+    // MPU6050 mpu = MPU6050(I2C_BUS, I2C_SDA, I2C_SCL, I2C_SPEED);
     float t = mpu.read_MPU_temperature();
     printf("temperature : %.2f\n",t);
     while (true)

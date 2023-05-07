@@ -8,36 +8,78 @@
  * @copyright Copyright (c) 2023
  *
  */
+#include "register_address_MPU6050.h"
+#include "config_MPU6050.h"
 #include "mpu6050.h"
 
 /**
  * @brief Construct a new MPU6050::MPU6050 object
  *
+ * @param master The associated I2C bus master
+ * @param mpu_config
  */
-MPU6050::MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate)
+MPU6050::MPU6050(hw_I2C_master *master, config_MPU6050_t mpu_config)
 {
-    this->master = new hw_I2C_master(i2c, sda, scl, baud_rate);
-    this->master->single_byte_write(MPU_ADDR, PWR_MGMT_1_RA, PWR_MGMT_1);
+    this->master = master;
+    this->config = mpu_config;
+    this->master->single_byte_write(this->config.MPU_ADDR, PWR_MGMT_1_RA, this->config.PWR_MGMT_1);
     // config FSYNC and DLPF config
-    this->master->single_byte_write(MPU_ADDR, CONFIG_RA, CONFIG);
-    uint8_t sample_div = int((GYRO_OUT_RATE / SAMPLE_RATE) - 1);
-    this->master->single_byte_write(MPU_ADDR, SMPLRT_DIV_RA, sample_div);
+    if (this->config.DLPF_BW == 250)
+        this->config.GYRO_OUT_RATE = 8000;
+    else
+        this->config.GYRO_OUT_RATE = 1000;
+    uint8_t DLPF_CFG;
+    if (this->config.DLPF_BW == 250)
+        DLPF_CFG = DLPF_CFG_250HZ;
+    else if (this->config.DLPF_BW == 200)
+        DLPF_CFG = DLPF_CFG_200HZ;
+    else if (this->config.DLPF_BW == 100)
+        DLPF_CFG = DLPF_CFG_100HZ;
+    else if (this->config.DLPF_BW == 50)
+        DLPF_CFG = DLPF_CFG_50HZ;
+    else if (this->config.DLPF_BW == 20)
+        DLPF_CFG = DLPF_CFG_20HZ;
+    else if (this->config.DLPF_BW == 10)
+        DLPF_CFG = DLPF_CFG_10HZ;
+    else if (this->config.DLPF_BW == 5)
+        DLPF_CFG = DLPF_CFG_5HZ;
+    this->master->single_byte_write(this->config.MPU_ADDR, CONFIG_RA, this->config.EXT_SYNC | DLPF_CFG);
+    uint8_t sample_div = int((this->config.GYRO_OUT_RATE / this->config.SAMPLE_RATE) - 1);
+    this->master->single_byte_write(this->config.MPU_ADDR, SMPLRT_DIV_RA, sample_div);
     // set gyro sensor resolution
-    this->gyro_factor = (float)GYRO_FULL_SCALE_RANGE / 32768.;
-    this->master->single_byte_write(MPU_ADDR,GYRO_CONFIG_RA, GYRO_CONFIG);
+    this->gyro_factor = (float)this->config.GYRO_FULL_SCALE_RANGE / 32768.;
+    uint8_t GYRO_CONFIG = 0;
+    if (this->config.GYRO_FULL_SCALE_RANGE == 250)
+        GYRO_CONFIG = GYRO_RANGE_250DPS;
+    else if (this->config.GYRO_FULL_SCALE_RANGE == 500)
+        GYRO_CONFIG = GYRO_RANGE_500DPS;
+    else if (this->config.GYRO_FULL_SCALE_RANGE == 1000)
+        GYRO_CONFIG = GYRO_RANGE_1000DPS;
+    else if (this->config.GYRO_FULL_SCALE_RANGE == 2000)
+        GYRO_CONFIG = GYRO_RANGE_2000DPS;
+    uint8_t ACCEL_CONFIG = 0;
+    if (this->config.ACCEL_FULL_SCALE_RANGE == 2)
+        ACCEL_CONFIG = ACCEL_RANGE_2G;
+    else if (this->config.ACCEL_FULL_SCALE_RANGE == 4)
+        ACCEL_CONFIG = ACCEL_RANGE_4G;
+    else if (this->config.ACCEL_FULL_SCALE_RANGE == 8)
+        ACCEL_CONFIG = ACCEL_RANGE_8G;
+    else if (this->config.ACCEL_FULL_SCALE_RANGE == 16)
+        ACCEL_CONFIG = ACCEL_RANGE_16G;
+    this->master->single_byte_write(this->config.MPU_ADDR, GYRO_CONFIG_RA, GYRO_CONFIG);
     // set acceleration sensor resolution
-    this->acceleration_factor = (float)ACCEL_FULL_SCALE_RANGE / 32768.;
-    this->master->single_byte_write(MPU_ADDR, ACCEL_CONFIG_RA, ACCEL_CONFIG);
+    this->acceleration_factor = (float)this->config.ACCEL_FULL_SCALE_RANGE / 32768.;
+    this->master->single_byte_write(this->config.MPU_ADDR, ACCEL_CONFIG_RA, ACCEL_CONFIG);
     // reset FIFO
-    this->master->single_byte_write(MPU_ADDR, USER_CTRL_RA, FIFO_RESET);
+    this->master->single_byte_write(this->config.MPU_ADDR, USER_CTRL_RA, FIFO_RESET);
     // enable FIFO
-    this->master->single_byte_write(MPU_ADDR, USER_CTRL_RA, FIFO_EN);
+    this->master->single_byte_write(this->config.MPU_ADDR, USER_CTRL_RA, FIFO_EN);
     // configure sensors to write in FIFO
-    this->master->single_byte_write(MPU_ADDR, FIFO_EN_RA, FIFO_SELECTED_SENSORS);
+    this->master->single_byte_write(this->config.MPU_ADDR, FIFO_EN_RA, this->config.FIFO_SELECTED_SENSORS);
     // configure INT
-    this->master->single_byte_write(MPU_ADDR, INT_PIN_CFG_RA, INT_PIN_CFG);
+    this->master->single_byte_write(this->config.MPU_ADDR, INT_PIN_CFG_RA, this->config.INT_PIN_CFG);
     // configure INT on Data ready
-    this->master->single_byte_write(MPU_ADDR, INT_ENABLE_RA, INT_ENABLE);
+    this->master->single_byte_write(this->config.MPU_ADDR, INT_ENABLE_RA, this->config.INT_ENABLE);
     sleep_ms(1);
     this->calibrate();
 }
@@ -45,7 +87,7 @@ MPU6050::MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate)
 void MPU6050::read_registers_all_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[14];
-    this->master->burst_byte_read(MPU_ADDR,ACCEL_XOUT_H_RA, read_buf, 14);
+    this->master->burst_byte_read(this->config.MPU_ADDR, ACCEL_XOUT_H_RA, read_buf, 14);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -58,7 +100,7 @@ void MPU6050::read_registers_all_raw_data(RawData_t *raw)
 void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[14];
-    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 14);
+    this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 14);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -81,7 +123,7 @@ void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
 void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[12];
-    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 12);
+    this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 12);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -92,7 +134,7 @@ void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
 void MPU6050::read_FIFO_accel_raw_data(RawData_t *raw)
 {
     uint8_t read_buf[6];
-    this->master->burst_byte_read(MPU_ADDR, FIFO_R_W_RA, read_buf, 6);
+    this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 6);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
     raw->g_y = (read_buf[2] << 8) + read_buf[3];
     raw->g_z = (read_buf[4] << 8) + read_buf[5];
@@ -128,7 +170,7 @@ void MPU6050::calibrate()
     float ax = accel_x / nb_sample;
     float ay = accel_y / nb_sample;
     float az = accel_z / nb_sample;
-    float g = 32768.0 / ACCEL_FULL_SCALE_RANGE;
+    float g = 32768.0 / this->config.ACCEL_FULL_SCALE_RANGE;
     float gx = gyro_x / nb_sample;
     float gy = gyro_y / nb_sample;
     float gz = gyro_z / nb_sample;
@@ -150,7 +192,7 @@ void MPU6050::read_MPU_all_measure_from_FIFO(MPUData_t *data)
 float MPU6050::read_MPU_temperature()
 {
     uint8_t read_buf[2];
-    this->master->burst_byte_read(MPU_ADDR, TEMP_OUT_H_RA, read_buf, 2);
+    this->master->burst_byte_read(this->config.MPU_ADDR, TEMP_OUT_H_RA, read_buf, 2);
     int16_t temp_out = (read_buf[0] << 8) + read_buf[1];
     return (float)temp_out * this->temperature_gain + this->temperature_offset;
 }
@@ -171,14 +213,14 @@ void MPU6050::read_MPU_all_measure_from_registers(MPUData_t *data)
 uint16_t MPU6050::read_FIFO_count()
 {
     uint8_t read_buf[2] = {FIFO_COUNT_H_RA};
-    this->master->burst_byte_read(MPU_ADDR, FIFO_COUNT_H_RA, read_buf, 2);
+    this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_COUNT_H_RA, read_buf, 2);
     return (read_buf[0] << 8) + read_buf[1];
 }
 
 bool MPU6050::is_data_ready()
 {
     uint8_t status[1];
-    this->master->single_byte_read(MPU_ADDR,INT_STATUS_RA, status);
+    this->master->single_byte_read(this->config.MPU_ADDR, INT_STATUS_RA, status);
 
     return status[0] & DATA_RDY_INT;
 }
