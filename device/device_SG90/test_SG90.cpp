@@ -9,52 +9,44 @@
  *
  */
 #include "pico/stdlib.h"
-#include "hw_PWM/hw_pwm.h"
+#include "sg90.h"
 
-#define CH1 8
-#define STEP_ns 1000
-#define PERIOD_us 20000
-#define PHASE_CORRECT true
+#define SYNC_PIN 6
+#define COMMAND_PIN 7
+#define POS_MIN -90
+#define POS_MAX 90
 
-int main(int argc, char const *argv[])
+
+int main()
 {
-    PWM pwm = PWM(8, CH1 + 1, STEP_ns, PERIOD_us, PHASE_CORRECT);
-
-    int pos_min = 0;   // 0°
-    int pos_max = 180; // 180°
+    SG90 motor = SG90(COMMAND_PIN, SYNC_PIN,POS_MIN,POS_MAX);
     int pos_step = 45; // in °
-    int pos = pos_min;
-    float duty_cycle_min = 0.5 / 20; // => pos_min
-    float duty_cycle_max = 2.5 / 20; // => pos_max
-    float duty_cycle{};              // duty_cycle_min + pos/180 * (duty_cycle_max-duty_cycle_min)
+    int pos = POS_MIN;
     bool going_up = true;
 
-    pwm.set_width_nb_of_step(CH1, 1);
-    pwm.start(true);
     while (true)
     {
 
         if (going_up)
         {
             pos += pos_step;
-            if (pos >= pos_max)
+            if (pos >= POS_MAX)
             {
-                pos = pos_max;
+                pos = POS_MAX;
                 going_up = false;
             }
         }
         else
         {
             pos -= pos_step;
-            if (pos <= pos_min)
+            if (pos <= POS_MIN)
             {
-                pos = pos_min;
+                pos = POS_MIN;
                 going_up = true;
             }
         }
 
-        duty_cycle = duty_cycle_min + (float)pos / 180 * (duty_cycle_max - duty_cycle_min);
-        pwm.set_duty_cycle(CH1 + 1, duty_cycle);
+        motor.set_pos(pos);
         sleep_ms(1000);
     }
 
