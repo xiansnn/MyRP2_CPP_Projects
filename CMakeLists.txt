@@ -26,4 +26,5 @@ include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
 add_subdirectory(utilities)
 add_subdirectory(hw)
 add_subdirectory(device)
+add_subdirectory(app_example)
 
