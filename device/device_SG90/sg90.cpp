@@ -10,20 +10,20 @@
  */
 #include "sg90.h"
 
-#define STEP_ns 2000        // arbitrary value, gives resolution step_ns/(pos_max_us - pos_min_us) = 100ppm
+#define STEP_ns 2000        // arbitrary value, gives resolution step_ns/(pos_max_us - pos_min_us) = 100ppm.
 #define PHASE_CORRECT false // if PHASE_CORRECt = true, channel B is used as a synch pulse in the begining of channel A pulse
-// else channel B is used as a synch pulse in the middle of channel A pulse
-#define PERIOD_us 20000 // according to SG90 data sheet
-#define T_MIN_us 500    // according to data sheet, should be 1000us but is 500us actually
-#define T_MAX_us 2500   // according to data sheet, should be 2000us but is 2500us actually
+// else channel B is used as a synch pulse in the middle of channel A pulse.
+#define PERIOD_us 20000 // according to SG90 data sheet.
+#define T_MIN_us 500    // according to data sheet, should be 1000us but is 500us actually.
+#define T_MAX_us 2500   // according to data sheet, should be 2000us but is 2500us actually.
 
 /**
- * @brief Construct a new SG90::SG90 object
+ * @brief Construct a new SG90::SG90 object.
  *
- * @param command
- * @param sync
- * @param pos_min_deg
- * @param pos_max_deg
+ * @param command // the gpio pin used to command the servo motor.
+ * @param sync // an auxilliary pulse that can be used as a synchro signal.
+ * @param pos_min_deg // minimum position in degrees. Typically 0° or -90°.
+ * @param pos_max_deg // maximum position in degrees. Typically 180° or +90°.
  */
 SG90::SG90(uint command, uint sync, int pos_min_deg, int pos_max_deg)
 {
@@ -38,9 +38,9 @@ SG90::SG90(uint command, uint sync, int pos_min_deg, int pos_max_deg)
 }
 
 /**
- * @brief
+ * @brief the command to set the position of the motor.
  *
- * @param pos
+ * @param pos position in degrees, between pos_min_deg and pos_max_deg.
  */
 void SG90::set_pos(int pos)
 {
