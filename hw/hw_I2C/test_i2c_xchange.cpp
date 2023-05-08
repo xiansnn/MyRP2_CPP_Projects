@@ -16,7 +16,6 @@ config_master_i2c_t master_config{
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
 
-
 config_slave_i2c_t slave_config{
     .i2c = i2c1,
     .sda_pin = 6,
