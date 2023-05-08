@@ -21,6 +21,18 @@
 #define T_MIN_us 500    // according to data sheet, should be 1000us but is 500us actually.
 #define T_MAX_us 2500   // according to data sheet, should be 2000us but is 2500us actually.
 
+/**
+ * @brief 
+ * 
+ */
+typedef struct config_sg90
+{
+    uint command_pin;
+    uint sync_pin;
+    int pos_min_degree = -90;
+    int pos_max_degree = +90;
+}config_sg90_t;
+
 
 class SG90
 {
@@ -33,7 +45,7 @@ private:
     float coef_us_per_degree;
 
 public:
-    SG90(uint command, uint sync, int pos_min, int pos_max);
+    SG90(config_sg90_t sg90_config);
     void set_pos(int pos);
 };
 

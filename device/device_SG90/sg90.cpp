@@ -18,15 +18,15 @@
  * @param pos_min_deg // minimum position in degrees. Typically 0° or -90°.
  * @param pos_max_deg // maximum position in degrees. Typically 180° or +90°.
  */
-SG90::SG90(uint command, uint sync, int pos_min_deg, int pos_max_deg)
+SG90::SG90(config_sg90_t cfg)
 {
-    this->pwm = new PWM(command, sync, STEP_ns, PERIOD_us, PHASE_CORRECT);
-    this->command = command;
-    this->pos_min_deg = pos_min_deg;
-    this->pos_max_deg = pos_max_deg;
+    this->pwm = new PWM(cfg.command_pin, cfg.sync_pin, STEP_ns, PERIOD_us, PHASE_CORRECT);
+    this->command = cfg.command_pin;
+    this->pos_min_deg = cfg.pos_min_degree;
+    this->pos_max_deg = cfg.pos_max_degree;
     this->coef_us_per_degree = (float)(T_MAX_us - T_MIN_us) / (this->pos_max_deg - this->pos_min_deg); //   coef us/degree
 
-    pwm->set_width_nb_of_step(sync, 1); // set the synch pulse width at 1 step
+    pwm->set_width_nb_of_step(cfg.sync_pin, 1); // set the synch pulse width at 1 step
     pwm->start(true);
 }
 

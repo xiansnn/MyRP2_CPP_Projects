@@ -11,17 +11,17 @@
 #include "pico/stdlib.h"
 #include "sg90.h"
 
-#define SYNC_PIN 6
-#define COMMAND_PIN 7
-#define POS_MIN -90
-#define POS_MAX 90
+config_sg90_t motor_config{
+    .command_pin = 7,
+    .sync_pin = 6
+};
 
 
 int main()
 {
-    SG90 motor = SG90(COMMAND_PIN, SYNC_PIN,POS_MIN,POS_MAX);
+    SG90 motor = SG90(motor_config);
     int pos_step = 45; // in °
-    int pos = POS_MIN;
+    int pos = motor_config.pos_min_degree;
     bool going_up = true;
 
     while (true)
@@ -30,18 +30,18 @@ int main()
         if (going_up)
         {
             pos += pos_step;
-            if (pos >= POS_MAX)
+            if (pos >= motor_config.pos_max_degree)
             {
-                pos = POS_MAX;
+                pos = motor_config.pos_max_degree;
                 going_up = false;
             }
         }
         else
         {
             pos -= pos_step;
-            if (pos <= POS_MIN)
+            if (pos <= motor_config.pos_min_degree)
             {
-                pos = POS_MIN;
+                pos = motor_config.pos_min_degree;
                 going_up = true;
             }
         }
