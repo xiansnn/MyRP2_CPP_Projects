@@ -15,17 +15,17 @@
 
 
 
-#define I2C_0_BAUD_RATE I2C_STANDARD_MODE
-#define I2C_0_SDA_PIN 8 // choice in [0, (4), 8, 12, 16, 20]   (default)
-#define I2C_0_SCL_PIN 9 // choice in [1, (5), 9, 13, 17, 21]   (default)
-#define I2C_0_SLAVE_ADDR 0x55 // in case I2C0 is slave (default 0x55)
-#define I2C_0_SLAVE_MAX_MEMORY_SIZE 256 // in case I2C0 is slave
+// #define I2C_0_BAUD_RATE I2C_STANDARD_MODE
+// #define I2C_0_SDA_PIN 8 // choice in [0, (4), 8, 12, 16, 20]   (default)
+// #define I2C_0_SCL_PIN 9 // choice in [1, (5), 9, 13, 17, 21]   (default)
+// #define I2C_0_SLAVE_ADDR 0x55 // in case I2C0 is slave (default 0x55)
+// #define I2C_0_SLAVE_MAX_MEMORY_SIZE 256 // in case I2C0 is slave
 
-#define I2C_1_BAUD_RATE I2C_STANDARD_MODE
-#define I2C_1_SDA_PIN 6 // choice in [2, 6, 10, 14, 18, 26]
-#define I2C_1_SCL_PIN 7 // choice in [3, 7, 11, 15, 19, 27]
-#define I2C_1_SLAVE_ADDR 0x15 // in case I2C0 is slave (default 0x55)
-#define I2C_1_SLAVE_MAX_MEMORY_SIZE 256 // in case I2C0 is slave
+// #define I2C_1_BAUD_RATE I2C_STANDARD_MODE
+// #define I2C_1_SDA_PIN 6 // choice in [2, 6, 10, 14, 18, 26]
+// #define I2C_1_SCL_PIN 7 // choice in [3, 7, 11, 15, 19, 27]
+// #define I2C_1_SLAVE_ADDR 0x15 // in case I2C0 is slave (default 0x55)
+// #define I2C_1_SLAVE_MAX_MEMORY_SIZE 256 // in case I2C0 is slave
 
 
 
@@ -33,11 +33,27 @@ Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
 Probe pr_D6 = Probe(6);
 
+config_master_i2c_t master_config{
+    .i2c = i2c0,
+    .sda_pin = 8,
+    .scl_pin = 9,
+    .baud_rate = I2C_STANDARD_MODE
+    };
+
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
 
-hw_I2C_master master = hw_I2C_master(i2c0, I2C_0_SDA_PIN, I2C_0_SCL_PIN, I2C_0_BAUD_RATE);
-hw_I2C_slave slave = hw_I2C_slave(i2c1, I2C_1_SDA_PIN, I2C_1_SCL_PIN, I2C_1_BAUD_RATE,
-                                  I2C_1_SLAVE_ADDR, i2c_slave_handler);                          
+config_slave_i2c_t slave_config{
+    .i2c = i2c1,
+    .sda_pin = 6,
+    .scl_pin = 7,
+    .baud_rate = I2C_STANDARD_MODE,
+    .slave_address = 0x15,
+    .slave_memory_size = 256,
+    .handler = i2c_slave_handler};
+
+
+hw_I2C_master master = hw_I2C_master(master_config);
+hw_I2C_slave slave = hw_I2C_slave(slave_config);                          
 
 
 /**
@@ -56,7 +72,7 @@ static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event)
 int main()
 {
     stdio_init_all();
-    slave.context.mem[I2C_SLAVE_DEFAULT_MAX_MEMORY_SIZE-1]=I2C_1_SLAVE_ADDR;//just for the fun:the slave answer its address located in its last memory
+    slave.context.mem[slave_config.slave_memory_size-1]=slave_config.slave_address;//just for the fun:the slave answer its address located in its last memory
     printf("test I2C bus scan : ");
     std::set<uint8_t> slave_set = master.bus_scan();
     for (auto &&i : slave_set)

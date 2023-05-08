@@ -21,24 +21,24 @@
  * @param scl the associated SCL pin
  * @param baud_rate the requested transmission speed
  */
-hw_I2C_master::hw_I2C_master(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate)
+hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
 {
-    this->i2c = i2c;
+    this->i2c = cfg.i2c;
 
     // As suggested by RP2040 data sheet
-    gpio_init(sda);
-    gpio_set_function(sda, GPIO_FUNC_I2C);
-    gpio_pull_up(sda);
-    gpio_set_slew_rate(sda, GPIO_SLEW_RATE_SLOW);
-    gpio_set_input_hysteresis_enabled(sda, true);
+    gpio_init(cfg.sda_pin);
+    gpio_set_function(cfg.sda_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(cfg.sda_pin);
+    gpio_set_slew_rate(cfg.sda_pin, GPIO_SLEW_RATE_SLOW);
+    gpio_set_input_hysteresis_enabled(cfg.sda_pin, true);
 
-    gpio_init(scl);
-    gpio_set_function(scl, GPIO_FUNC_I2C);
-    gpio_pull_up(scl);
-    gpio_set_slew_rate(scl, GPIO_SLEW_RATE_SLOW);
-    gpio_set_input_hysteresis_enabled(scl, true);
+    gpio_init(cfg.scl_pin);
+    gpio_set_function(cfg.scl_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(cfg.scl_pin);
+    gpio_set_slew_rate(cfg.scl_pin, GPIO_SLEW_RATE_SLOW);
+    gpio_set_input_hysteresis_enabled(cfg.scl_pin, true);
 
-    i2c_init(i2c, baud_rate);
+    i2c_init(this->i2c, cfg.baud_rate);
 }
 
 /**
@@ -110,17 +110,11 @@ int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr
 std::set<uint8_t> hw_I2C_master::bus_scan()
 {
     std::set<uint8_t> device_address_set;
-    // int nb;
-    // uint8_t rxdata;
     for (uint8_t addr = 0x08; addr < 0x78; addr++)
-    {
-        // nb = i2c_read_blocking(this->i2c,addr, &rxdata,1,false);
         if (this->device_is_connected(addr))
             device_address_set.insert(addr);
-    }
     return device_address_set;
 }
-
 bool hw_I2C_master::device_is_connected(uint8_t slave_address)
 {
     int nb;
@@ -195,25 +189,24 @@ void hw_I2C_slave::slave_isr(i2c_slave_event_t event)
  * @param handler the IRQ handler. NOTICE: This handler is the one given to NVIC IRQ map.
  * It seems that it must be a static function defined in the main code.
  */
-hw_I2C_slave::hw_I2C_slave(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate,
-                           uint8_t slave_address, i2c_slave_handler_t handler)
+hw_I2C_slave::hw_I2C_slave(config_slave_i2c_t cfg)
 {
-    this->i2c = i2c;
+    this->i2c = cfg.i2c;
 
     // As suggested by RP2040 data sheet
-    gpio_init(sda);
-    gpio_set_function(sda, GPIO_FUNC_I2C);
-    gpio_pull_up(sda);
-    gpio_set_slew_rate(sda, GPIO_SLEW_RATE_SLOW);
-    gpio_set_input_hysteresis_enabled(sda, true);
+    gpio_init(cfg.sda_pin);
+    gpio_set_function(cfg.sda_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(cfg.sda_pin);
+    gpio_set_slew_rate(cfg.sda_pin, GPIO_SLEW_RATE_SLOW);
+    gpio_set_input_hysteresis_enabled(cfg.sda_pin, true);
 
-    gpio_init(scl);
-    gpio_set_function(scl, GPIO_FUNC_I2C);
-    gpio_pull_up(scl);
-    gpio_set_slew_rate(scl, GPIO_SLEW_RATE_SLOW);
-    gpio_set_input_hysteresis_enabled(scl, true);
+    gpio_init(cfg.scl_pin);
+    gpio_set_function(cfg.scl_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(cfg.scl_pin);
+    gpio_set_slew_rate(cfg.scl_pin, GPIO_SLEW_RATE_SLOW);
+    gpio_set_input_hysteresis_enabled(cfg.scl_pin, true);
 
-    i2c_init(i2c, baud_rate);
+    i2c_init(this->i2c, cfg.baud_rate);
 
-    i2c_slave_init(i2c, slave_address, handler);
+    i2c_slave_init(this->i2c, cfg.slave_address, cfg.handler);
 }
