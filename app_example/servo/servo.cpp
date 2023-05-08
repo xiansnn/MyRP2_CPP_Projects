@@ -17,10 +17,10 @@ config_MPU6050_t sensor_config{
 };
 //-----------------------------------------------------------------------------
 //                             SG90 config
-#define MOTOR_SYNC_PIN 6
-#define MOTOR_COMMAND_PIN 7
-#define MOTOR_POS_MIN -90
-#define MOTOR_POS_MAX 90
+config_sg90_t motor_config{
+    .command_pin = 7,
+    .sync_pin = 6
+};
 //-----------------------------------------------------------------------------
 
 Probe pr_D4 = Probe(4);
@@ -31,7 +31,7 @@ int main()
 {
     stdio_init_all();
     hw_I2C_master bus_master = hw_I2C_master(i2c_bus_cfg);
-    SG90 motor = SG90(MOTOR_COMMAND_PIN, MOTOR_SYNC_PIN, MOTOR_POS_MIN, MOTOR_POS_MAX);
+    SG90 motor = SG90(motor_config);
     MPU6050 sensor = MPU6050(&bus_master,sensor_config);
     MPUData_t measures;
     float dev;
@@ -43,7 +43,7 @@ int main()
         pr_D4.lo();
         dev = measures.g_z;
         // printf("dev : %+000.1f \n", dev);
-        int pos = MOTOR_POS_MAX * dev;
+        int pos = motor_config.pos_max_degree * dev;
         pr_D5.hi();
         motor.set_pos(pos);
         pr_D5.lo();
