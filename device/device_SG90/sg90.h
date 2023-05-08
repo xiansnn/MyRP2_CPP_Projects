@@ -14,16 +14,23 @@
 #include "pico/stdlib.h"
 #include "hw_PWM/hw_pwm.h"
 
+#define STEP_ns 2000        // arbitrary value, gives resolution step_ns/(pos_max_us - pos_min_us) = 100ppm.
+#define PHASE_CORRECT false // if PHASE_CORRECt = true, channel B is used as a synch pulse in the begining of channel A pulse
+// else channel B is used as a synch pulse in the middle of channel A pulse.
+#define PERIOD_us 20000 // according to SG90 data sheet.
+#define T_MIN_us 500    // according to data sheet, should be 1000us but is 500us actually.
+#define T_MAX_us 2500   // according to data sheet, should be 2000us but is 2500us actually.
+
+
 class SG90
 {
 private:
     PWM *pwm;
     uint command;
     uint sync;
-    int pos_range_deg;
     int pos_min_deg;
     int pos_max_deg;
-    float coef;
+    float coef_us_per_degree;
 
 public:
     SG90(uint command, uint sync, int pos_min, int pos_max);
