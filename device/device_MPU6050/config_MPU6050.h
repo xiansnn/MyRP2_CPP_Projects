@@ -43,6 +43,7 @@
 
 // ==== Register 35 0x23– FIFO Enable : config which measures will be written into the FIFO
 // values to be selected :
+#define NO_SELECTION 0x00
 #define GYRO_FIFO_EN XG_FIFO_EN | YG_FIFO_EN | ZG_FIFO_EN
 #define TEMP_FIFO_EN 0x80
 #define XG_FIFO_EN 0x40
@@ -89,6 +90,7 @@
 
 // ==== Register 106 0x6A– User Control
 // config FIFO, I2C, signal path
+#define FIFO_DISABLE 0x00   // disable FIFO operations
 #define FIFO_EN 0x40        // enables FIFO operations
 #define I2C_MST_EN 0x20     // enables I2C master mode
 #define I2C_IF_DIS 0x10     // MPU6000 only

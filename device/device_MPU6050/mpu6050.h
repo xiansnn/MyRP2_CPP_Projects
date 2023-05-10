@@ -22,6 +22,7 @@ typedef struct config_MPU6050
     uint8_t INT_PIN_CFG = INT_LEVEL | LATCH_INT_EN; // Reg 0x37: Active LO, open drain, pulsed 50us, cleared by read INT status
     uint8_t INT_ENABLE = DATA_RDY_EN;          // Reg 0x38: INT each time a sensor register write occurs
     uint8_t SIGNAL_PATH_RESET = NO_PATH_RESET; // Reg 0x68: default no reset
+    uint8_t FIFO_OP = FIFO_EN;                // Reg 0x6A: FIFO enable
     uint8_t PWR_MGMT_1 = CLKSEL_Z_PLL;         // Reg 0x6B: 
 }config_MPU6050_t;
 

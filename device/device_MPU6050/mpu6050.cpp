@@ -75,8 +75,8 @@ MPU6050::MPU6050(hw_I2C_master *master, config_MPU6050_t mpu_config)
     this->master->single_byte_write(this->config.MPU_ADDR, ACCEL_CONFIG_RA, ACCEL_CONFIG);
     // reset FIFO
     this->master->single_byte_write(this->config.MPU_ADDR, USER_CTRL_RA, FIFO_RESET);
-    // enable FIFO
-    this->master->single_byte_write(this->config.MPU_ADDR, USER_CTRL_RA, FIFO_EN);
+    // enable FIFO operations
+    this->master->single_byte_write(this->config.MPU_ADDR, USER_CTRL_RA, this->config.FIFO_OP);
     // configure sensors to write in FIFO
     this->master->single_byte_write(this->config.MPU_ADDR, FIFO_EN_RA, this->config.FIFO_SELECTED_SENSORS);
     // configure INT
