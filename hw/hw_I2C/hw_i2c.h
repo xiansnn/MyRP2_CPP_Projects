@@ -35,6 +35,7 @@ class hw_I2C_master
 {
 private:
     i2c_inst_t *i2c;
+    uint time_out_us_per_byte;
 
 public:
     hw_I2C_master(config_master_i2c_t master_config);

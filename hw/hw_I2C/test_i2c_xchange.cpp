@@ -5,7 +5,6 @@
 
 Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
-Probe pr_D6 = Probe(6);
 
 config_master_i2c_t master_config{
     .i2c = i2c0,
@@ -63,9 +62,7 @@ int main()
             // read from mem_address
             uint8_t read_data[MAX_DATA_SIZE];
             char read_msg[MAX_DATA_SIZE];
-            pr_D6.hi();
             master.burst_byte_read(slave_config.slave_address, mem_address, read_data, MAX_DATA_SIZE);
-            pr_D6.lo();
             memcpy(read_msg, read_data, MAX_DATA_SIZE);
             msg_len = strlen(read_msg);
             printf("Read %d char at 0x%02X: '%s'\n\n", msg_len, mem_address, read_msg);

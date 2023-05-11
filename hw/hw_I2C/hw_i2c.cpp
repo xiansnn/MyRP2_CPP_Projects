@@ -12,18 +12,19 @@
 #include "hw_i2c.h"
 #include <cstring>
 #include <stdio.h>
+#include "probe.h"
+Probe pr_D6 = Probe(6);
+Probe pr_D7 = Probe(7);
 
 /**
  * @brief Construct a new hw I2C master::hw I2C master object
  *
- * @param i2c The I2C hardware instance. Either i2c0 or i2c1.
- * @param sda the associated SDA pin
- * @param scl the associated SCL pin
- * @param baud_rate the requested transmission speed
+ * @param cfg
  */
 hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
 {
     this->i2c = cfg.i2c;
+    this->time_out_us_per_byte = 8 * 1500000 / cfg.baud_rate; // with 50% margin
 
     // As suggested by RP2040 data sheet
     gpio_init(cfg.sda_pin);
@@ -54,16 +55,35 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
  */
 int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, uint8_t len)
 {
+    int nb;
     uint8_t write_buf[len + 1] = {slave_mem_addr};
     memcpy(write_buf + 1, src, len);
-    int nb = i2c_write_blocking(this->i2c, slave_address, write_buf, len + 1, false);
+    // nb = i2c_write_blocking(this->i2c, slave_address, write_buf, len + 1, false);
+    uint timeout = this->time_out_us_per_byte *(len+3);
+    nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, len + 1, false, timeout);
+    if (nb < 0 || nb != len+1)
+    {
+        pr_D6.hi();
+        sleep_us(10);
+        pr_D6.lo();
+    }
+
     return nb;
 }
 
 int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value)
 {
+    int nb;
     uint8_t write_buf[] = {mem_addr, mem_value};
-    int nb = i2c_write_blocking(this->i2c, slave_address, write_buf, 2, false);
+    // nb = i2c_write_blocking(this->i2c, slave_address, write_buf, 2, false);
+    uint timeout = this->time_out_us_per_byte * 3;
+    nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, 2, false, timeout);
+    if (nb < 0 || nb != 2)
+    {
+        pr_D6.hi();
+        sleep_us(10);
+        pr_D6.lo();
+    }
     return nb;
 }
 
@@ -78,9 +98,28 @@ int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, ui
  */
 int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest)
 {
+    int nb;
     uint8_t cmd_buf[]{slave_mem_addr};
-    i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);
-    int nb = i2c_read_blocking(this->i2c, slave_address, dest, 1, false);
+
+    // i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);
+    uint timeout = this->time_out_us_per_byte * 2;
+    nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
+    if (nb < 0 || nb != 1)
+    {
+        pr_D6.hi();
+        sleep_us(10);
+        pr_D6.lo();
+    }
+    // nb = i2c_read_blocking(this->i2c, slave_address, dest, 1, false);
+    timeout = this->time_out_us_per_byte * 3;
+    nb = i2c_read_timeout_us(this->i2c, slave_address, dest, 1, false, timeout);
+    if (nb < 0 || nb != 1)
+    {
+        pr_D7.hi();
+        sleep_us(10);
+        pr_D7.lo();
+    }
+
     return nb;
 }
 
@@ -96,11 +135,28 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
  */
 int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
 {
+    int nb;
     uint8_t cmd_buf[]{slave_mem_addr};
     // i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);
-    i2c_write_timeout_us(this->i2c,slave_address,cmd_buf,1,true,2000);
+    uint timeout = this->time_out_us_per_byte * 2;
+    nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
+    if (nb < 0 || nb != 1)
+    {
+        pr_D6.hi();
+        sleep_us(10);
+        pr_D6.lo();
+    }
+
     // int nb = i2c_read_blocking(this->i2c, slave_address, dest, len, false);
-    int nb = i2c_read_timeout_us(this->i2c, slave_address, dest, len, false,2000);
+    timeout = this->time_out_us_per_byte * (len + 2);
+    nb = i2c_read_timeout_us(this->i2c, slave_address, dest, len, false, timeout);
+    if (nb < 0 || nb != len)
+    {
+        pr_D7.hi();
+        sleep_us(10);
+        pr_D7.lo();
+    }
+
     return nb;
 }
 
