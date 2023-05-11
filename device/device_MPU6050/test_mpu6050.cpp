@@ -3,6 +3,10 @@
 #include "pico/stdio.h"
 #include <stdio.h>
 #include <math.h>
+#include "probe.h"
+
+Probe pr_D4 = Probe(4);
+Probe pr_D5 = Probe(5);
 
 config_master_i2c_t i2c_cfg{
     .i2c = i2c0,
@@ -12,16 +16,20 @@ config_master_i2c_t i2c_cfg{
 
 config_MPU6050_t mpu_cfg{
     .SAMPLE_RATE = 50,
-    .DLPF_BW = 20};
+    .DLPF_BW = 5};
 
 void process_data_from_register(MPU6050 mpu)
 {
+    pr_D5.hi();
     MPUData_t measures{};
     mpu.read_MPU_all_measure_from_registers(&measures);
+    pr_D5.lo();
+    pr_D4.hi();
     printf("reg. accX = %.2f\taccY = %.2f\taccZ = %.2f", measures.g_x, measures.g_y, measures.g_z);
     printf("\tvecteur G: %.2f", sqrt(pow(measures.g_x, 2) + pow(measures.g_y, 2) + pow(measures.g_z, 2)));
     printf("\t\tgyroX = %.2f\tgyroY = %.2f\tgyroZ = %.2f", measures.gyro_x, measures.gyro_y, measures.gyro_z);
     printf("\n\n");
+    pr_D4.lo();
 };
 void process_data_from_FIFO(MPU6050 mpu)
 {
@@ -58,7 +66,7 @@ int main()
             process_data_from_register(mpu);
             // process_data_from_FIFO(mpu);
         }
-        sleep_ms(1);
+        sleep_ms(5);
     }
     return 0;
 }

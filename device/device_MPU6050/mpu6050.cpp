@@ -11,9 +11,6 @@
 #include "register_address_MPU6050.h"
 #include "config_MPU6050.h"
 #include "mpu6050.h"
-#include "probe.h"
-Probe pr_D6 = Probe(6);
-Probe pr_D7 = Probe(7);
 
 /**
  * @brief Construct a new MPU6050::MPU6050 object
@@ -89,7 +86,6 @@ MPU6050::MPU6050(hw_I2C_master *master, config_MPU6050_t mpu_config)
 
 void MPU6050::read_registers_all_raw_data(RawData_t *raw)
 {
-    pr_D6.hi();
     uint8_t read_buf[14];
     this->master->burst_byte_read(this->config.MPU_ADDR, ACCEL_XOUT_H_RA, read_buf, 14);
     raw->g_x = (read_buf[0] << 8) + read_buf[1];
@@ -99,7 +95,6 @@ void MPU6050::read_registers_all_raw_data(RawData_t *raw)
     raw->gyro_x = (read_buf[8] << 8) + read_buf[9];
     raw->gyro_y = (read_buf[10] << 8) + read_buf[11];
     raw->gyro_z = (read_buf[12] << 8) + read_buf[13];
-    pr_D6.lo();
 }
 
 void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
@@ -116,7 +111,6 @@ void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
 }
 void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
 {
-    pr_D7.hi();
     data->g_x = raw->g_x * this->acceleration_factor + this->accel_x_offset;
     data->g_y = raw->g_y * this->acceleration_factor + this->accel_y_offset;
     data->g_z = raw->g_z * this->acceleration_factor + this->accel_z_offset;
@@ -124,7 +118,6 @@ void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
     data->gyro_y = raw->gyro_y * this->gyro_factor + this->gyro_y_offset;
     data->gyro_z = raw->gyro_z * this->gyro_factor + this->gyro_z_offset;
     data->temp_out = raw->temp_out * this->temperature_gain + this->temperature_offset;
-    pr_D7.lo();
 }
 
 void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
