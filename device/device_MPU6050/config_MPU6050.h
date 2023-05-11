@@ -43,7 +43,7 @@
 
 // ==== Register 35 0x23– FIFO Enable : config which measures will be written into the FIFO
 // values to be selected :
-#define NO_SELECTION 0x00
+#define FIFO_NO_SELECTION 0x00
 #define GYRO_FIFO_EN XG_FIFO_EN | YG_FIFO_EN | ZG_FIFO_EN
 #define TEMP_FIFO_EN 0x80
 #define XG_FIFO_EN 0x40
