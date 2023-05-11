@@ -31,7 +31,7 @@
 
 Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
-Probe pr_D6 = Probe(6);
+
 
 config_master_i2c_t master_config{
     .i2c = i2c0,
