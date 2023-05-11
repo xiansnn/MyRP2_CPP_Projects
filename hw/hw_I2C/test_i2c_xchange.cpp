@@ -10,7 +10,7 @@ config_master_i2c_t master_config{
     .i2c = i2c0,
     .sda_pin = 8,
     .scl_pin = 9,
-    .baud_rate = I2C_STANDARD_MODE
+    .baud_rate = I2C_FAST_MODE
     };
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
@@ -19,7 +19,7 @@ config_slave_i2c_t slave_config{
     .i2c = i2c1,
     .sda_pin = 6,
     .scl_pin = 7,
-    .baud_rate = I2C_STANDARD_MODE,
+    .baud_rate = I2C_FAST_MODE,
     .slave_address = 0x15,
     .slave_memory_size = 256,
     .handler = i2c_slave_handler};
