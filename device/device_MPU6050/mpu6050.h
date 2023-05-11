@@ -77,6 +77,7 @@ private:
     void read_registers_all_raw_data(RawData_t *raw);
     void read_FIFO_all_raw_data(RawData_t *raw);
     void convert_raw_to_measure(RawData_t *raw, MPUData_t *measures);
+    void init_mpu();
 
 public:
     // MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);

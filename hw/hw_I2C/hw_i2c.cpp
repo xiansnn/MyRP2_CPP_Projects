@@ -131,7 +131,7 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
  * @param slave_mem_addr the starting address of slave memory to read from
  * @param dest Pointer to buffer to receive data
  * @param len the size of the block of data
- * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
+ * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present or PICO_ERROR_TIMEOUT
  */
 int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
 {
