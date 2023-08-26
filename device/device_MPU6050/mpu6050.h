@@ -73,6 +73,8 @@ private:
     float gyro_x_offset{};
     float gyro_y_offset{};
     float gyro_z_offset{};
+    MPUData_t data;
+    RawData_t raw;
 
     void read_registers_all_raw_data(RawData_t *raw);
     void read_FIFO_all_raw_data(RawData_t *raw);
