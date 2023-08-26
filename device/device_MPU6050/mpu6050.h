@@ -19,7 +19,7 @@ typedef struct config_MPU6050
     uint16_t GYRO_FULL_SCALE_RANGE = 250;      // Reg 0x1B:values in { 250, 500, 1000, 2000} DPS
     uint8_t ACCEL_FULL_SCALE_RANGE = 2;        // Reg 0x1C:values in { 2, 4, 8, 16} G
     uint8_t FIFO_SELECTED_SENSORS = GYRO_FIFO_EN | ACCEL_FIFO_EN; // Reg 0x23:
-    uint8_t INT_PIN_CFG = INT_LEVEL | LATCH_INT_EN; // Reg 0x37: Active LO, open drain, pulsed 50us, cleared by read INT status
+    uint8_t INT_PIN_CFG = INT_LEVEL | LATCH_INT_EN | INT_RD_CLEAR; // Reg 0x37: Active LO, open drain, pulsed 50us, cleared any read operation
     uint8_t INT_ENABLE = DATA_RDY_EN;          // Reg 0x38: INT each time a sensor register write occurs
     uint8_t SIGNAL_PATH_RESET = NO_PATH_RESET; // Reg 0x68: default no reset
     uint8_t FIFO_OP = FIFO_EN;                 // Reg 0x6A: FIFO enable
