@@ -8,7 +8,7 @@ Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
 Probe pr_D1 = Probe(1);
 
-#define MPU_INT 6 // gpio connnected to MPU INT pin
+#define MPU_INT 22 // gpio connnected to MPU INT pin
 
 config_master_i2c_t i2c_cfg{
     .i2c = i2c0,
@@ -52,7 +52,7 @@ int main()
             pr_D5.lo();
         }
         pr_D4.lo();
-        sleep_ms(1000);
+        sleep_ms(100);
     }
     return 0;
 }
