@@ -76,24 +76,24 @@ private:
     MPUData_t data;
     RawData_t raw;
 
-    void read_registers_all_raw_data(RawData_t *raw);
-    void read_FIFO_all_raw_data(RawData_t *raw);
-    void convert_raw_to_measure(RawData_t *raw, MPUData_t *measures);
     void init_mpu();
+    void read_registers_all_raw_data();
+    void calibrate();
+    void convert_raw_to_measure();
+    void read_FIFO_all_raw_data();               // TODO check FIFO data reading.... seems not working well
+    void read_FIFO_g_accel_raw_data();           // TODO check FIFO data reading.... seems not working well
+    void read_FIFO_accel_raw_data();             // TODO check FIFO data reading.... seems not working well
 
 public:
     // MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);
     MPU6050(hw_I2C_master *master, config_MPU6050_t default_config);
-    void read_FIFO_g_accel_raw_data(RawData_t *raw);
-    void read_FIFO_accel_raw_data(RawData_t *raw);
-    uint16_t read_FIFO_count();
+    uint16_t get_FIFO_count();
+    float get_MPU_temperature();
     bool is_data_ready();
+    MPUData_t get_measures();
 
-    float read_MPU_temperature();
-    void read_MPU_all_measure_from_registers(MPUData_t *data);
-    void read_MPU_all_measure_from_FIFO(MPUData_t *data);
-    void read_MPU_g_accel_measures_from_FIFO(MPUData_t *data);
-    void calibrate();
+    void print_measures();
+    void print_raw_data();
 };
 
 #endif // MPU6050_H

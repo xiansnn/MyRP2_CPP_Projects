@@ -38,7 +38,7 @@ int main()
     MPU6050 sensor = MPU6050(&bus_master, sensor_config);
     motor.set_pos((motor_config.pos_max_degree + motor_config.pos_min_degree) / 2); // set pos at mid range
     sleep_ms(5000);
-    MPUData_t measures;
+    
 
     while (true)
     {
@@ -46,10 +46,10 @@ int main()
         {
             float dev;
             pr_D4.hi();
-            sensor.read_MPU_all_measure_from_registers(&measures);
+            MPUData_t measures = sensor.get_measures();
 
-            pr_D4.lo();
-            dev = measures.g_z;
+            pr_D4.lo(); 
+            dev =    measures.g_z;
             // printf("dev : %+000.1f \n", dev);
             int pos = motor_config.pos_max_degree * dev;
             pr_D5.hi();

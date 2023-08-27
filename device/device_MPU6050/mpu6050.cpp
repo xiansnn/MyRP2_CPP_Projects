@@ -11,6 +11,10 @@
 #include "register_address_MPU6050.h"
 #include "config_MPU6050.h"
 #include "mpu6050.h"
+// #include "pico/stdio.h"
+#include <stdio.h>
+#include <math.h>
+
 
 /**
  * @brief Construct a new MPU6050::MPU6050 object
@@ -27,7 +31,7 @@ MPU6050::MPU6050(hw_I2C_master *master, config_MPU6050_t mpu_config)
     this->calibrate();
 }
 
-void MPU6050::read_registers_all_raw_data(RawData_t *raw)
+void MPU6050::read_registers_all_raw_data()
 {
     int nb;
     uint8_t read_buf[14];
@@ -43,21 +47,13 @@ void MPU6050::read_registers_all_raw_data(RawData_t *raw)
     this->raw.gyro_y = (read_buf[10] << 8) + read_buf[11];
     this->raw.gyro_z = (read_buf[12] << 8) + read_buf[13];
 
-    raw->g_x = this->raw.g_x;
-    raw->g_y = this->raw.g_y;
-    raw->g_z = this->raw.g_z;
-    raw->temp_out = this->raw.temp_out;
-    raw->gyro_x = this->raw.gyro_x;
-    raw->gyro_y = this->raw.gyro_y;
-    raw->gyro_z = this->raw.gyro_z;
 }
 
-void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
+void MPU6050::read_FIFO_all_raw_data()// TODO check FIFO data reading.... seems not working well
 {
     uint8_t read_buf[14];
     this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 14);
-    raw->gyro_z = (read_buf[12] << 8) + read_buf[13];
-
+    
     this->raw.g_x = (read_buf[0] << 8) + read_buf[1];
     this->raw.g_y = (read_buf[2] << 8) + read_buf[3];
     this->raw.g_z = (read_buf[4] << 8) + read_buf[5];
@@ -66,15 +62,8 @@ void MPU6050::read_FIFO_all_raw_data(RawData_t *raw)
     this->raw.gyro_y = (read_buf[10] << 8) + read_buf[11];
     this->raw.gyro_z = (read_buf[12] << 8) + read_buf[13];
 
-    raw->g_x = this->raw.g_x;
-    raw->g_y = this->raw.g_y;
-    raw->g_z = this->raw.g_z;
-    raw->temp_out = this->raw.temp_out;
-    raw->gyro_x = this->raw.gyro_x;
-    raw->gyro_y = this->raw.gyro_y;
-    raw->gyro_z = this->raw.gyro_z;
-}
-void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
+    }
+void MPU6050::convert_raw_to_measure()
 {
     this->data.g_x = this->raw.g_x * this->acceleration_factor + this->accel_x_offset;
     this->data.g_y = this->raw.g_y * this->acceleration_factor + this->accel_y_offset;
@@ -84,13 +73,13 @@ void MPU6050::convert_raw_to_measure(RawData_t *raw, MPUData_t *data)
     this->data.gyro_z = this->raw.gyro_z * this->gyro_factor + this->gyro_z_offset;
     this->data.temp_out = this->raw.temp_out * this->temperature_gain + this->temperature_offset;
 
-    data->g_x = this->data.g_x;
-    data->g_y = this->data.g_y;
-    data->g_z = this->data.g_z;
-    data->gyro_x = this->data.gyro_x;
-    data->gyro_y = this->data.gyro_y;
-    data->gyro_z = this->data.gyro_z;
-    data->temp_out = this->data.temp_out;
+    // data->g_x = this->data.g_x;
+    // data->g_y = this->data.g_y;
+    // data->g_z = this->data.g_z;
+    // data->gyro_x = this->data.gyro_x;
+    // data->gyro_y = this->data.gyro_y;
+    // data->gyro_z = this->data.gyro_z;
+    // data->temp_out = this->data.temp_out;
 
 }
 
@@ -158,7 +147,7 @@ void MPU6050::init_mpu()
     this->master->single_byte_write(this->config.MPU_ADDR, INT_ENABLE_RA, this->config.INT_ENABLE);
 }
 
-void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
+void MPU6050::read_FIFO_g_accel_raw_data() // TODO check FIFO data reading.... seems not working well
 {
     uint8_t read_buf[12];
     this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 12);
@@ -170,15 +159,8 @@ void MPU6050::read_FIFO_g_accel_raw_data(RawData_t *raw)
     this->raw.gyro_y = (read_buf[8] << 8) + read_buf[9];
     this->raw.gyro_z = (read_buf[10] << 8) + read_buf[11];
 
-    raw->g_x = this->raw.g_x;
-    raw->g_y = this->raw.g_y;
-    raw->g_z = this->raw.g_z;
-    raw->gyro_x = this->raw.gyro_x;
-    raw->gyro_y = this->raw.gyro_y;
-    raw->gyro_z = this->raw.gyro_z;
-
 }
-void MPU6050::read_FIFO_accel_raw_data(RawData_t *raw)
+void MPU6050::read_FIFO_accel_raw_data() // TODO check FIFO data reading.... seems not working well
 {
     uint8_t read_buf[6];
     this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_R_W_RA, read_buf, 6);
@@ -187,9 +169,6 @@ void MPU6050::read_FIFO_accel_raw_data(RawData_t *raw)
     this->raw.g_y = (read_buf[2] << 8) + read_buf[3];
     this->raw.g_z = (read_buf[4] << 8) + read_buf[5];
 
-    raw->g_x = this->raw.g_x;
-    raw->g_y = this->raw.g_y;
-    raw->g_z = this->raw.g_z;
 
 }
 
@@ -208,8 +187,7 @@ void MPU6050::calibrate()
     {
         if (this->is_data_ready())
         {
-            RawData_t raw{};
-            this->read_registers_all_raw_data(&raw);
+            this->read_registers_all_raw_data();
             accel_x += (float)this->raw.g_x;
             accel_y += (float)this->raw.g_y;
             accel_z += (float)this->raw.g_z;
@@ -235,36 +213,23 @@ void MPU6050::calibrate()
     this->gyro_y_offset = (-gy) * this->gyro_factor;
     this->gyro_z_offset = (-gz) * this->gyro_factor;
 }
-void MPU6050::read_MPU_all_measure_from_FIFO(MPUData_t *data)
-{
-    RawData_t raw;
-    this->read_FIFO_all_raw_data(&raw);
-    this->convert_raw_to_measure(&raw, data);
-}
 
-float MPU6050::read_MPU_temperature()
+float MPU6050::get_MPU_temperature()
 {
     uint8_t read_buf[2];
     this->master->burst_byte_read(this->config.MPU_ADDR, TEMP_OUT_H_RA, read_buf, 2);
-    // int16_t temp_out = (read_buf[0] << 8) + read_buf[1];
     this->raw.temp_out = (read_buf[0] << 8) + read_buf[1];
     return (float)this->raw.temp_out * this->temperature_gain + this->temperature_offset;
 }
-void MPU6050::read_MPU_g_accel_measures_from_FIFO(MPUData_t *data)
+
+MPUData_t MPU6050::get_measures()
 {
-    RawData_t raw{};
-    this->read_FIFO_g_accel_raw_data(&raw);
-    this->convert_raw_to_measure(&raw, data);
+    this->read_registers_all_raw_data();
+    this->convert_raw_to_measure();
+    return this->data;
 }
 
-void MPU6050::read_MPU_all_measure_from_registers(MPUData_t *data)
-{
-    RawData_t raw;
-    this->read_registers_all_raw_data(&raw);
-    this->convert_raw_to_measure(&raw, data);
-}
-
-uint16_t MPU6050::read_FIFO_count()
+uint16_t MPU6050::get_FIFO_count()
 {
     uint8_t read_buf[2] = {FIFO_COUNT_H_RA};
     this->master->burst_byte_read(this->config.MPU_ADDR, FIFO_COUNT_H_RA, read_buf, 2);
@@ -278,3 +243,18 @@ bool MPU6050::is_data_ready()
 
     return status[0] & DATA_RDY_INT;
 }
+
+void MPU6050::print_measures()
+{
+    printf("AccX = %.2f\tY = %.2f\tZ = %.2f", this->data.g_x, this->data.g_y, this->data.g_z);
+    printf("\tvecteur G: %.2f", sqrt(pow(this->data.g_x, 2) + pow(this->data.g_y, 2) + pow(this->data.g_z, 2)));
+    printf("\tGyroX = %.2f\tY = %.2f\tZ = %.2f", this->data.gyro_x, this->data.gyro_y, this->data.gyro_z);
+    printf("\n\n");
+};
+
+void MPU6050::print_raw_data()
+{
+    printf("Acc [X = %4x\t\tY = %4x\t\tZ = %4x ]", this->raw.g_x, this->raw.g_y, this->raw.g_z);
+    printf("\t\t\tGyro [X = %4x\t\tY = %4x\t\tZ = %4x ]", this->raw.gyro_x, this->raw.gyro_y, this->raw.gyro_z);
+    printf("\n\n");
+};
