@@ -12,16 +12,16 @@
 #include "hw_i2c.h"
 #include <cstring>
 #include <stdio.h>
-#include "probe.h"
+// #include "probe.h"
 #include <string>
-Probe pr_D6 = Probe(6);
-// Probe pr_D7 = Probe(7);
 
-void probe_i2c_error(int nb)
+
+void probe_i2c_error(std::string msg, int nb)
 {
-    pr_D6.hi();
+
+    printf("context:%s; return value:%d",msg.c_str(),nb);
     sleep_us(10);
-    pr_D6.lo();
+
 }
 
 /**
@@ -33,9 +33,7 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
 {
     this->i2c = cfg.i2c;
     this->time_out_us_per_byte = 8 * 1500000 / cfg.baud_rate; // with 50% margin
-    std::string s = "demarrage";
-    printf("demarrage , nb= %d \n", 3);
-    probe_i2c_error(3);
+    probe_i2c_error("demarrage", 0);
 
     // As suggested by RP2040 data sheet
     gpio_init(cfg.sda_pin);
@@ -74,8 +72,7 @@ int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_add
     nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, len + 1, false, timeout);
     if (nb < 0 || nb != len + 1)
     {
-        probe_i2c_error(nb);
-        printf("write burst write, nb: %d\n", nb);
+        probe_i2c_error("write burst write", nb);
     }
 
     return nb;
@@ -90,8 +87,7 @@ int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, ui
     nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, 2, false, timeout);
     if (nb < 0 || nb != 2)
     {
-        probe_i2c_error(nb);
-        printf("write single write, nb: %d\n", nb);
+        probe_i2c_error("write single write", nb);
     }
     return nb;
 }
@@ -115,16 +111,14 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
     nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error(nb);
-        printf("write single read, nb: %d\n", nb);
+        probe_i2c_error("write single read", nb);
     }
     // nb = i2c_read_blocking(this->i2c, slave_address, dest, 1, false);
     timeout = this->time_out_us_per_byte * 3;
     nb = i2c_read_timeout_us(this->i2c, slave_address, dest, 1, false, timeout);
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error(nb);
-        printf("read single read, nb: %d\n", nb);
+        probe_i2c_error("read single read", nb);
     }
 
     return nb;
@@ -149,8 +143,7 @@ int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr
     nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error(nb);
-        printf("write burst read, nb: %d\n", nb);
+        probe_i2c_error("write burst read", nb);
     }
 
     // int nb = i2c_read_blocking(this->i2c, slave_address, dest, len, false);
@@ -158,8 +151,7 @@ int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr
     nb = i2c_read_timeout_us(this->i2c, slave_address, dest, len, false, timeout);
     if (nb < 0 || nb != len)
     {
-        probe_i2c_error(nb);
-        printf("read burst read, nb: %d\n", nb);
+        probe_i2c_error("read burst read", nb);
     }
 
     return nb;
