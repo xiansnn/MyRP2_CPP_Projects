@@ -20,9 +20,9 @@ config_MPU6050_t mpu_cfg{
 
 void print_measures(MPUData_t measures)
 {
-    printf("fifo AccX = %.2f\tY = %.2f\tZ = %.2f", measures.g_x, measures.g_y, measures.g_z);
-    printf("\tvecteur G: %.2f", sqrt(pow(measures.g_x, 2) + pow(measures.g_y, 2) + pow(measures.g_z, 2)));
-    printf("\tGyroX = %.2f\tY = %.2f\tZ = %.2f", measures.gyro_x, measures.gyro_y, measures.gyro_z);
+    printf("AccX = %+.2f\tY = %+.2f\tZ = %+.2f", measures.g_x, measures.g_y, measures.g_z);
+    printf("\tvecteur G: %+.2f", sqrt(pow(measures.g_x, 2) + pow(measures.g_y, 2) + pow(measures.g_z, 2)));
+    printf("\tGyroX = %+.2f\tY = %+.2f\tZ = %+.2f", measures.gyro_x, measures.gyro_y, measures.gyro_z);
     printf("\n\n");
 }
 
@@ -40,7 +40,7 @@ int main()
             MPUData_t measures = mpu.get_measures();
             print_measures(measures);
         }
-        sleep_ms(5);
+        sleep_ms(1000);
     }
     return 0;
 }

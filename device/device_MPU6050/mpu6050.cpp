@@ -11,7 +11,6 @@
 #include "register_address_MPU6050.h"
 #include "config_MPU6050.h"
 #include "mpu6050.h"
-// #include "pico/stdio.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -73,13 +72,6 @@ void MPU6050::convert_raw_to_measure()
     this->data.gyro_z = this->raw.gyro_z * this->gyro_factor + this->gyro_z_offset;
     this->data.temp_out = this->raw.temp_out * this->temperature_gain + this->temperature_offset;
 
-    // data->g_x = this->data.g_x;
-    // data->g_y = this->data.g_y;
-    // data->g_z = this->data.g_z;
-    // data->gyro_x = this->data.gyro_x;
-    // data->gyro_y = this->data.gyro_y;
-    // data->gyro_z = this->data.gyro_z;
-    // data->temp_out = this->data.temp_out;
 
 }
 
@@ -246,9 +238,9 @@ bool MPU6050::is_data_ready()
 
 void MPU6050::print_measures()
 {
-    printf("AccX = %.2f\tY = %.2f\tZ = %.2f", this->data.g_x, this->data.g_y, this->data.g_z);
-    printf("\tvecteur G: %.2f", sqrt(pow(this->data.g_x, 2) + pow(this->data.g_y, 2) + pow(this->data.g_z, 2)));
-    printf("\tGyroX = %.2f\tY = %.2f\tZ = %.2f", this->data.gyro_x, this->data.gyro_y, this->data.gyro_z);
+    printf("AccX = %+.2f\tY = %+.2f\tZ = %+.2f", this->data.g_x, this->data.g_y, this->data.g_z);
+    printf("\tvecteur G: %+.2f", sqrt(pow(this->data.g_x, 2) + pow(this->data.g_y, 2) + pow(this->data.g_z, 2)));
+    printf("\tGyroX = %+.2f\tY = %+.2f\tZ = %+.2f", this->data.gyro_x, this->data.gyro_y, this->data.gyro_z);
     printf("\n\n");
 };
 
