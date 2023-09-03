@@ -32,7 +32,6 @@ MPU6050::MPU6050(hw_I2C_master *master, config_MPU6050_t mpu_config)
 
 void MPU6050::read_registers_all_raw_data()
 {
-    int nb;
     i2c_xfer_result_t result;
     uint8_t read_buf[14];
     result = this->master->burst_byte_read(this->config.MPU_ADDR, ACCEL_XOUT_H_RA, read_buf, 14);
