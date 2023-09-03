@@ -12,17 +12,15 @@
 #include "hw_i2c.h"
 #include <cstring>
 #include <stdio.h>
-// #include "probe.h"
 #include <string>
 
+// void probe_i2c_error(std::string msg, int nb)
+// {
 
-void probe_i2c_error(std::string msg, int nb)
-{
+//     printf("context:%s; return value:%d",msg.c_str(),nb);
+//     sleep_us(10);
 
-    printf("context:%s; return value:%d",msg.c_str(),nb);
-    sleep_us(10);
-
-}
+// }
 
 /**
  * @brief Construct a new hw I2C master::hw I2C master object
@@ -33,7 +31,8 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
 {
     this->i2c = cfg.i2c;
     this->time_out_us_per_byte = 8 * 1500000 / cfg.baud_rate; // with 50% margin
-    probe_i2c_error("demarrage", 0);
+    std::string msg = "demarrage I2C master";
+    printf(msg.c_str());
 
     // As suggested by RP2040 data sheet
     gpio_init(cfg.sda_pin);
@@ -62,34 +61,43 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
  * @param len the size of the block of data. Can be 1 for single byte write
  * @return int Number of bytes written, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
  */
-int hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, uint8_t len)
+i2c_xfer_result_t hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, uint8_t len)
 {
     int nb;
+    i2c_xfer_result_t result;
     uint8_t write_buf[len + 1] = {slave_mem_addr};
     memcpy(write_buf + 1, src, len);
     // nb = i2c_write_blocking(this->i2c, slave_address, write_buf, len + 1, false);
     uint timeout = this->time_out_us_per_byte * (len + 3);
     nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, len + 1, false, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != len + 1)
     {
-        probe_i2c_error("write burst write", nb);
+        result.context = "burst_byte_write [write cmd][data*]";
+        result.error = true;
+        return result;
     }
-
-    return nb;
+    result.error = false;
+    return result;
 }
 
-int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value)
+i2c_xfer_result_t hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value)
 {
     int nb;
+    i2c_xfer_result_t result;
     uint8_t write_buf[] = {mem_addr, mem_value};
     // nb = i2c_write_blocking(this->i2c, slave_address, write_buf, 2, false);
     uint timeout = this->time_out_us_per_byte * 3;
     nb = i2c_write_timeout_us(this->i2c, slave_address, write_buf, 2, false, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != 2)
     {
-        probe_i2c_error("write single write", nb);
+        result.context = "single_byte_write [write cmd][byte]";
+        result.error = true;
+        return result;
     }
-    return nb;
+    result.error = false;
+    return result;
 }
 
 /**
@@ -101,27 +109,34 @@ int hw_I2C_master::single_byte_write(uint8_t slave_address, uint8_t mem_addr, ui
  * @param dest Pointer to buffer to receive data
  * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
  */
-int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest)
+i2c_xfer_result_t hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest)
 {
     int nb;
+    i2c_xfer_result_t result;
     uint8_t cmd_buf[]{slave_mem_addr};
 
     // i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);
     uint timeout = this->time_out_us_per_byte * 2;
     nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error("write single read", nb);
+        result.context = "single_byte_read [write cmd]";
+        result.error = true;
+        return result;
     }
     // nb = i2c_read_blocking(this->i2c, slave_address, dest, 1, false);
     timeout = this->time_out_us_per_byte * 3;
     nb = i2c_read_timeout_us(this->i2c, slave_address, dest, 1, false, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error("read single read", nb);
+        result.context = "single_byte_read [read byte]";
+        result.error = true;
+        return result;
     }
-
-    return nb;
+    result.error = false;
+    return result;
 }
 
 /**
@@ -134,27 +149,34 @@ int hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t slave_mem_add
  * @param len the size of the block of data
  * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present or PICO_ERROR_TIMEOUT
  */
-int hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
+i2c_xfer_result_t hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
 {
     int nb;
+    i2c_xfer_result_t result;
     uint8_t cmd_buf[]{slave_mem_addr};
     // i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);
     uint timeout = this->time_out_us_per_byte * 2;
     nb = i2c_write_timeout_us(this->i2c, slave_address, cmd_buf, 1, true, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != 1)
     {
-        probe_i2c_error("write burst read", nb);
+        result.context = "burst_byte_read [write cmd]";
+        result.error = true;
+        return result;
     }
 
     // int nb = i2c_read_blocking(this->i2c, slave_address, dest, len, false);
     timeout = this->time_out_us_per_byte * (len + 2);
     nb = i2c_read_timeout_us(this->i2c, slave_address, dest, len, false, timeout);
+    result.xfer_size = nb;
     if (nb < 0 || nb != len)
     {
-        probe_i2c_error("read burst read", nb);
+        result.context ="burst_byte_read [read data*]";
+        result.error = true;
+        return result;
     }
-
-    return nb;
+    result.error=false;
+    return result;
 }
 
 /**
