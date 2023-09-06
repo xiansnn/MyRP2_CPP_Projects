@@ -45,8 +45,11 @@
 
 // 400 is usual, but often these can be overclocked to improve display response.
 // Tested at 1000 on both 32 and 84 pixel height devices and it worked.
-#define SSD1306_I2C_CLK             400
+#define SSD1306_I2C_CLK             400*1000
 //#define SSD1306_I2C_CLK             1000
+
+#define SSD1306_SDA_GPIO 8
+#define SSD1306_SCL_GPIO 9
 
 
 // commands (see datasheet)
@@ -337,11 +340,11 @@ int main() {
 
     // I2C is "open drain", pull ups to keep signal high when no data is being
     // sent
-    i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
-    gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-    gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+    i2c_init(i2c_default, SSD1306_I2C_CLK);
+    gpio_set_function(SSD1306_SDA_GPIO, GPIO_FUNC_I2C);
+    gpio_set_function(SSD1306_SCL_GPIO, GPIO_FUNC_I2C);
+    gpio_pull_up(SSD1306_SDA_GPIO);
+    gpio_pull_up(SSD1306_SCL_GPIO);
 
     // run through the complete initialization process
     SSD1306_init();
