@@ -31,7 +31,7 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
 {
     this->i2c = cfg.i2c;
     this->time_out_us_per_byte = 8 * 1500000 / cfg.baud_rate; // with 50% margin
-    std::string msg = "demarrage I2C master";
+    std::string msg = "demarrage I2C master\n";
     printf(msg.c_str());
 
     // As suggested by RP2040 data sheet
