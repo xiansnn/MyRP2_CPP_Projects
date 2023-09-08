@@ -61,9 +61,9 @@ hw_I2C_master::hw_I2C_master(config_master_i2c_t cfg)
  * @param len the size of the block of data. Can be 1 for single byte write
  * @return int Number of bytes written, or PICO_ERROR_GENERIC if address not acknowledged, no device present.
  */
-i2c_xfer_result_t hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, uint8_t len)
+i2c_xfer_result_t hw_I2C_master::burst_byte_write(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *src, size_t len)
 {
-    int nb;
+    size_t nb;
     i2c_xfer_result_t result;
     uint8_t write_buf[len + 1] = {slave_mem_addr};
     memcpy(write_buf + 1, src, len);
@@ -149,9 +149,9 @@ i2c_xfer_result_t hw_I2C_master::single_byte_read(uint8_t slave_address, uint8_t
  * @param len the size of the block of data
  * @return int Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present or PICO_ERROR_TIMEOUT
  */
-i2c_xfer_result_t hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, uint8_t len)
+i2c_xfer_result_t hw_I2C_master::burst_byte_read(uint8_t slave_address, uint8_t slave_mem_addr, uint8_t *dest, size_t len)
 {
-    int nb;
+    size_t nb;
     i2c_xfer_result_t result;
     uint8_t cmd_buf[]{slave_mem_addr};
     // i2c_write_blocking(this->i2c, slave_address, cmd_buf, 1, true);

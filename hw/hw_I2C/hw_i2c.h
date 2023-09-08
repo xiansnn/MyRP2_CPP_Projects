@@ -48,10 +48,10 @@ private:
 
 public:
     hw_I2C_master(config_master_i2c_t master_config);
-    i2c_xfer_result_t burst_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t *src, uint8_t len);
+    i2c_xfer_result_t burst_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t *src, size_t len);
     i2c_xfer_result_t single_byte_write(uint8_t slave_address, uint8_t mem_addr, uint8_t mem_value);
     i2c_xfer_result_t single_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest);
-    i2c_xfer_result_t burst_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest, uint8_t len);
+    i2c_xfer_result_t burst_byte_read(uint8_t slave_address, uint8_t mem_addr, uint8_t *dest, size_t len);
     std::set<uint8_t> bus_scan();
     bool device_is_connected(uint8_t slave_address);
     void show_bus_map();

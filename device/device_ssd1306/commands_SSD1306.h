@@ -13,20 +13,12 @@
 #define SSD1306_NUM_PAGES (SSD1306_HEIGHT / SSD1306_PAGE_HEIGHT)
 #define SSD1306_BUF_LEN (SSD1306_NUM_PAGES * SSD1306_WIDTH)
 
-// ---------- I2C configuration ----------
-// I2C address
-#define SSD1306_I2C_ADDR _u(0x3C) // depends on SA0 bit value. SA0=0->address=0x3C, SA0=1->address=0x3D
-//    I2C clock speed
-//    I2C_STANDARD_MODE       100 * 1000          => 100kb/s
-//    I2C_FAST_MODE           400 * 1000          => 400kb/s
-//    I2C_FAST_MODE_PLUS      1000 * 1000         => 1Mb/s
-#define SSD1306_I2C_CLK 400 * 1000 // I2C_FAST_MODE is usual, but often these can be overclocked to improve display response.
-
-// I2C SDA and SCL gpio pin
-#define SSD1306_SDA_GPIO 8
-#define SSD1306_SCL_GPIO 9
 
 // ---------- SSD1306 commands (see datasheet)----------
+//  Continuation bit (Co), D/~C data/command bit
+#define I2C_CMD_FLAG 0x80  // Co = 1, D/~C = 0 => the driver expects a command
+#define I2C_DATA_FLAG 0x40 // Co = 0, D/~C = 1 => followinf bytes are data only
+
 
 // ----- Fundamental Commands -----
 #define SSD1306_SET_CONTRAST _u(0x81) //  Set Contrast Control, command with 1 parameter byte
@@ -133,6 +125,15 @@
 //                    A[4]=1b(RESET) 0x12      Alternative COM pin configuration 
 //                    A[5]=0b(RESET) 0x02      Disable COM Left/Right remap 
 //                    A[5]=1b        0x22      Enable COM Left/Right remap
+// if ((SSD1306_WIDTH == 128) && (SSD1306_HEIGHT == 32))
+//         0x02,
+// elif ((SSD1306_WIDTH == 128) && (SSD1306_HEIGHT == 64))
+//         0x12,
+// else
+//         0x02,
+// endif
+
+
 
 // ----- Timing & Driving Scheme Setting Command -----
 #define SSD1306_SET_DISP_CLK_DIV _u(0xD5) // Set Display Clock Divide Ratio/Oscillator Frequency, command with 1 parameter byte.
