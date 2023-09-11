@@ -153,7 +153,7 @@ void SSD1306_init() {
         SSD1306_HEIGHT - 1,             // Display height - 1
         SSD1306_SET_COM_OUT_DIR | 0x08, // set COM (common) output scan direction. Scan from bottom up, COM[N-1] to COM0
         SSD1306_SET_DISP_OFFSET,        // set display offset
-        0x00,                           // no offset
+        0x00,      //63                     // no offset
         SSD1306_SET_COM_PIN_CFG,        // set COM (common) pins hardware configuration. Board specific magic number. 
                                         // 0x02 Works for 128x32, 0x12 Possibly works for 128x64. Other options 0x22, 0x32
 #if ((SSD1306_WIDTH == 128) && (SSD1306_HEIGHT == 32))
