@@ -260,20 +260,6 @@ void SSD1306::vertical_scroll(bool on, config_scroll_t scroll_data)
     this->send_cmd_list(cmds, count_of(cmds));
 }
 
-// void SSD1306::render(uint8_t *buf)
-// {
-//     // update a portion of the display with a render area
-//     uint8_t cmds[] = {
-//         SSD1306_SET_COL_ADDR,
-//         this->render_area.start_col,
-//         this->render_area.end_col,
-//         SSD1306_SET_PAGE_ADDR,
-//         this->render_area.start_page,
-//         this->render_area.end_page};
-//     this->send_cmd_list(cmds, count_of(cmds));
-//     this->send_buf(buf, this->render_area.buflen);
-// }
-
 void SSD1306::SetPixel(uint8_t *buf, int x, int y, bool on)
 {
     assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
@@ -320,6 +306,7 @@ void SSD1306::DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
         if (e2 >= dy)
         {
             err += dy;
+
             x0 += sx;
         }
         if (e2 <= dx)
