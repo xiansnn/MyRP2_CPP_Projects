@@ -18,8 +18,10 @@ class Framebuffer
 {
 private:
     /* data */
+    uint8_t * buffer;
+    size_t frame_width;
+    size_t frame_height;
 public:
-    Framebuffer();
     Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuffer_format format);
     void fill(Framebuffer_color c);
     void pixel(uint8_t x, uint8_t y, Framebuffer_color c);
