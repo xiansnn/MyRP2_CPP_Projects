@@ -27,7 +27,7 @@ void test_contrast(SSD1306 *display)
     display->fill_GDDRAM(0x00, area);
     area = display->compute_render_area(48, 80, 3, 4);
     display->fill_GDDRAM(0xFF, area);
-    for (size_t i = 0; i < 5; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         display->set_contrast(0);
         sleep_ms(1000);
@@ -81,14 +81,14 @@ void test_blink(SSD1306 *display)
     display->fill_GDDRAM(0x81, area);
     area = display->compute_render_area(64, 96, 2, 5);
     display->fill_GDDRAM(0x7E, area);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 2; i++)
     {
         display->send_cmd(SSD1306_SET_DISPLAY_ON); // Set all pixels on
         sleep_ms(500);
         display->send_cmd(SSD1306_SET_RAM_DISPLAY); // go back to following RAM for pixel state
         sleep_ms(500);
     }
-    sleep_ms(4500);
+    sleep_ms(500);
 };
 void test_scrolling(SSD1306 *display)
 {
@@ -107,7 +107,7 @@ void test_scrolling(SSD1306 *display)
         .time_frame_interval = _25_FRAMES,
         .vertical_scrolling_offset = 1};
     display->horizontal_scroll(true, scroll_data);
-    sleep_ms(5000);
+    sleep_ms(3000);
     display->horizontal_scroll(false, scroll_data);
     sleep_ms(1000);
     display->vertical_scroll(true, scroll_data);
@@ -142,14 +142,12 @@ int main()
     hw_I2C_master master = hw_I2C_master(i2c_cfg);
     SSD1306 display = SSD1306(&master, ssd1306_cfg);
 
-    // printf("hello from SSD1306\n");
-
     while (true)
     {
-        // test_blink(&display);
-        // test_contrast(&display);
-        // test_addressing_mode(&display);
-        // test_scrolling(&display);
+        test_blink(&display);
+        test_contrast(&display);
+        test_addressing_mode(&display);
+        test_scrolling(&display);
         test_drawline(&display);
     }
 
