@@ -1,5 +1,5 @@
 add_library(ssd1306 ssd1306.cpp  )
-target_link_libraries(ssd1306 pico_stdlib hardware_i2c hw_i2c)
+target_link_libraries(ssd1306 pico_stdlib hardware_i2c hw_i2c framebuffer)
 
 add_library(framebuffer framebuffer.cpp)
 target_link_libraries(framebuffer pico_stdlib)

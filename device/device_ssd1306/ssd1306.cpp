@@ -19,22 +19,24 @@ void SSD1306::send_buf(uint8_t buffer[], size_t buffer_size)
     this->i2c_master->burst_byte_write(this->config.i2c_address, I2C_DATA_FLAG, buffer, buffer_size);
 }
 
-SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config)
+SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config, uint8_t buffer[])
+    : Framebuffer(buffer, SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
 {
     this->i2c_master = master;
     this->config = init_config;
     this->init();
 }
 
-render_area_t SSD1306::compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page)
+render_area_t SSD1306::get_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line)
 {
     render_area_t area;
     area.start_col = start_col;
     area.end_col = end_col;
-    area.start_page = start_page;
-    area.end_page = end_page;
-    // this->calc_render_area_buflen();
-    area.buflen = (area.end_col - area.start_col + 1) * (area.end_page - area.start_page + 1);
+    area.start_page = start_line / SSD1306_PAGE_HEIGHT;
+    area.end_page = end_line / SSD1306_PAGE_HEIGHT;
+    area.width = end_col - start_col + 1;
+    area.height = end_line - start_line + 1;
+    area.buflen = (area.width) * (area.end_page - area.start_page + 1);
     return area;
 }
 
@@ -66,23 +68,22 @@ void SSD1306::set_display_ON()
     this->send_cmd(SSD1306_SET_DISPLAY_NORMAL_ON);
 }
 
-void SSD1306::fill_GDDRAM(uint8_t pattern, render_area_t area)
+void SSD1306::fill_pattern_GDDRAM(uint8_t pattern, render_area_t area)
 {
     uint8_t image[SSD1306_BUF_LEN];
-    memset(image, pattern, SSD1306_BUF_LEN);
+    memset(image, pattern, area.buflen);
     this->show_render_area(HORIZONTAL_ADDRESSING_MODE, image, area);
 }
 
-void SSD1306::clear_screen_buffer_and_GDDRAM()
+void SSD1306::clear_buffer_and_GDDRAM()
 {
-    render_area_t full_screen_area = this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_NUM_PAGES - 1);
-    memset(this->screen_buffer, 0x00, SSD1306_BUF_LEN);
-    this->show_render_area(HORIZONTAL_ADDRESSING_MODE, this->screen_buffer, full_screen_area);
+    render_area_t full_screen_area = SSD1306::get_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
+    memset(this->buffer, 0x00, full_screen_area.buflen);
+    this->show_render_area(HORIZONTAL_ADDRESSING_MODE, this->buffer, full_screen_area);
 }
 
 void SSD1306::init()
 {
-    // printf("init_display\n");
     this->set_display_OFF();
     this->init_MUX_ratio(config.mux_ratio_value);
     this->init_display_vertical_shift(config.vertical_offset);
@@ -120,9 +121,6 @@ void SSD1306::show_render_area(const uint8_t addressing_mode, uint8_t *data_buff
     this->send_cmd(addressing_mode);
     if (addressing_mode == PAGE_ADDRESSING_MODE)
     {
-        // this->send_cmd(SSD1306_SET_COL_ADDR);
-        // this->send_cmd(buffer_area.start_col);
-        // this->send_cmd(buffer_area.end_col);
         uint8_t page_start_address = 0xB0 | buffer_area.start_page;
         this->send_cmd(page_start_address);
         uint8_t column_start_LO_address = 0x0F & buffer_area.start_col;
@@ -178,13 +176,9 @@ void SSD1306::init_COM_cfg(bool sequential_COM, bool enable_COM_L_R_remap)
     uint8_t value = 0x02;
     this->send_cmd(SSD1306_SET_COM_PIN_CFG);
     if (!sequential_COM)
-    {
         value = value | 0x10;
-    }
     if (enable_COM_L_R_remap)
-    {
         value = value | 0x20;
-    }
     this->send_cmd(value);
 }
 
@@ -207,9 +201,9 @@ void SSD1306::init_clock_frequency(uint8_t divide_ratio, uint8_t frequency_facto
 void SSD1306::init_charge_pump_enabled(bool enabled)
 {
     this->send_cmd(SSD1306_SET_PRECHARGE);
-    this->send_cmd(0x22); // 0xF1
+    this->send_cmd(0x22);
     this->send_cmd(SSD1306_SET_VCOM_DESEL);
-    this->send_cmd(0x20); // 0x30
+    this->send_cmd(0x20);
     uint8_t value;
     this->send_cmd(SSD1306_SET_CHARGE_PUMP);
     if (enabled)
@@ -221,7 +215,6 @@ void SSD1306::init_charge_pump_enabled(bool enabled)
 
 void SSD1306::horizontal_scroll(bool on, config_scroll_t scroll_data)
 { // configure horizontal scrolling by 1 column
-    // send_cmd(SSD1306_SET_SCROLL_OFF);
     uint8_t cmds[8];
     if (scroll_data.scroll_H_to_right)
         cmds[0] = SSD1306_SET_R_HORIZ_SCROLL;
@@ -242,7 +235,6 @@ void SSD1306::horizontal_scroll(bool on, config_scroll_t scroll_data)
 
 void SSD1306::vertical_scroll(bool on, config_scroll_t scroll_data)
 {
-    // send_cmd(SSD1306_SET_SCROLL_OFF);
     uint8_t cmds[7];
     if (scroll_data.scroll_H_to_right)
         cmds[0] = SSD1306_SET_VERTICAL_R_HORIZ_SCROLL;
@@ -258,63 +250,6 @@ void SSD1306::vertical_scroll(bool on, config_scroll_t scroll_data)
     else
         cmds[6] = SSD1306_SET_SCROLL_OFF;
     this->send_cmd_list(cmds, count_of(cmds));
-}
-
-void SSD1306::SetPixel(uint8_t *buf, int x, int y, bool on)
-{
-    assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
-
-    // The calculation to determine the correct bit to set depends on which address
-    // mode we are in. This code assumes horizontal
-
-    // The video ram on the SSD1306 is split up in to 8 rows, one bit per pixel.
-    // Each row is 128 long by 8 pixels high, each byte vertically arranged, so byte 0 is x=0, y=0->7,
-    // byte 1 is x = 1, y=0->7 etc
-
-    // This code could be optimised, but is like this for clarity. The compiler
-    // should do a half decent job optimising it anyway.
-
-    const int BytesPerRow = SSD1306_WIDTH; // x pixels, 1bpp, but each row is 8 pixel high, so (x / 8) * 8
-
-    int byte_idx = (y / 8) * BytesPerRow + x;
-    uint8_t byte = buf[byte_idx];
-
-    if (on)
-        byte |= 1 << (y % 8);
-    else
-        byte &= ~(1 << (y % 8));
-
-    buf[byte_idx] = byte;
-}
-
-void SSD1306::DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
-{
-    int dx = abs(x1 - x0);
-    int sx = x0 < x1 ? 1 : -1;
-    int dy = -abs(y1 - y0);
-    int sy = y0 < y1 ? 1 : -1;
-    int err = dx + dy;
-    int e2;
-
-    while (true)
-    {
-        SetPixel(buf, x0, y0, on);
-        if (x0 == x1 && y0 == y1)
-            break;
-        e2 = 2 * err;
-
-        if (e2 >= dy)
-        {
-            err += dy;
-
-            x0 += sx;
-        }
-        if (e2 <= dx)
-        {
-            err += dx;
-            y0 += sy;
-        }
-    }
 }
 
 inline int SSD1306::GetFontIndex(uint8_t ch)
