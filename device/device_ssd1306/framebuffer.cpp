@@ -9,8 +9,9 @@ Framebuffer::Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuf
     this->buffer = buffer;
     this->frame_height = height;
     this->frame_width = width; // MONO_VLDB => 1 Byte = 1 column of 8 pixel
-    size_t page_nb = height/BYTE_SIZE;
-    if (height%BYTE_SIZE != 0)page_nb +=1;
+    size_t page_nb = height / BYTE_SIZE;
+    if (height % BYTE_SIZE != 0)
+        page_nb += 1;
     this->buffer_size = width * page_nb;
 }
 
@@ -28,27 +29,21 @@ void Framebuffer::fill(Framebuffer_color c)
 
 void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
 {
-    assert(format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
-    // The calculation to determine the correct bit to set depends on which address
-    // mode we are in. This code assumes horizontal
+    assert(format == Framebuffer_format::MONO_VLSB);                         // works only if MONO_VLSB
+    
+    if (x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height) // avoid drawing outside the framebuffer
+    {
+        const int BytesPerRow = this->frame_width; // x pixels, 1bpp, but each row is 8 pixel high, so (x / 8) * 8
+        int byte_idx = (y / 8) * BytesPerRow + x;
+        uint8_t byte = this->buffer[byte_idx];
 
-    // The video ram on the SSD1306 is split up in to 8 rows, one bit per pixel.
-    // Each row is 128 long by 8 pixels high, each byte vertically arranged, so byte 0 is x=0, y=0->7,
-    // byte 1 is x = 1, y=0->7 etc
+        if (c == Framebuffer_color::white)
+            byte |= 1 << (y % 8);
+        else
+            byte &= ~(1 << (y % 8));
 
-    // This code could be optimised, but is like this for clarity. The compiler
-    // should do a half decent job optimising it anyway.
-    assert(x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height); // avoid drawing outside the framebuffer
-    const int BytesPerRow = this->frame_width;                                   // x pixels, 1bpp, but each row is 8 pixel high, so (x / 8) * 8
-    int byte_idx = (y / 8) * BytesPerRow + x;
-    uint8_t byte = this->buffer[byte_idx];
-
-    if (c == Framebuffer_color::white)
-        byte |= 1 << (y % 8);
-    else
-        byte &= ~(1 << (y % 8));
-
-    this->buffer[byte_idx] = byte;
+        this->buffer[byte_idx] = byte;
+    }
 }
 
 void Framebuffer::hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c)
@@ -115,4 +110,109 @@ void Framebuffer::ellipse(uint8_t x, uint8_t y, uint8_t xr, uint8_t yr, bool fil
 
 void Framebuffer::text(std::string s, uint8_t x, uint8_t y, Framebuffer_color c)
 {
+}
+
+void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)
+/*
+procédure tracerCercle (entier rayon, entier x_centre, entier y_centre)
+    déclarer entier x, y, m ;
+    x ← 0 ;
+    y ← rayon ;             // on se place en haut du cercle
+    m ← 5 - 4*rayon ;       // initialisation
+    Tant que x <= y         // tant qu'on est dans le second octant
+        tracerPixel( x+x_centre, y+y_centre ) ;
+        tracerPixel( y+x_centre, x+y_centre ) ;
+        tracerPixel( -x+x_centre, y+y_centre ) ;
+        tracerPixel( -y+x_centre, x+y_centre ) ;
+        tracerPixel( x+x_centre, -y+y_centre ) ;
+        tracerPixel( y+x_centre, -x+y_centre ) ;
+        tracerPixel( -x+x_centre, -y+y_centre ) ;
+        tracerPixel( -y+x_centre, -x+y_centre ) ;
+        si m > 0 alors	//choix du point F
+            y ← y - 1 ;
+            m ← m - 8*y ;
+        fin si ;
+        x ← x + 1 ;
+        m ← m + 8*x + 4 ;
+    fin tant que ;
+fin de procédure ;
+*/
+{
+    int x, y, m;
+    x = 0;
+    y = radius;
+    m = 5 - 4 * radius;
+    while (x <= y)
+    {
+        if (!fill)
+        {
+            pixel(x_center + x, y_center + y, c);
+            pixel(x_center + y, y_center + x, c);
+            pixel(x_center - x, y_center + y, c);
+            pixel(x_center - y, y_center + x, c);
+            pixel(x_center + x, y_center - y, c);
+            pixel(x_center + y, y_center - x, c);
+            pixel(x_center - x, y_center - y, c);
+            pixel(x_center - y, y_center - x, c);
+        }
+        else
+        {
+            hline(x_center - x, y_center + y, 2 * x + 2, c);
+            hline(x_center - y, y_center + x, 2 * y + 2, c);
+            hline(x_center - y, y_center - x, 2 * y + 2, c);
+            hline(x_center - x, y_center - y, 2 * x + 2, c);
+        }
+
+        if (m > 0)
+        {
+            y -= 1;
+            m -= 8 * y;
+        }
+        x += 1;
+        m += 8 * x + 4;
+    }
+}
+
+void Framebuffer::tracer_octant(int rayon, int x_centre, int y_centre)
+/*
+procédure tracerOctant (entier rayon, entier x_centre, entier y_centre)
+    déclarer entier x, y, m ;
+    x ← 0 ;
+    y ← rayon ;                 // on se place en haut du cercle
+    m ← 5 - 4*rayon ;           // initialisation
+    Tant que x <= y             // tant qu'on est dans le second octant
+        tracerPixel( x+x_centre, y+y_centre ) ;
+        si m > 0 alors      // choix du point F
+            y ← y - 1 ;
+            m ← m-8*y ; // correspond au "d" des explications
+        fin si ;
+        x ← x+1 ;
+        m ← m + 8*x+4 ;
+    fin tant que ;
+fin de procédure ;
+*/
+{
+    int x, y, m;
+    x = 0;
+    y = rayon;
+    m = 5 - 4 * rayon;
+    while (x <= y)
+    {
+        pixel(x + x_centre, y + y_centre);
+        if (m > 0)
+        {
+            y -= 1;
+            m -= 8 * y;
+        }
+        x += 1;
+        m += 8 * x + 4;
+    }
+}
+
+void Framebuffer::clip(uint8_t x, uint8_t y)
+{
+    if (x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height)
+    {
+        /* code */
+    }
 }

@@ -25,6 +25,8 @@ private:
     size_t frame_height;
     size_t buffer_size;
     Framebuffer_format format;
+    void tracer_octant(int rayon, int x_centre, int y_centre);
+    void clip(uint8_t x, uint8_t y);
 public:
     uint8_t * buffer;
 
@@ -37,6 +39,8 @@ public:
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill=false, Framebuffer_color c= Framebuffer_color::white);
     void ellipse(uint8_t x, uint8_t y, uint8_t xr, uint8_t yr, bool fill=false, uint8_t m= 0b1111, Framebuffer_color c= Framebuffer_color::white);
     void text(std::string s, uint8_t x, uint8_t y, Framebuffer_color c= Framebuffer_color::white);
+
+    void circle(int radius, int x_center, int y_center, bool fill=false, Framebuffer_color c= Framebuffer_color::white);
 };
 
 #endif // FRAMEBUFFER_H
