@@ -4,29 +4,32 @@
 #include <string.h>
 #include "raspberry26x32.h"
 #include "ssd1306_font.h"
+#include "framebuffer.h"
 
-config_master_i2c_t i2c_cfg{
+config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
     .sda_pin = 8,
     .scl_pin = 9,
     .baud_rate = I2C_FAST_MODE};
 
-init_config_SSD1306_t ssd1306_cfg{
+init_config_SSD1306_t cfg_ssd1306{
     .i2c_address = 0x3C,
     .vertical_offset = 0,
     .scan_SEG_inverse_direction = true,
     .scan_COM_inverse_direction = true,
     .contrast = 128,
-    .frequency_divider = 2,
+    .frequency_divider = 1,
     .frequency_factor = 0};
 
 void test_contrast(SSD1306 *display)
 {
-    display->clear_screen_buffer_and_GDDRAM();
-    render_area_t area = display->compute_render_area(0, 127, 0, 7);
-    display->fill_GDDRAM(0x00, area);
-    area = display->compute_render_area(48, 80, 3, 4);
-    display->fill_GDDRAM(0xFF, area);
+    display->clear_buffer_and_show_GDDRAM();
+    // render_area_t area = SSD1306::get_render_paged_area(0, 127, 0, 7);
+    render_area_t area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->fill_pattern_and_show_GDDRAM(0x55, area);
+    // area = SSD1306::get_render_paged_area(48, 80, 3, 4);
+    area = SSD1306::get_render_area(32, 96, 16, 32);
+    display->fill_pattern_and_show_GDDRAM(0xFF, area);
     for (size_t i = 0; i < 3; i++)
     {
         display->set_contrast(0);
@@ -43,31 +46,34 @@ void test_addressing_mode(SSD1306 *display)
     uint8_t image[128 * 8]{0x00};
     memset(image, 0xFE, sizeof(image));
     sleep_ms(1000);
-    display->clear_screen_buffer_and_GDDRAM();
+    display->clear_buffer_and_show_GDDRAM();
     render_area_t area;
     // HORIZONTAL_ADDRESSING_MODE
     for (size_t i = 0; i < 4; i++)
     {
         memset(image, 0xAA, sizeof(image));
-        area = display->compute_render_area(10 * i, 90 + 10 * i, i, 2 + i);
+        // area = SSD1306::get_render_paged_area(10 * i, 90 + 10 * i, i, 2 + i);
+        area = SSD1306::get_render_area(10 * i, 90 + 10 * i, 8 * i, 2 + 8 * i);
         display->show_render_area(HORIZONTAL_ADDRESSING_MODE, image, area);
         sleep_ms(1000);
-        display->clear_screen_buffer_and_GDDRAM();
+        display->clear_buffer_and_show_GDDRAM();
     }
     // VERTICAL_ADDRESSING_MODE
     for (size_t i = 0; i < 4; i++)
     {
         memset(image, 0xAA, sizeof(image));
-        area = display->compute_render_area(40 + 10 * i, 50 + 10 * i, i, 4 + i);
+        // area = SSD1306::get_render_paged_area(40 + 10 * i, 50 + 10 * i, i, 4 + i);
+        area = SSD1306::get_render_area(40 + 10 * i, 50 + 10 * i, 8 * i, 30 + 8 * i);
         display->show_render_area(VERTICAL_ADDRESSING_MODE, image, area);
         sleep_ms(1000);
-        display->clear_screen_buffer_and_GDDRAM();
+        display->clear_buffer_and_show_GDDRAM();
     }
     // PAGE_ADDRESSING_MODE
     for (size_t i = 0; i < 8; i++)
     {
         memset(image, 0x55, sizeof(image));
-        area = display->compute_render_area(i * 10, 100 + i * 10, i, i);
+        // area = SSD1306::get_render_paged_area(i * 10, 100 + i * 10, i, i);
+        area = SSD1306::get_render_area(i * 10, 100 + i * 10, 8 * i, 8 * i);
         display->show_render_area(PAGE_ADDRESSING_MODE, image, area); // TODO semble dependre de ce qu'il y a avant
         sleep_ms(1000);
     }
@@ -76,25 +82,30 @@ void test_addressing_mode(SSD1306 *display)
 void test_blink(SSD1306 *display)
 {
     render_area_t area;
-    display->clear_screen_buffer_and_GDDRAM();
-    area = display->compute_render_area(0, 127, 0, 7);
-    display->fill_GDDRAM(0x81, area);
-    area = display->compute_render_area(64, 96, 2, 5);
-    display->fill_GDDRAM(0x7E, area);
+    display->clear_buffer_and_show_GDDRAM();
+    // display->fill(Framebuffer_color::black);
+    // area = SSD1306::get_render_paged_area(0, 127, 0, 7);
+    area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->fill_pattern_and_show_GDDRAM(0x81, area);
+    // area = SSD1306::get_render_paged_area(64, 96, 2, 5);
+    area = SSD1306::get_render_area(64, 96, 15, 40);
+    display->fill_pattern_and_show_GDDRAM(0x7E, area);
     for (int i = 0; i < 2; i++)
     {
-        display->send_cmd(SSD1306_SET_DISPLAY_ON); // Set all pixels on
-        sleep_ms(500);
-        display->send_cmd(SSD1306_SET_RAM_DISPLAY); // go back to following RAM for pixel state
-        sleep_ms(500);
+        // display->send_cmd(SSD1306_SET_DISPLAY_ON); // Set all pixels on
+        display->set_all_pixel_ON();
+        sleep_ms(1000);
+        // display->send_cmd(SSD1306_SET_RAM_DISPLAY); // go back to following RAM for pixel state
+        display->set_display_from_RAM();
+        sleep_ms(1000);
     }
-    sleep_ms(500);
 };
 void test_scrolling(SSD1306 *display)
 {
-    display->clear_screen_buffer_and_GDDRAM();
+    display->clear_buffer_and_show_GDDRAM();
     // render 3 cute little raspberries
-    render_area_t area = display->compute_render_area(0, IMG_WIDTH - 1, 0, (IMG_HEIGHT / SSD1306_PAGE_HEIGHT) - 1);
+    // render_area_t area = SSD1306::get_render_paged_area(0, IMG_WIDTH - 1, 0, (IMG_HEIGHT / SSD1306_PAGE_HEIGHT) - 1);
+    render_area_t area = SSD1306::get_render_area(0, IMG_WIDTH - 1, 0, IMG_HEIGHT - 1);
     uint8_t offset = 5 + IMG_WIDTH; // 5px padding
     for (int i = 0; i < 3; i++)
     {
@@ -114,33 +125,131 @@ void test_scrolling(SSD1306 *display)
     sleep_ms(5000);
     display->vertical_scroll(false, scroll_data);
 };
-void test_drawline(SSD1306 *display)
+void test_fb_line(SSD1306 *display)
 {
-    render_area_t full_screen_area = display->compute_render_area(0,127,0,7);
-    bool pix = true;
+    display->clear_buffer_and_show_GDDRAM();
+    // bool inverse_co = true;
+    Framebuffer_color c = Framebuffer_color::black;
+    render_area_t full_screen_area = SSD1306::get_render_area(0, 127, 0, 63);
+    // render_area_t reduced_screen_area = SSD1306::get_render_paged_area(32, 96, 3, 5);
     for (int i = 0; i < 2; i++)
     {
+        if (c == Framebuffer_color::black)
+            c = Framebuffer_color::white;
+        else
+            c = Framebuffer_color::black;
+
         for (int x = 0; x < SSD1306_WIDTH; x++)
         {
-            display->DrawLine(display->screen_buffer, x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, pix);
-            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->screen_buffer, full_screen_area);
+            display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
         }
 
         for (int y = SSD1306_HEIGHT - 1; y >= 0; y--)
         {
-            display->DrawLine(display->screen_buffer, 0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, pix);
-            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->screen_buffer, full_screen_area);
+            display->line(0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
         }
-        pix = false;
     }
+    sleep_ms(1000);
+    for (int i = 0; i < 2; i++)
+    {
+        for (int x = 0; x < SSD1306_WIDTH; x++)
+        {
+            c = Framebuffer_color::white;
+            display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+            c = Framebuffer_color::black;
+            display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+        }
+
+        for (int y = SSD1306_HEIGHT - 1; y >= 0; y--)
+        {
+            c = Framebuffer_color::white;
+            display->line(0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+            c = Framebuffer_color::black;
+            display->line(0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, c);
+            display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+        }
+    }
+    sleep_ms(1000);
 };
+void test_fb_hline(SSD1306 *display)
+{
+    display->clear_buffer_and_show_GDDRAM();
+    render_area_t full_screen_area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->hline(0, 0, 32); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->hline(0, 15, 64); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->hline(0, 31, 96); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->hline(0, 47, 128); //, Framebuffer_color::white);
+    display->hline(0, 63, 128); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+}
+void test_fb_vline(SSD1306 *display)
+{
+    display->clear_buffer_and_show_GDDRAM();
+    render_area_t full_screen_area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->vline(0, 0, 16); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->vline(15, 0, 32); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->vline(31, 0, 48); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->vline(64, 0, 64);  //, Framebuffer_color::white);
+    display->vline(127, 0, 64); //, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+}
+
+void test_fb_rect(SSD1306 *display)
+{
+    display->clear_buffer_and_show_GDDRAM();
+    render_area_t full_screen_area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->rect(0, 0, 128, 64); //, false, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    display->rect(10, 10, 108, 44, true); //, false, Framebuffer_color::white);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(2000);
+}
+void test_fb_in_fb(SSD1306 *display)
+{
+    display->clear_buffer_and_show_GDDRAM();
+    render_area_t full_screen_area = SSD1306::get_render_area(0, 127, 0, 63);
+    display->rect(0, 0, 128, 64); //, false, Framebuffer_color::white);
+    display->rect(10, 10, 108, 44, true); //, true, Framebuffer_color::black);
+    display->line(5,60,120,5,Framebuffer_color::black);
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, display->buffer, full_screen_area);
+    sleep_ms(1000);
+    render_area_t small_frame_area = SSD1306::get_render_area(20,107,20,44);
+    uint8_t small_frame_buffer[SSD1306_BUF_LEN];
+    Framebuffer small_frame = Framebuffer(small_frame_buffer,small_frame_area.width,small_frame_area.height,Framebuffer_format::MONO_VLSB);
+    small_frame.fill(Framebuffer_color::black);
+    small_frame.line(5,5,80,20); // point coordinates are relative to the local frame
+    display->show_render_area(HORIZONTAL_ADDRESSING_MODE, small_frame.buffer, small_frame_area);
+    sleep_ms(2000);
+
+}
 
 int main()
 {
     stdio_init_all();
     // create I2C bus hw peripheral and display
-    hw_I2C_master master = hw_I2C_master(i2c_cfg);
-    SSD1306 display = SSD1306(&master, ssd1306_cfg);
+    uint8_t screen[SSD1306_BUF_LEN]{0};
+    hw_I2C_master master = hw_I2C_master(cfg_i2c);
+    SSD1306 display = SSD1306(&master, cfg_ssd1306, screen);
 
     while (true)
     {
@@ -148,7 +257,12 @@ int main()
         test_contrast(&display);
         test_addressing_mode(&display);
         test_scrolling(&display);
-        test_drawline(&display);
+
+        test_fb_line(&display);
+        test_fb_hline(&display);
+        test_fb_vline(&display);
+        test_fb_rect(&display);
+        test_fb_in_fb(&display);
     }
 
     return 0;
