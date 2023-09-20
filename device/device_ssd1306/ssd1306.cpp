@@ -72,14 +72,14 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
 {
     uint8_t image[SSD1306_BUF_LEN];
     memset(image, pattern, area.buflen);
-    this->show_render_area(HORIZONTAL_ADDRESSING_MODE, image, area);
+    this->show_render_area( image, area);
 }
 
 void SSD1306::clear_buffer_and_show_GDDRAM()
 {
     render_area_t full_screen_area = SSD1306::get_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     memset(this->buffer, 0x00, full_screen_area.buflen);
-    this->show_render_area(HORIZONTAL_ADDRESSING_MODE, this->buffer, full_screen_area);
+    this->show_render_area( this->buffer, full_screen_area);
 }
 
 void SSD1306::init()
@@ -114,7 +114,7 @@ void SSD1306::init_MUX_ratio(uint8_t value)
     this->send_cmd(value - 1);
 }
 
-void SSD1306::show_render_area(const uint8_t addressing_mode, uint8_t *data_buffer, const render_area_t buffer_area)
+void SSD1306::show_render_area( uint8_t *data_buffer, const render_area_t buffer_area,const uint8_t addressing_mode)
 {
     assert((addressing_mode >= 0) & (addressing_mode <= 2));
     this->send_cmd(SSD1306_SET_MEM_MODE);
