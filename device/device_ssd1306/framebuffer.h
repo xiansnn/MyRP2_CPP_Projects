@@ -25,8 +25,7 @@ private:
     size_t frame_height;
     size_t buffer_size;
     Framebuffer_format format;
-    void tracer_octant(int rayon, int x_centre, int y_centre);
-    void clip(uint8_t x, uint8_t y);
+
 public:
     uint8_t * buffer;
 

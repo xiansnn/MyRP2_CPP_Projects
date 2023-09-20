@@ -114,6 +114,8 @@ void Framebuffer::text(std::string s, uint8_t x, uint8_t y, Framebuffer_color c)
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)
 /*
+https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_d%27arc_de_cercle_de_Bresenham
+https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 procédure tracerCercle (entier rayon, entier x_centre, entier y_centre)
     déclarer entier x, y, m ;
     x ← 0 ;
@@ -173,46 +175,3 @@ fin de procédure ;
     }
 }
 
-void Framebuffer::tracer_octant(int rayon, int x_centre, int y_centre)
-/*
-procédure tracerOctant (entier rayon, entier x_centre, entier y_centre)
-    déclarer entier x, y, m ;
-    x ← 0 ;
-    y ← rayon ;                 // on se place en haut du cercle
-    m ← 5 - 4*rayon ;           // initialisation
-    Tant que x <= y             // tant qu'on est dans le second octant
-        tracerPixel( x+x_centre, y+y_centre ) ;
-        si m > 0 alors      // choix du point F
-            y ← y - 1 ;
-            m ← m-8*y ; // correspond au "d" des explications
-        fin si ;
-        x ← x+1 ;
-        m ← m + 8*x+4 ;
-    fin tant que ;
-fin de procédure ;
-*/
-{
-    int x, y, m;
-    x = 0;
-    y = rayon;
-    m = 5 - 4 * rayon;
-    while (x <= y)
-    {
-        pixel(x + x_centre, y + y_centre);
-        if (m > 0)
-        {
-            y -= 1;
-            m -= 8 * y;
-        }
-        x += 1;
-        m += 8 * x + 4;
-    }
-}
-
-void Framebuffer::clip(uint8_t x, uint8_t y)
-{
-    if (x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height)
-    {
-        /* code */
-    }
-}
