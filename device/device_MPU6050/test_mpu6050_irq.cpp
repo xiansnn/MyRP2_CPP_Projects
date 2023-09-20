@@ -10,7 +10,7 @@ Probe pr_D1 = Probe(1);
 
 #define MPU_INT 22 // gpio connnected to MPU INT pin
 
-config_master_i2c_t i2c_cfg{
+config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
     .sda_pin = 8,
     .scl_pin = 9,
@@ -21,7 +21,7 @@ config_MPU6050_t mpu_cfg{
     .DLPF_BW = 5};
 
 // create I2C bus hw peripheral and MPU
-hw_I2C_master master = hw_I2C_master(i2c_cfg);
+hw_I2C_master master = hw_I2C_master(cfg_i2c);
 MPU6050 mpu = MPU6050(&master, mpu_cfg);
 
 bool data_ready = false;

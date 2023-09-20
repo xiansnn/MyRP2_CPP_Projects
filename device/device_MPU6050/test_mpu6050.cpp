@@ -8,7 +8,7 @@
 Probe pr_D4 = Probe(4);
 Probe pr_D5 = Probe(5);
 
-config_master_i2c_t i2c_cfg{
+config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
     .sda_pin = 8,
     .scl_pin = 9,
@@ -29,7 +29,7 @@ void print_measures(MPUData_t measures)
 int main()
 {
     stdio_init_all();
-    hw_I2C_master master = hw_I2C_master(i2c_cfg);
+    hw_I2C_master master = hw_I2C_master(cfg_i2c);
     MPU6050 mpu = MPU6050(&master, mpu_cfg);
     float t = mpu.get_MPU_temperature();
     printf("temperature : %.2f\n", t);
