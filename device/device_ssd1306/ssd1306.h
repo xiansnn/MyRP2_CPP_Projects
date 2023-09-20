@@ -84,8 +84,8 @@ public:
     // static render_area_t get_render_paged_area(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
     static render_area_t get_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
     void show_render_area(uint8_t addressing_mode, uint8_t *data_buffer, render_area_t buffer_area);
-    void fill_pattern_GDDRAM(uint8_t pattern, render_area_t area);
-    void clear_buffer_and_GDDRAM();
+    void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
+    void clear_buffer_and_show_GDDRAM();
 
     static inline int GetFontIndex(uint8_t ch);
     static void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);

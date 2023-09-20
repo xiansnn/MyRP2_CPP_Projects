@@ -68,14 +68,14 @@ void SSD1306::set_display_ON()
     this->send_cmd(SSD1306_SET_DISPLAY_NORMAL_ON);
 }
 
-void SSD1306::fill_pattern_GDDRAM(uint8_t pattern, render_area_t area)
+void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
 {
     uint8_t image[SSD1306_BUF_LEN];
     memset(image, pattern, area.buflen);
     this->show_render_area(HORIZONTAL_ADDRESSING_MODE, image, area);
 }
 
-void SSD1306::clear_buffer_and_GDDRAM()
+void SSD1306::clear_buffer_and_show_GDDRAM()
 {
     render_area_t full_screen_area = SSD1306::get_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     memset(this->buffer, 0x00, full_screen_area.buflen);
