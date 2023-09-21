@@ -29,8 +29,8 @@ void Framebuffer::fill(Framebuffer_color c)
 
 void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
 {
-    assert(format == Framebuffer_format::MONO_VLSB);                         // works only if MONO_VLSB
-    
+    assert(format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
+
     if (x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height) // avoid drawing outside the framebuffer
     {
         const int BytesPerRow = this->frame_width; // x pixels, 1bpp, but each row is 8 pixel high, so (x / 8) * 8
@@ -104,8 +104,49 @@ void Framebuffer::rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill, Fram
     }
 }
 
-void Framebuffer::ellipse(uint8_t x, uint8_t y, uint8_t xr, uint8_t yr, bool fill, uint8_t m, Framebuffer_color c)
+void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c)
 {
+    int x, y, m;
+    x = 0;
+    y = y_radius;
+    int _xr2 = x_radius * x_radius;
+    int _yr2 = y_radius * y_radius;
+
+    m = 4 * _yr2 - 4 * _xr2 * y_radius + _xr2;
+
+    while (y >= 0)
+    {
+        if (!fill)
+        {
+            pixel(x_center + x, y_center + y, c);
+            // pixel(x_center + y, y_center + x, c);
+            pixel(x_center - x, y_center + y, c);
+            // pixel(x_center - y, y_center + x, c);
+            pixel(x_center + x, y_center - y, c);
+            // pixel(x_center + y, y_center - x, c);
+            pixel(x_center - x, y_center - y, c);
+            // pixel(x_center - y, y_center - x, c);
+        }
+        else
+        {
+            hline(x_center - x, y_center + y, 2 * x + 2, c);
+            hline(x_center - y, y_center + x, 2 * y + 2, c);
+            hline(x_center - y, y_center - x, 2 * y + 2, c);
+            hline(x_center - x, y_center - y, 2 * x + 2, c);
+        }
+
+        if (m > 0)
+        {
+            x += 1;
+            y -= 1;
+            m += 3 * _xr2 - 4 * _xr2 * y;
+        }
+        else
+        {
+            x += 1;
+            m += 4 * _xr2 * y - _xr2;
+        }
+    }
 }
 
 void Framebuffer::text(std::string s, uint8_t x, uint8_t y, Framebuffer_color c)
@@ -164,7 +205,6 @@ fin de procédure ;
             hline(x_center - y, y_center - x, 2 * y + 2, c);
             hline(x_center - x, y_center - y, 2 * x + 2, c);
         }
-
         if (m > 0)
         {
             y -= 1;
@@ -174,4 +214,3 @@ fin de procédure ;
         m += 8 * x + 4;
     }
 }
-
