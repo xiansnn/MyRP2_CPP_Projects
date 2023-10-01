@@ -1,5 +1,8 @@
 #include "framebuffer.h"
 #include <string.h>
+#include <cstring>
+#include "ssd1306_font.h"
+
 #define BYTE_SIZE 8
 
 Framebuffer::Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuffer_format format)
@@ -149,8 +152,65 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
     }
 }
 
-void Framebuffer::text(std::string s, uint8_t x, uint8_t y, Framebuffer_color c)
+inline int Framebuffer::get_font_index(uint8_t ch)
 {
+    if (ch >= 'A' && ch <= 'Z')
+    {
+        return ch - 'A' + 1;
+    }
+    else if (ch >= '0' && ch <= '9')
+    {
+        return ch - '0' + 27;
+    }
+    else
+        return 0; // Not got that char so space.
+}
+unsigned char reverseBits(unsigned char c)
+{
+    unsigned char result = 0;
+    for (int shift = 0; shift < BYTE_SIZE; shift++)
+    {
+        if (c & (0x01 << shift))
+        {
+            result |= (0x80 >> shift);
+        }
+    }
+    return result;
+}
+
+void Framebuffer::write_char(int16_t x, int16_t y, uint8_t ch)
+{
+    if (x > this->frame_width - 8 || y > this->frame_height - 8)
+        return;
+    y = y / 8; // For the moment, only write on Y row boundaries (every 8 vertical pixels)
+
+    ch = toupper(ch);
+    int idx = get_font_index(ch);
+    int fb_idx = y * 128 + x;
+
+    for (int i = 0; i < 8; i++)
+    {
+        // buf[fb_idx++] = reversed[idx * 8 + i];
+        this->buffer[fb_idx++] = reverseBits(font[idx * 8 + i]);
+    }
+}
+
+void Framebuffer::write_string(int16_t x, int16_t y, const char *txt)
+{
+    // Cull out any string off the screen
+    if (x > this->frame_width - 8 || y > this->frame_height - 8)
+        return;
+
+    while (*txt)
+    {
+        this->write_char(x, y, *txt++);
+        x += 8;
+    }
+}
+void Framebuffer::text(std::string str, uint16_t x, uint16_t y, Framebuffer_color c)
+{
+    const char *txt = str.c_str();
+    this->write_string(x, y, txt);
 }
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)

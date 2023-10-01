@@ -1,5 +1,6 @@
 #include "ssd1306.h"
 #include <string.h>
+#include "ssd1306_font.h"
 
 void SSD1306::send_cmd(uint8_t cmd)
 {
@@ -72,14 +73,14 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
 {
     uint8_t image[SSD1306_BUF_LEN];
     memset(image, pattern, area.buflen);
-    this->show_render_area( image, area);
+    this->show_render_area(image, area);
 }
 
 void SSD1306::clear_buffer_and_show_GDDRAM()
 {
     render_area_t full_screen_area = SSD1306::get_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     memset(this->buffer, 0x00, full_screen_area.buflen);
-    this->show_render_area( this->buffer, full_screen_area);
+    this->show_render_area(this->buffer, full_screen_area);
 }
 
 void SSD1306::init()
@@ -114,7 +115,7 @@ void SSD1306::init_MUX_ratio(uint8_t value)
     this->send_cmd(value - 1);
 }
 
-void SSD1306::show_render_area( uint8_t *data_buffer, const render_area_t buffer_area,const uint8_t addressing_mode)
+void SSD1306::show_render_area(uint8_t *data_buffer, const render_area_t buffer_area, const uint8_t addressing_mode)
 {
     assert((addressing_mode >= 0) & (addressing_mode <= 2));
     this->send_cmd(SSD1306_SET_MEM_MODE);
@@ -252,15 +253,64 @@ void SSD1306::vertical_scroll(bool on, config_scroll_t scroll_data)
     this->send_cmd_list(cmds, count_of(cmds));
 }
 
-inline int SSD1306::GetFontIndex(uint8_t ch)
-{
-    return 0;
-}
+// inline int SSD1306::GetFontIndex(uint8_t ch)
+// {
+//     if (ch >= 'A' && ch <= 'Z')
+//     {
+//         return ch - 'A' + 1;
+//     }
+//     else if (ch >= '0' && ch <= '9')
+//     {
+//         return ch - '0' + 27;
+//     }
+//     else
+//         return 0; // Not got that char so space.
+// }
+static uint8_t reversed[sizeof(font)] = {0};
 
-void SSD1306::WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
+static uint8_t reverse(uint8_t b)
 {
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
 }
+static void FillReversedCache()
+{
+    // calculate and cache a MONO_VLSB version of fhe font, because it's defined MONO_VMSB (upside down)
+    for (size_t i = 0; i < sizeof(font); i++)
+        reversed[i] = reverse(font[i]);
+}
+// void SSD1306::WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
+// {
+//     if (reversed[0] == 0)
+//         FillReversedCache();
 
-void SSD1306::WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
-{
-}
+//     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
+//         return;
+
+//     // For the moment, only write on Y row boundaries (every 8 vertical pixels)
+//     y = y / 8;
+
+//     ch = toupper(ch);
+//     int idx = GetFontIndex(ch);
+//     int fb_idx = y * 128 + x;
+
+//     for (int i = 0; i < 8; i++)
+//     {
+//         buf[fb_idx++] = reversed[idx * 8 + i];
+//     }
+// }
+
+// void SSD1306::WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
+// {
+//     // Cull out any string off the screen
+//     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
+//         return;
+
+//     while (*str)
+//     {
+//         WriteChar(buf, x, y, *str++);
+//         x += 8;
+//     }
+// }

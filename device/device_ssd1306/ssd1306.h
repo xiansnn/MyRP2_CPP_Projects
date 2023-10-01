@@ -87,9 +87,9 @@ public:
     void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
     void clear_buffer_and_show_GDDRAM();
 
-    static inline int GetFontIndex(uint8_t ch);
-    static void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
-    static void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str);
+    // static inline int GetFontIndex(uint8_t ch);
+    // static void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
+    // static void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str);
 
     void set_display_from_RAM();
     void set_all_pixel_ON();
