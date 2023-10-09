@@ -28,7 +28,7 @@ SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config, uint8
     this->init();
 }
 
-render_area_t SSD1306::get_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line)
+render_area_t SSD1306::compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line)
 {
     render_area_t area;
     area.start_col = start_col;
@@ -78,7 +78,7 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
 
 void SSD1306::clear_buffer_and_show_GDDRAM()
 {
-    render_area_t full_screen_area = SSD1306::get_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
+    render_area_t full_screen_area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     memset(this->buffer, 0x00, full_screen_area.buflen);
     this->show_render_area(this->buffer, full_screen_area);
 }

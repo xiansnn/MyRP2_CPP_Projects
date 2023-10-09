@@ -49,6 +49,44 @@ void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
     }
 }
 
+void Framebuffer::setPixel(int16_t x, int16_t y, WriteMode mode)
+{
+    // return if position out of bounds
+    if ((x < 0) || (x >= this->frame_width) || (y < 0) || (y >= this->frame_height))
+        return;
+
+    // byte to be used for buffer operation
+    uint8_t byte;
+
+    byte = 1 << (y & 7);
+    // display with 32 px height requires doubling of set bits, reason to this is explained in readme
+    // this shifts 1 to byte based on y coordinate
+    // remember that buffer is a one dimension array, so we have to calculate offset from coordinates
+    // if (size == Size::W128xH32)
+    // {
+    //     y = (y << 1) + 1;
+    //     byte = 1 << (y & 7);
+    //     char byte_offset = byte >> 1;
+    //     byte = byte | byte_offset;
+    // }
+    // else
+    // {
+    // }
+
+    // check the write mode and manipulate the frame buffer
+    if (mode == WriteMode::ADD)
+    {
+        this->byteOR(x + (y / 8) * this->frame_width, byte);
+    }
+    else if (mode == WriteMode::SUBTRACT)
+    {
+        this->byteAND(x + (y / 8) * this->frame_width, ~byte);
+    }
+    else if (mode == WriteMode::INVERT)
+    {
+        this->byteXOR(x + (y / 8) * this->frame_width, byte);
+    }
+}
 void Framebuffer::hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c)
 {
     for (size_t i = 0; i < w; i++)
@@ -76,11 +114,9 @@ void Framebuffer::line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, Framebuff
         if (x0 == x1 && y0 == y1)
             break;
         e2 = 2 * err;
-
         if (e2 >= dy)
         {
             err += dy;
-
             x0 += sx;
         }
         if (e2 <= dx)
@@ -107,6 +143,14 @@ void Framebuffer::rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill, Fram
     }
 }
 
+/// @brief doesn't work
+/// @param x_center
+/// @param y_center
+/// @param x_radius
+/// @param y_radius
+/// @param fill
+/// @param quadrant
+/// @param c
 void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c)
 {
     int x, y, m;
@@ -122,13 +166,9 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
         if (!fill)
         {
             pixel(x_center + x, y_center + y, c);
-            // pixel(x_center + y, y_center + x, c);
             pixel(x_center - x, y_center + y, c);
-            // pixel(x_center - y, y_center + x, c);
             pixel(x_center + x, y_center - y, c);
-            // pixel(x_center + y, y_center - x, c);
             pixel(x_center - x, y_center - y, c);
-            // pixel(x_center - y, y_center - x, c);
         }
         else
         {
@@ -207,10 +247,97 @@ void Framebuffer::write_string(int16_t x, int16_t y, const char *txt)
         x += 8;
     }
 }
+void Framebuffer::byteOR(int byte_idx, uint8_t byte)
+{
+    // return if index outside 0 - buffer length - 1
+    if (byte_idx > (this->buffer_size - 1))
+        return;
+    this->buffer[byte_idx] |= byte;
+}
+void Framebuffer::byteAND(int byte_idx, uint8_t byte)
+{
+    // return if index outside 0 - buffer length - 1
+    if (byte_idx > (this->buffer_size - 1))
+        return;
+    this->buffer[byte_idx] &= byte;
+}
+void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
+{
+    // return if index outside 0 - buffer length - 1
+    if (byte_idx > (this->buffer_size - 1))
+        return;
+    this->buffer[byte_idx] ^= byte;
+}
+
 void Framebuffer::text(std::string str, uint16_t x, uint16_t y, Framebuffer_color c)
 {
     const char *txt = str.c_str();
     this->write_string(x, y, txt);
+}
+
+void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
+                           WriteMode mode, Rotation rotation)
+{
+    if (!font || c < 32)
+        return;
+
+    uint8_t font_width = font[0];
+    uint8_t font_height = font[1];
+
+    uint16_t seek = (c - 32) * (font_width * font_height) / 8 + 2;
+
+    uint8_t b_seek = 0;
+
+    for (uint8_t x = 0; x < font_width; x++)
+    {
+        for (uint8_t y = 0; y < font_height; y++)
+        {
+            if (font[seek] >> b_seek & 0b00000001)
+            {
+                switch (rotation)
+                {
+                case Rotation::deg0:
+                    // this->setPixel(x + anchor_x, y + anchor_y, mode);
+                    this->pixel(x + anchor_x, y + anchor_y);
+                    break;
+                case Rotation::deg90:
+                    // this->setPixel(-y + anchor_x + font_height, x + anchor_y, mode);
+                    this->pixel(-y + anchor_x + font_height, x + anchor_y);
+                    break;
+                }
+            }
+            b_seek++;
+            if (b_seek == 8)
+            {
+                b_seek = 0;
+                seek++;
+            }
+        }
+    }
+}
+
+void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode , Rotation rotation)
+{
+    if (!font || !text)
+        return;
+
+    uint8_t font_width = font[0];
+
+    uint16_t n = 0;
+    while (text[n] != '\0')
+    {
+        switch (rotation)
+        {
+        case Rotation::deg0:
+            drawChar( font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
+            break;
+        case Rotation::deg90:
+            drawChar( font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
+            break;
+        }
+
+        n++;
+    }
 }
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)

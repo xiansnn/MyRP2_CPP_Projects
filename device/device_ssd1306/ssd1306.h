@@ -82,7 +82,7 @@ public:
     void set_contrast(uint8_t value);
 
     // static render_area_t get_render_paged_area(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
-    static render_area_t get_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
+    static render_area_t compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
     void show_render_area(uint8_t *data_buffer, render_area_t buffer_area, uint8_t addressing_mode=HORIZONTAL_ADDRESSING_MODE);
     void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
     void clear_buffer_and_show_GDDRAM();
