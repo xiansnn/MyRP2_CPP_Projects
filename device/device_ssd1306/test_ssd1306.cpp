@@ -220,8 +220,7 @@ void test_fb_in_fb(SSD1306 *display)
     display->show_render_area(display->buffer, full_screen_area);
     sleep_ms(1000);
     render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 20, 44);
-    uint8_t small_frame_buffer[SSD1306_BUF_LEN];
-    Framebuffer small_frame = Framebuffer(small_frame_buffer, small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
+    Framebuffer small_frame = Framebuffer(small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
     small_frame.fill(Framebuffer_color::black);
     small_frame.line(5, 5, 80, 20); // point coordinates are relative to the local frame
     small_frame.circle(8, 44, 12);
@@ -252,16 +251,14 @@ void test_text(SSD1306 *display)
     display->show_render_area(display->buffer, full_screen_area);
     */
     render_area_t title_area = SSD1306::compute_render_area(0, 63, 40, 63);
-    uint8_t * title_buffer = new uint8_t[title_area.buflen];
-    Framebuffer title = Framebuffer(title_buffer, title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
+    Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
     title.text(font_8x8, "ROLL:", 0, 0);
     title.text(font_8x8, "PITCH:", 0, 16);
     display->show_render_area(title.buffer, title_area);
     sleep_ms(500);
     // draw graph
     render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 0, 39);
-    uint8_t *small_frame_buffer = new uint8_t[small_frame_area.buflen];
-    Framebuffer small_frame = Framebuffer(small_frame_buffer, small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
+    Framebuffer small_frame = Framebuffer(small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
     small_frame.fill(Framebuffer_color::black);
     small_frame.rect(0, 0, 107 - 20 + 1, 63 - 32 + 1); // point coordinates are relative to the local frame
     small_frame.line(5, 5, 80, 20);                    // point coordinates are relative to the local frame
@@ -269,36 +266,32 @@ void test_text(SSD1306 *display)
     display->show_render_area(small_frame.buffer, small_frame_area);
     sleep_ms(500);
     // draw values
-    render_area_t values_area = SSD1306::compute_render_area(64,127,40,63);
-    uint8_t values_buffer[256]{0};
-    Framebuffer values = Framebuffer(values_buffer,values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
+    render_area_t values_area = SSD1306::compute_render_area(64, 127, 40, 63);
+    Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
 
-    delete[] title_buffer;
-    delete[] small_frame_buffer;
-
+    sleep_ms(1000);
 }
 
 int main()
 {
     stdio_init_all();
     // create I2C bus hw peripheral and display
-    uint8_t screen_buffer[SSD1306_BUF_LEN]{0};
     hw_I2C_master master = hw_I2C_master(cfg_i2c);
-    SSD1306 display = SSD1306(&master, cfg_ssd1306, screen_buffer);
+    SSD1306 display = SSD1306(&master, cfg_ssd1306);
 
     while (true)
     {
-        // test_blink(&display);
-        // test_contrast(&display);
-        // test_addressing_mode(&display);
-        // test_scrolling(&display);
+        test_blink(&display);
+        test_contrast(&display);
+        test_addressing_mode(&display);
+        test_scrolling(&display);
 
-        // test_fb_line(&display);
-        // test_fb_hline(&display);
-        // test_fb_vline(&display);
-        // test_fb_rect(&display);
-        // test_fb_in_fb(&display);
-        // test_fb_circle(&display);
+        test_fb_line(&display);
+        test_fb_hline(&display);
+        test_fb_vline(&display);
+        test_fb_rect(&display);
+        test_fb_in_fb(&display);
+        test_fb_circle(&display);
         test_text(&display);
     }
 

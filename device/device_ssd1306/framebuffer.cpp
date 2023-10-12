@@ -4,18 +4,25 @@
 
 #define BYTE_SIZE 8
 
-Framebuffer::Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuffer_format format)
+Framebuffer::Framebuffer(size_t width, size_t height, Framebuffer_format format)
 {
     assert(format == Framebuffer_format::MONO_VLSB); // works only for MONO_VLSB devices
     this->format = format;
-    this->buffer = buffer;
     this->frame_height = height;
     this->frame_width = width; // MONO_VLDB => 1 Byte = 1 column of 8 pixel
     size_t page_nb = height / BYTE_SIZE;
     if (height % BYTE_SIZE != 0)
         page_nb += 1;
     this->buffer_size = width * page_nb;
+    this->buffer = new uint8_t[this->buffer_size];
+    // printf("create frame buffer: %d,%d,%d\n",this->frame_width,this->frame_height,this->buffer_size);
     clear_buffer();
+}
+
+Framebuffer::~Framebuffer()
+{
+    delete[] this->buffer;
+    // printf("del frame buffer: %d,%d,%d\n",this->frame_width,this->frame_height,this->buffer_size);
 }
 
 void Framebuffer::fill(Framebuffer_color c)
@@ -110,7 +117,6 @@ void Framebuffer::rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill, Fram
     }
 }
 
-
 void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c)
 {
     int x, y, m;
@@ -173,7 +179,6 @@ void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
         return;
     this->buffer[byte_idx] ^= byte;
 }
-
 
 void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
                            WriteMode mode, Rotation rotation)

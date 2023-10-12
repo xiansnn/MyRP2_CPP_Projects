@@ -87,11 +87,11 @@ public:
     uint8_t *buffer;
 
     /// @brief
-    /// @param buffer
     /// @param width
     /// @param height
     /// @param format
-    Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuffer_format format);
+    Framebuffer(size_t width, size_t height, Framebuffer_format format);
+    ~Framebuffer();
     /// @brief
     /// @param c
     void fill(Framebuffer_color c);
