@@ -99,7 +99,8 @@ public:
 
     void setPixel(int16_t x, int16_t y, WriteMode mode);
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation = Rotation::deg0);
-    void drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    // void drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    void drawText(const unsigned char *font, std::string s, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
 };
 
 #endif // FRAMEBUFFER_H

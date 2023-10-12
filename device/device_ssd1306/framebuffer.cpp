@@ -322,28 +322,53 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
-{
-    if (!font || !text)
-        return;
+// void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
+// {
+//     if (!font || !text)
+//         return;
 
+//     uint8_t font_width = font[0];
+
+//     uint16_t n = 0;
+//     while (text[n] != '\0')
+//     {
+//         switch (rotation)
+//         {
+//         case Rotation::deg0:
+//             drawChar(font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
+//             break;
+//         case Rotation::deg90:
+//             drawChar(font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
+//             break;
+//         }
+
+//         n++;
+//     }
+// }
+
+void Framebuffer::drawText(const unsigned char *font, std::string s, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
+{
     uint8_t font_width = font[0];
 
+    char *cstr = new char[s.length() + 1];
+    std::strcpy(cstr, s.c_str());
+
     uint16_t n = 0;
-    while (text[n] != '\0')
+    while (cstr[n] != '\0')
     {
         switch (rotation)
         {
         case Rotation::deg0:
-            drawChar(font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
+            drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
             break;
         case Rotation::deg90:
-            drawChar(font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
+            drawChar(font, cstr[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
             break;
         }
 
         n++;
     }
+    delete[] cstr;
 }
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)
