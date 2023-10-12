@@ -292,20 +292,29 @@ void test_text(SSD1306 *display)
 }
 void test_text2(SSD1306 *display)
 {
-    // draw text directly on display framebuffer
     display->clear_buffer_and_show_GDDRAM();
+    /*
+    // draw text directly on display framebuffer
     render_area_t full_screen_area = SSD1306::compute_render_area(0, 127, 0, 63);
     display->drawText(font_8x8, "ROLL:", 0, 0);
     display->drawText(font_8x8, "PITCH:", 0, 16);
     display->show_render_area(display->buffer, full_screen_area);
+    */
+    render_area_t title_area = SSD1306::compute_render_area(0, 63, 0, 31);
+    uint8_t title_buffer [0x100];
+    Framebuffer title = Framebuffer(title_buffer,64,32,Framebuffer_format::MONO_VLSB);
+    title.fill(Framebuffer_color::black);
+    title.drawText(font_8x8, "ROLL:", 0, 0);
+    title.drawText(font_8x8, "PITCH:", 0, 16);
+    display->show_render_area(title.buffer, title_area);
     sleep_ms(500);
     // draw graph
     render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 32, 63);
     uint8_t small_frame_buffer[SSD1306_BUF_LEN];
     Framebuffer small_frame = Framebuffer(small_frame_buffer, small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
     small_frame.fill(Framebuffer_color::black);
-    small_frame.rect(0,0,107-20+1,63-32+1); // point coordinates are relative to the local frame
-    small_frame.line(5, 5, 80, 20); // point coordinates are relative to the local frame
+    small_frame.rect(0, 0, 107 - 20 + 1, 63 - 32 + 1); // point coordinates are relative to the local frame
+    small_frame.line(5, 5, 80, 20);                    // point coordinates are relative to the local frame
     small_frame.circle(14, 44, 15);
     display->show_render_area(small_frame.buffer, small_frame_area);
     sleep_ms(1000);

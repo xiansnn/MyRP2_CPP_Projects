@@ -30,6 +30,12 @@ void Framebuffer::fill(Framebuffer_color c)
     memset(this->buffer, pattern, this->buffer_size);
 }
 
+void Framebuffer::clear_buffer()
+{
+    assert(this->format == Framebuffer_format::MONO_VLSB);
+    memset(this->buffer, 0x00, this->buffer_size);
+}
+
 void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
 {
     assert(format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
@@ -316,7 +322,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode , Rotation rotation)
+void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
 {
     if (!font || !text)
         return;
@@ -329,10 +335,10 @@ void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor
         switch (rotation)
         {
         case Rotation::deg0:
-            drawChar( font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
+            drawChar(font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
             break;
         case Rotation::deg90:
-            drawChar( font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
+            drawChar(font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
             break;
         }
 

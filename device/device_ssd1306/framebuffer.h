@@ -87,6 +87,7 @@ public:
     /// @brief
     /// @param c
     void fill(Framebuffer_color c);
+    void clear_buffer();
     void pixel(uint8_t x, uint8_t y, Framebuffer_color c = Framebuffer_color::white);
     void hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c = Framebuffer_color::white);
     void vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c = Framebuffer_color::white);
