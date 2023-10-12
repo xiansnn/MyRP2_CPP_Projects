@@ -1,7 +1,7 @@
 #include "framebuffer.h"
 #include <string.h>
 #include <cstring>
-#include "ssd1306_font.h"
+// #include "ssd1306_font.h"
 
 #define BYTE_SIZE 8
 
@@ -21,7 +21,6 @@ Framebuffer::Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuf
 void Framebuffer::fill(Framebuffer_color c)
 {
     assert(this->format == Framebuffer_format::MONO_VLSB);
-    // uint8_t image[SSD1306_BUF_LEN];
     int pattern;
     if (c == Framebuffer_color::black)
         pattern = 0x00;
@@ -55,44 +54,6 @@ void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
     }
 }
 
-void Framebuffer::setPixel(int16_t x, int16_t y, WriteMode mode)
-{
-    // return if position out of bounds
-    if ((x < 0) || (x >= this->frame_width) || (y < 0) || (y >= this->frame_height))
-        return;
-
-    // byte to be used for buffer operation
-    uint8_t byte;
-
-    byte = 1 << (y & 7);
-    // display with 32 px height requires doubling of set bits, reason to this is explained in readme
-    // this shifts 1 to byte based on y coordinate
-    // remember that buffer is a one dimension array, so we have to calculate offset from coordinates
-    // if (size == Size::W128xH32)
-    // {
-    //     y = (y << 1) + 1;
-    //     byte = 1 << (y & 7);
-    //     char byte_offset = byte >> 1;
-    //     byte = byte | byte_offset;
-    // }
-    // else
-    // {
-    // }
-
-    // check the write mode and manipulate the frame buffer
-    if (mode == WriteMode::ADD)
-    {
-        this->byteOR(x + (y / 8) * this->frame_width, byte);
-    }
-    else if (mode == WriteMode::SUBTRACT)
-    {
-        this->byteAND(x + (y / 8) * this->frame_width, ~byte);
-    }
-    else if (mode == WriteMode::INVERT)
-    {
-        this->byteXOR(x + (y / 8) * this->frame_width, byte);
-    }
-}
 void Framebuffer::hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c)
 {
     for (size_t i = 0; i < w; i++)
@@ -149,6 +110,7 @@ void Framebuffer::rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill, Fram
     }
 }
 
+
 /// @brief doesn't work
 /// @param x_center
 /// @param y_center
@@ -198,61 +160,6 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
     }
 }
 
-inline int Framebuffer::get_font_index(uint8_t ch)
-{
-    if (ch >= 'A' && ch <= 'Z')
-    {
-        return ch - 'A' + 1;
-    }
-    else if (ch >= '0' && ch <= '9')
-    {
-        return ch - '0' + 27;
-    }
-    else
-        return 0; // Not got that char so space.
-}
-unsigned char reverseBits(unsigned char c)
-{
-    unsigned char result = 0;
-    for (int shift = 0; shift < BYTE_SIZE; shift++)
-    {
-        if (c & (0x01 << shift))
-        {
-            result |= (0x80 >> shift);
-        }
-    }
-    return result;
-}
-
-void Framebuffer::write_char(int16_t x, int16_t y, uint8_t ch)
-{
-    if (x > this->frame_width - 8 || y > this->frame_height - 8)
-        return;
-    y = y / 8; // For the moment, only write on Y row boundaries (every 8 vertical pixels)
-
-    ch = toupper(ch);
-    int idx = get_font_index(ch);
-    int fb_idx = y * 128 + x;
-
-    for (int i = 0; i < 8; i++)
-    {
-        // buf[fb_idx++] = reversed[idx * 8 + i];
-        this->buffer[fb_idx++] = reverseBits(font[idx * 8 + i]);
-    }
-}
-
-void Framebuffer::write_string(int16_t x, int16_t y, const char *txt)
-{
-    // Cull out any string off the screen
-    if (x > this->frame_width - 8 || y > this->frame_height - 8)
-        return;
-
-    while (*txt)
-    {
-        this->write_char(x, y, *txt++);
-        x += 8;
-    }
-}
 void Framebuffer::byteOR(int byte_idx, uint8_t byte)
 {
     // return if index outside 0 - buffer length - 1
@@ -275,11 +182,6 @@ void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
     this->buffer[byte_idx] ^= byte;
 }
 
-void Framebuffer::text(std::string str, uint16_t x, uint16_t y, Framebuffer_color c)
-{
-    const char *txt = str.c_str();
-    this->write_string(x, y, txt);
-}
 
 void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
                            WriteMode mode, Rotation rotation)
@@ -303,11 +205,9 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
                 switch (rotation)
                 {
                 case Rotation::deg0:
-                    // this->setPixel(x + anchor_x, y + anchor_y, mode);
                     this->pixel(x + anchor_x, y + anchor_y);
                     break;
                 case Rotation::deg90:
-                    // this->setPixel(-y + anchor_x + font_height, x + anchor_y, mode);
                     this->pixel(-y + anchor_x + font_height, x + anchor_y);
                     break;
                 }
@@ -322,36 +222,12 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-// void Framebuffer::drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
-// {
-//     if (!font || !text)
-//         return;
-
-//     uint8_t font_width = font[0];
-
-//     uint16_t n = 0;
-//     while (text[n] != '\0')
-//     {
-//         switch (rotation)
-//         {
-//         case Rotation::deg0:
-//             drawChar(font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
-//             break;
-//         case Rotation::deg90:
-//             drawChar(font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
-//             break;
-//         }
-
-//         n++;
-//     }
-// }
-
-void Framebuffer::drawText(const unsigned char *font, std::string s, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
+void Framebuffer::drawText(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
 {
     uint8_t font_width = font[0];
 
-    char *cstr = new char[s.length() + 1];
-    std::strcpy(cstr, s.c_str());
+    char *cstr = new char[text.length() + 1];
+    std::strcpy(cstr, text.c_str());
 
     uint16_t n = 0;
     while (cstr[n] != '\0')

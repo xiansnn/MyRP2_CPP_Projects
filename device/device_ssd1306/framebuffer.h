@@ -44,14 +44,12 @@ class Framebuffer
 {
 private:
     /* data */
-    size_t frame_width;
-    size_t frame_height;
-    size_t buffer_size;
+    uint8_t frame_width;
+    uint8_t frame_height;
+    uint16_t buffer_size;
     Framebuffer_format format;
 
-    static inline int get_font_index(uint8_t ch);
-    void write_char(int16_t x, int16_t y, uint8_t ch);
-    void write_string(int16_t x, int16_t y, const char *str);
+    void ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c);
 
     /// \brief Performs OR logical operation on selected and provided byte
     ///
@@ -94,13 +92,16 @@ public:
     void line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, Framebuffer_color c = Framebuffer_color::white);
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
-    void ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill = false, uint8_t quadrant = 0b1111, Framebuffer_color c = Framebuffer_color::white);
-    void text(std::string str, uint16_t x, uint16_t y, Framebuffer_color c = Framebuffer_color::white);
-
-    void setPixel(int16_t x, int16_t y, WriteMode mode);
+    /// @brief do not use, until fixed
+    /// @param x_center 
+    /// @param y_center 
+    /// @param x_radius 
+    /// @param y_radius 
+    /// @param fill 
+    /// @param quadrant 
+    /// @param c 
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation = Rotation::deg0);
-    // void drawText(const unsigned char *font, char *text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
-    void drawText(const unsigned char *font, std::string s, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    void drawText(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
 };
 
 #endif // FRAMEBUFFER_H

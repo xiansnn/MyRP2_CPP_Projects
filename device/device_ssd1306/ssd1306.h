@@ -50,9 +50,9 @@ typedef struct config_scroll_ssd1306
 typedef struct struct_render_area
 {
     uint8_t start_col{0};
-    uint8_t end_col{SSD1306_WIDTH-1};
+    uint8_t end_col{SSD1306_WIDTH - 1};
     uint8_t start_page{0};
-    uint8_t end_page{SSD1306_NUM_PAGES-1};
+    uint8_t end_page{SSD1306_NUM_PAGES - 1};
     size_t width{SSD1306_WIDTH};
     size_t height{SSD1306_HEIGHT};
     int buflen{SSD1306_BUF_LEN};
@@ -80,16 +80,10 @@ private:
 public:
     SSD1306(hw_I2C_master *master, init_config_SSD1306_t config, uint8_t buffer[]);
     void set_contrast(uint8_t value);
-
-    // static render_area_t get_render_paged_area(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
     static render_area_t compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
-    void show_render_area(uint8_t *data_buffer, render_area_t buffer_area, uint8_t addressing_mode=HORIZONTAL_ADDRESSING_MODE);
+    void show_render_area(uint8_t *data_buffer, render_area_t buffer_area, uint8_t addressing_mode = HORIZONTAL_ADDRESSING_MODE);
     void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
     void clear_buffer_and_show_GDDRAM();
-
-    // static inline int GetFontIndex(uint8_t ch);
-    // static void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
-    // static void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str);
 
     void set_display_from_RAM();
     void set_all_pixel_ON();
