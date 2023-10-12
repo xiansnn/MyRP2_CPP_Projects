@@ -292,39 +292,22 @@ void test_text(SSD1306 *display)
 }
 void test_text2(SSD1306 *display)
 {
+    // draw text directly on display framebuffer
     display->clear_buffer_and_show_GDDRAM();
-    render_area_t roll_title_area = SSD1306::compute_render_area(0, 127, 0, 63);
-    Framebuffer roll_title = Framebuffer(display->buffer, roll_title_area.width, roll_title_area.height, Framebuffer_format::MONO_VLSB);
-
-    // uint8_t roll_title_buffer[128]{0};
-    // Framebuffer roll = Framebuffer(roll_title_buffer, roll_title_frame.width, roll_title_frame.height, Framebuffer_format::MONO_VLSB);
-    
-    roll_title.drawText(font_12x16, "TEST text", 0, 0);
-
-    // display->show_render_area(roll_title_buffer, roll_title_frame);
-    display->show_render_area(display->buffer, roll_title_area);
-
-    // uint8_t pitch_title_buffer[128]{0};
-    // render_area_t pitch_title_frame = SSD1306::get_render_area(0, 63, 16, 24);
-    // Framebuffer pitch = Framebuffer(pitch_title_buffer, pitch_title_frame.width, pitch_title_frame.height, Framebuffer_format::MONO_VLSB);
-    // pitch.drawText(font_5x8,"pitch", 0, 0);
-    // display->show_render_area(pitch_title_buffer, pitch_title_frame);
-
-    // uint8_t roll_counter_buffer[128]{0};
-    // render_area_t roll_counter_frame = SSD1306::get_render_area(70, 90, 0, 7);
-    // Framebuffer roll_counter = Framebuffer(roll_counter_buffer, roll_counter_frame.width, roll_counter_frame.height, Framebuffer_format::MONO_VLSB);
-    // uint8_t pitch_counter_buffer[128]{0};
-    // render_area_t pitch_counter_frame = SSD1306::get_render_area(70, 120, 16, 24);
-    // Framebuffer pitch_counter = Framebuffer(pitch_counter_buffer, pitch_counter_frame.width, pitch_counter_frame.height, Framebuffer_format::MONO_VLSB);
-    // for (size_t i = 0; i < 30; i++)
-    // {
-
-    //     // roll_counter.drawText(font_8x8, std::to_string(i).c_str(), 0, 0);
-    //     // display->show_render_area(roll_counter_buffer, roll_counter_frame);
-    //     // pitch_counter.drawText(font_8x8,  std::to_string(100 + 10 * i), 0, 0);
-    //     // display->show_render_area(pitch_counter_buffer, pitch_counter_frame);
-    //     sleep_ms(500);
-    // }
+    render_area_t full_screen_area = SSD1306::compute_render_area(0, 127, 0, 63);
+    display->drawText(font_8x8, "ROLL:", 0, 0);
+    display->drawText(font_8x8, "PITCH:", 0, 16);
+    display->show_render_area(display->buffer, full_screen_area);
+    sleep_ms(500);
+    // draw graph
+    render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 32, 63);
+    uint8_t small_frame_buffer[SSD1306_BUF_LEN];
+    Framebuffer small_frame = Framebuffer(small_frame_buffer, small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
+    small_frame.fill(Framebuffer_color::black);
+    small_frame.rect(0,0,107-20+1,63-32+1); // point coordinates are relative to the local frame
+    small_frame.line(5, 5, 80, 20); // point coordinates are relative to the local frame
+    small_frame.circle(14, 44, 15);
+    display->show_render_area(small_frame.buffer, small_frame_area);
     sleep_ms(1000);
 }
 
@@ -332,9 +315,9 @@ int main()
 {
     stdio_init_all();
     // create I2C bus hw peripheral and display
-    uint8_t screen[SSD1306_BUF_LEN]{0};
+    uint8_t screen_buffer[SSD1306_BUF_LEN]{0};
     hw_I2C_master master = hw_I2C_master(cfg_i2c);
-    SSD1306 display = SSD1306(&master, cfg_ssd1306, screen);
+    SSD1306 display = SSD1306(&master, cfg_ssd1306, screen_buffer);
 
     while (true)
     {
