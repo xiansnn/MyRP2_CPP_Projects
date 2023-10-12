@@ -15,6 +15,7 @@ Framebuffer::Framebuffer(uint8_t buffer[], size_t width, size_t height, Framebuf
     if (height % BYTE_SIZE != 0)
         page_nb += 1;
     this->buffer_size = width * page_nb;
+    clear_buffer();
 }
 
 void Framebuffer::fill(Framebuffer_color c)
