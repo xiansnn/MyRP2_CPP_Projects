@@ -247,15 +247,15 @@ void test_text(SSD1306 *display)
     /*
     // option: draw text directly on display framebuffer
     render_area_t full_screen_area = SSD1306::compute_render_area(0, 127, 0, 63);
-    display->drawText(font_8x8, "ROLL:", 0, 0);
-    display->drawText(font_8x8, "PITCH:", 0, 16);
+    display->text(font_8x8, "ROLL:", 0, 0);
+    display->text(font_8x8, "PITCH:", 0, 16);
     display->show_render_area(display->buffer, full_screen_area);
     */
     render_area_t title_area = SSD1306::compute_render_area(0, 63, 40, 63);
     uint8_t title_buffer[0x100]{0}; // title.clear_buffer();
     Framebuffer title = Framebuffer(title_buffer, 64, 32, Framebuffer_format::MONO_VLSB);
-    title.drawText(font_8x8, "ROLL:", 0, 0);
-    title.drawText(font_8x8, "PITCH:", 0, 16);
+    title.text(font_8x8, "ROLL:", 0, 0);
+    title.text(font_8x8, "PITCH:", 0, 16);
     display->show_render_area(title.buffer, title_area);
     // sleep_ms(500);
     // draw graph

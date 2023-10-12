@@ -1,7 +1,6 @@
 #include "framebuffer.h"
 #include <string.h>
 #include <cstring>
-// #include "ssd1306_font.h"
 
 #define BYTE_SIZE 8
 
@@ -111,14 +110,6 @@ void Framebuffer::rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill, Fram
 }
 
 
-/// @brief doesn't work
-/// @param x_center
-/// @param y_center
-/// @param x_radius
-/// @param y_radius
-/// @param fill
-/// @param quadrant
-/// @param c
 void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c)
 {
     int x, y, m;
@@ -222,7 +213,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::drawText(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
+void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
 {
     uint8_t font_width = font[0];
 
