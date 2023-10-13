@@ -4,6 +4,9 @@
 #include "pico/stdlib.h"
 #include <string>
 
+
+
+#define  SSD1306_ASCII_FULL
 #include "5x8_font.h"
 #include "8x8_font.h"
 #include "12x16_font.h"

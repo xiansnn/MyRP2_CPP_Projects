@@ -55,7 +55,7 @@ typedef struct struct_render_area
     uint8_t end_page{SSD1306_NUM_PAGES - 1};
     size_t width{SSD1306_WIDTH};
     size_t height{SSD1306_HEIGHT};
-    int buflen{SSD1306_BUF_LEN};
+    size_t buflen{SSD1306_BUF_LEN};
 } render_area_t;
 
 class SSD1306 : public Framebuffer

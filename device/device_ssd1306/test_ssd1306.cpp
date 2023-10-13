@@ -2,8 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include "raspberry26x32.h"
 #include "framebuffer.h"
+#include <math.h>
+#include <numbers>
+
+#define DEGREE "\xF8"
 
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
@@ -225,7 +230,7 @@ void test_fb_in_fb(SSD1306 *display)
     small_frame.line(5, 5, 80, 20); // point coordinates are relative to the local frame
     small_frame.circle(8, 44, 12);
     display->show_render_area(small_frame.buffer, small_frame_area);
-    sleep_ms(2000);
+    sleep_ms(1000);
 }
 
 void test_fb_circle(SSD1306 *display)
@@ -239,17 +244,9 @@ void test_fb_circle(SSD1306 *display)
     display->show_render_area(display->buffer, full_screen_area);
     sleep_ms(2000);
 }
-
 void test_text(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
-    /*
-    // option: draw text directly on display framebuffer
-    render_area_t full_screen_area = SSD1306::compute_render_area(0, 127, 0, 63);
-    display->text(font_8x8, "ROLL:", 0, 0);
-    display->text(font_8x8, "PITCH:", 0, 16);
-    display->show_render_area(display->buffer, full_screen_area);
-    */
     render_area_t title_area = SSD1306::compute_render_area(0, 63, 40, 63);
     Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
     title.text(font_8x8, "ROLL:", 0, 0);
@@ -257,18 +254,44 @@ void test_text(SSD1306 *display)
     display->show_render_area(title.buffer, title_area);
     sleep_ms(500);
     // draw graph
-    render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 0, 39);
-    Framebuffer small_frame = Framebuffer(small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
-    small_frame.fill(Framebuffer_color::black);
-    small_frame.rect(0, 0, 107 - 20 + 1, 63 - 32 + 1); // point coordinates are relative to the local frame
-    small_frame.line(5, 5, 80, 20);                    // point coordinates are relative to the local frame
-    small_frame.circle(14, 44, 15);
-    display->show_render_area(small_frame.buffer, small_frame_area);
+    render_area_t graph_area = SSD1306::compute_render_area(20, 107, 0, 38);
+    Framebuffer graph = Framebuffer(graph_area.width, graph_area.height, Framebuffer_format::MONO_VLSB);
+    graph.fill(Framebuffer_color::black);
+    display->show_render_area(graph.buffer, graph_area);
     sleep_ms(500);
     // draw values
     render_area_t values_area = SSD1306::compute_render_area(64, 127, 40, 63);
     Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
+    int roll, pitch;
 
+    for (int i = -45; i < 45; i++)
+    {
+        values.clear_buffer();
+        roll = i ;
+        pitch = i ;
+        std::string roll_str = std::to_string(roll) + " " + DEGREE;
+        std::string pitch_str = std::to_string(pitch) + " " + DEGREE;
+        values.text(font_8x8, roll_str, 0, 0);
+        values.text(font_8x8, pitch_str, 0, 16);
+
+        int x0 = 0;
+        int x1 = graph_area.width - 1;
+        float xc = graph_area.width / 2;
+        float yc = graph_area.height / 2;
+        float t = tanf(3.14 / 180.0 * roll);
+        // printf("tanf de roll :%5.2f \n",t);
+        float dy1 = xc * t;
+        int y1 = yc - dy1;
+        int y0 = yc + dy1;
+        graph.rect(0, 0, graph_area.width, graph_area.height); // point coordinates are relative to the local frame
+        graph.circle(yc, xc, yc);
+        graph.line(x0, y0, x1, y1); // point coordinates are relative to the local frame
+        // graph.line(5,5,80,20); // point coordinates are relative to the local frame
+        display->show_render_area(graph.buffer, graph_area);
+        display->show_render_area(values.buffer, values_area);
+        graph.line(x0, y0, x1, y1, Framebuffer_color::black);
+        sleep_ms(50);
+    }
     sleep_ms(1000);
 }
 
@@ -281,17 +304,17 @@ int main()
 
     while (true)
     {
-        test_blink(&display);
-        test_contrast(&display);
-        test_addressing_mode(&display);
-        test_scrolling(&display);
+        // test_blink(&display);
+        // test_contrast(&display);
+        // test_addressing_mode(&display);
+        // test_scrolling(&display);
 
-        test_fb_line(&display);
-        test_fb_hline(&display);
-        test_fb_vline(&display);
-        test_fb_rect(&display);
-        test_fb_in_fb(&display);
-        test_fb_circle(&display);
+        // test_fb_line(&display);
+        // test_fb_hline(&display);
+        // test_fb_vline(&display);
+        // test_fb_rect(&display);
+        // test_fb_circle(&display);
+        // test_fb_in_fb(&display);
         test_text(&display);
     }
 
