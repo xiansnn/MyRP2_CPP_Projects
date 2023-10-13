@@ -34,14 +34,6 @@ enum class WriteMode : const uint8_t
     INVERT = 2
 };
 
-enum class Rotation
-{
-    /// deg0 - means no rotation
-    deg0,
-    /// deg 90 - means 90 deg rotation
-    deg90,
-};
-
 /// @brief
 class Framebuffer
 {
@@ -82,7 +74,7 @@ private:
     /// \param byte - provided byte to make operation
     void byteXOR(int byte_idx, uint8_t byte);
 
-    void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation = Rotation::deg0);
+    void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD);
     void pixel(uint8_t x, uint8_t y, Framebuffer_color c = Framebuffer_color::white);
 
 public:
@@ -104,7 +96,7 @@ public:
     void line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, Framebuffer_color c = Framebuffer_color::white);
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
-    void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD);
     };
 
 #endif // FRAMEBUFFER_H

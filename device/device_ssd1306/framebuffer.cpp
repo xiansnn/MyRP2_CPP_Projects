@@ -181,7 +181,7 @@ void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
 }
 
 void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
-                           WriteMode mode, Rotation rotation)
+                           WriteMode mode)
 {
     if (!font || c < 32)
         return;
@@ -198,17 +198,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
         for (uint8_t y = 0; y < font_height; y++)
         {
             if (font[seek] >> b_seek & 0b00000001)
-            {
-                switch (rotation)
-                {
-                case Rotation::deg0:
-                    this->pixel(x + anchor_x, y + anchor_y);
-                    break;
-                case Rotation::deg90:
-                    this->pixel(-y + anchor_x + font_height, x + anchor_y);
-                    break;
-                }
-            }
+                this->pixel(x + anchor_x, y + anchor_y);
             b_seek++;
             if (b_seek == 8)
             {
@@ -219,7 +209,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode, Rotation rotation)
+void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode)
 {
     uint8_t font_width = font[0];
 
@@ -229,16 +219,7 @@ void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anch
     uint16_t n = 0;
     while (cstr[n] != '\0')
     {
-        switch (rotation)
-        {
-        case Rotation::deg0:
-            drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
-            break;
-        case Rotation::deg90:
-            drawChar(font, cstr[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
-            break;
-        }
-
+        drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y, mode);
         n++;
     }
     delete[] cstr;
