@@ -73,7 +73,7 @@ void Framebuffer::vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c)
         this->pixel(x, y + i, c);
 }
 
-void Framebuffer::line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, Framebuffer_color c)
+void Framebuffer::line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, Framebuffer_color c) // TODO clipping line outside frame
 {
     int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
@@ -158,30 +158,29 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
     }
 }
 
-void Framebuffer::byteOR(int byte_idx, uint8_t byte)
-{
-    // return if index outside 0 - buffer length - 1
-    if (byte_idx > (this->buffer_size - 1))
-        return;
-    this->buffer[byte_idx] |= byte;
-}
-void Framebuffer::byteAND(int byte_idx, uint8_t byte)
-{
-    // return if index outside 0 - buffer length - 1
-    if (byte_idx > (this->buffer_size - 1))
-        return;
-    this->buffer[byte_idx] &= byte;
-}
-void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
-{
-    // return if index outside 0 - buffer length - 1
-    if (byte_idx > (this->buffer_size - 1))
-        return;
-    this->buffer[byte_idx] ^= byte;
-}
+// void Framebuffer::byteOR(int byte_idx, uint8_t byte)
+// {
+//     // return if index outside 0 - buffer length - 1
+//     if (byte_idx > (this->buffer_size - 1))
+//         return;
+//     this->buffer[byte_idx] |= byte;
+// }
+// void Framebuffer::byteAND(int byte_idx, uint8_t byte)
+// {
+//     // return if index outside 0 - buffer length - 1
+//     if (byte_idx > (this->buffer_size - 1))
+//         return;
+//     this->buffer[byte_idx] &= byte;
+// }
+// void Framebuffer::byteXOR(int byte_idx, uint8_t byte)
+// {
+//     // return if index outside 0 - buffer length - 1
+//     if (byte_idx > (this->buffer_size - 1))
+//         return;
+//     this->buffer[byte_idx] ^= byte;
+// }
 
-void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
-                           WriteMode mode)
+void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y)
 {
     if (!font || c < 32)
         return;
@@ -209,7 +208,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode)
+void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y)
 {
     uint8_t font_width = font[0];
 
@@ -219,7 +218,7 @@ void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anch
     uint16_t n = 0;
     while (cstr[n] != '\0')
     {
-        drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y, mode);
+        drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y);
         n++;
     }
     delete[] cstr;
