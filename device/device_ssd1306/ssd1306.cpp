@@ -20,7 +20,7 @@ void SSD1306::send_buf(uint8_t buffer[], size_t buffer_size)
 }
 
 SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config)
-    : Framebuffer( SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
+    : Framebuffer(SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
 {
     this->i2c_master = master;
     this->config = init_config;
@@ -114,36 +114,47 @@ void SSD1306::init_MUX_ratio(uint8_t value)
     this->send_cmd(value - 1);
 }
 
-void SSD1306::show_render_area(uint8_t *data_buffer, const render_area_t buffer_area, const uint8_t addressing_mode)
+void SSD1306::show_render_area(uint8_t *data_buffer, const render_area_t screen_area, const uint8_t addressing_mode)
 {
     assert((addressing_mode >= 0) & (addressing_mode <= 2));
     this->send_cmd(SSD1306_SET_MEM_MODE);
     this->send_cmd(addressing_mode);
     if (addressing_mode == PAGE_ADDRESSING_MODE)
     {
-        uint8_t page_start_address = 0xB0 | buffer_area.start_page;
+        uint8_t page_start_address = 0xB0 | screen_area.start_page;
         this->send_cmd(page_start_address);
-        uint8_t column_start_LO_address = 0x0F & buffer_area.start_col;
+        uint8_t column_start_LO_address = 0x0F & screen_area.start_col;
         this->send_cmd(column_start_LO_address);
-        uint8_t column_start_HI_address = (((0xF0) & buffer_area.start_col) >> 4) | 0x10;
+        uint8_t column_start_HI_address = (((0xF0) & screen_area.start_col) >> 4) | 0x10;
         this->send_cmd(column_start_HI_address);
-        this->send_buf(data_buffer, buffer_area.buflen);
+        this->send_buf(data_buffer, screen_area.buflen);
     }
     else
     {
         this->send_cmd(SSD1306_SET_COL_ADDR);
-        this->send_cmd(buffer_area.start_col);
-        this->send_cmd(buffer_area.end_col);
+        this->send_cmd(screen_area.start_col);
+        this->send_cmd(screen_area.end_col);
         this->send_cmd(SSD1306_SET_PAGE_ADDR);
-        this->send_cmd(buffer_area.start_page);
-        this->send_cmd(buffer_area.end_page);
-        this->send_buf(data_buffer, buffer_area.buflen);
+        this->send_cmd(screen_area.start_page);
+        this->send_cmd(screen_area.end_page);
+        this->send_buf(data_buffer, screen_area.buflen);
     }
 }
 
 void SSD1306::show()
 {
-    this->show_render_area(this->buffer,this->compute_render_area(0,SSD1306_WIDTH-1,0,SSD1306_HEIGHT-1));
+    this->show_render_area(this->buffer, this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1));
+}
+
+void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
+{
+    this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, anchor_x + frame->frame_width - 1, anchor_y, anchor_y + frame->frame_height - 1));
+}
+
+void SSD1306::show(Framebuffer *frame, frame_data_t data)
+{
+    this->show_render_area(frame->buffer, this->compute_render_area(data.anchor_x, data.anchor_x + frame->frame_width - 1,
+                                                                    data.anchor_y, data.anchor_y + frame->frame_height - 1));
 }
 
 void SSD1306::init_display_vertical_shift(uint8_t value)

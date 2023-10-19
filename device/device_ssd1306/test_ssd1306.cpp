@@ -141,7 +141,6 @@ void test_fb_line(SSD1306 *display)
         for (int x = 0; x < SSD1306_WIDTH; x++)
         {
             display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
-            // display->show_render_area(display->buffer, full_screen_area);
             display->show();
         }
 
@@ -224,17 +223,20 @@ void test_fb_rect(SSD1306 *display)
 void test_fb_in_fb(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
-    display->rect(0, 0, 128, 64);         //, false, Framebuffer_color::white);
-    display->rect(10, 10, 108, 44, true); //, true, Framebuffer_color::black);
+    display->rect(0, 0, SSD1306_WIDTH, SSD1306_HEIGHT); //, false, Framebuffer_color::white);
+    display->rect(10, 10, 108, 44, true);               //, true, Framebuffer_color::black);
     display->line(5, 60, 120, 5, Framebuffer_color::black);
     display->show();
     sleep_ms(1000);
-    render_area_t small_frame_area = SSD1306::compute_render_area(20, 107, 20, 44);
-    Framebuffer small_frame = Framebuffer(small_frame_area.width, small_frame_area.height, Framebuffer_format::MONO_VLSB);
+    uint8_t small_frame_x_anchor = 20;
+    uint8_t small_frame_y_anchor = 20;
+    uint8_t small_frame_width = 88;
+    uint8_t small_frame_height = 25;
+    Framebuffer small_frame = Framebuffer(small_frame_width, small_frame_height, Framebuffer_format::MONO_VLSB);
     small_frame.fill(Framebuffer_color::black);
     small_frame.line(5, 5, 80, 20); // point coordinates are relative to the local frame
     small_frame.circle(8, 44, 12);
-    display->show_render_area(small_frame.buffer, small_frame_area);
+    display->show(&small_frame, small_frame_x_anchor, small_frame_y_anchor);
     sleep_ms(1000);
 }
 
@@ -248,22 +250,40 @@ void test_fb_circle(SSD1306 *display)
     display->show();
     sleep_ms(2000);
 }
-void test_text(SSD1306 *display)
+void test_text_and_graph(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
-    render_area_t title_area = SSD1306::compute_render_area(0, 63, 40, 63);
+    frame_data_t title_area{
+        .anchor_x = 0,
+        .anchor_y = 40,
+        .width = 64,
+        .height = 24
+    };
     Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
+
     title.text(font_8x8, "ROLL:", 0, 0);
     title.text(font_8x8, "PITCH:", 0, 16);
-    display->show_render_area(title.buffer, title_area);
+    display->show(&title, title_area.anchor_x, title_area.anchor_y);
     sleep_ms(500);
     // draw graph
-    render_area_t graph_area = SSD1306::compute_render_area(20, 107, 0, 30);
+    frame_data_t graph_area{
+        .anchor_x = 20,
+        .anchor_y = 0,
+        .width = 88,
+        .height = 31
+    };
+
     Framebuffer graph = Framebuffer(graph_area.width, graph_area.height, Framebuffer_format::MONO_VLSB);
     graph.fill(Framebuffer_color::black);
-    display->show_render_area(graph.buffer, graph_area);
+    display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
     // draw values
-    render_area_t values_area = SSD1306::compute_render_area(64, 127, 40, 63);
+    frame_data_t values_area{
+        .anchor_x = 64,
+        .anchor_y = 40,
+        .width = 64,
+        .height = 24
+    };
+
     Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
     int roll, pitch;
 
@@ -289,8 +309,8 @@ void test_text(SSD1306 *display)
         graph.rect(0, 0, graph_area.width, graph_area.height); // point coordinates are relative to the local frame
         graph.circle(yc, xc, yc);
         graph.line(x0, y0, x1, y1);
-        display->show_render_area(graph.buffer, graph_area);
-        display->show_render_area(values.buffer, values_area);
+        display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
+        display->show(&values, values_area.anchor_x, values_area.anchor_y);
         graph.line(x0, y0, x1, y1, Framebuffer_color::black);
         sleep_ms(50);
     }
@@ -309,13 +329,13 @@ void test_full_screen_text(SSD1306 *display)
             x = j * font_8x8[FONT_WIDTH];
             y = i * font_8x8[FONT_HEIGHT];
             c += 1;
-            s=c;
+            s = c;
             display->text(font_8x8, s, x, y);
             display->show();
         }
     }
     display->clear_buffer_and_show_GDDRAM();
-    sleep_ms(500);
+    sleep_ms(1000);
     for (size_t i = 0; i < 8; i++)
     {
         for (size_t j = 0; j < 16; j++)
@@ -323,7 +343,7 @@ void test_full_screen_text(SSD1306 *display)
             x = j * font_8x8[FONT_WIDTH];
             y = i * font_8x8[FONT_HEIGHT];
             c += 1;
-            s=c;
+            s = c;
             display->text(font_8x8, s, x, y);
             display->show();
         }
@@ -339,114 +359,152 @@ void test_text_stream(SSD1306 *display)
 
     Framebuffer degree_unit = Framebuffer(font_8x8[FONT_WIDTH], font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
     degree_unit.text(font_8x8, DEGREE, 0, 0);
-    render_area_t unit1_area = SSD1306::compute_render_area(120, 127, 0, 7);
-    display->show_render_area(degree_unit.buffer, unit1_area);
 
-    render_area_t unit2_area = SSD1306::compute_render_area(120, 127, 8, 8 + 7);
-    display->show_render_area(degree_unit.buffer, unit2_area);
+    frame_data_t unit1_area = {
+        .anchor_x = 120,
+        .anchor_y = 0,
+        .width = font_8x8[FONT_WIDTH],
+        .height = font_8x8[FONT_HEIGHT]};
 
-    render_area_t unit3_area = SSD1306::compute_render_area(120, 127, 32, 32 + 7);
-    display->show_render_area(degree_unit.buffer, unit3_area);
+    display->show(&degree_unit, unit1_area);
 
-    render_area_t unit4_raea = SSD1306::compute_render_area(120, 127, 48, 48 + 7);
-    display->show_render_area(degree_unit.buffer, unit4_raea);
+    frame_data_t unit2_area = {
+        .anchor_x = 120,
+        .anchor_y = 8,
+        .width = font_8x8[FONT_WIDTH],
+        .height = font_8x8[FONT_HEIGHT]};
+    display->show(&degree_unit, unit2_area);
 
-    std::string roll_title = " ROLL:";
-    std::string pitch_title = "PITCH:";
+    frame_data_t unit3_area = {
+        .anchor_x = 120,
+        .anchor_y = 32,
+        .width = font_8x8[FONT_WIDTH],
+        .height = font_8x8[FONT_HEIGHT]};
+    display->show(&degree_unit, unit3_area);
 
-    Framebuffer roll_1 = Framebuffer(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t roll_1_area = SSD1306::compute_render_area(0, font_8x8[FONT_WIDTH] * 6 - 1, 0, 7);
+    frame_data_t unit4_area = {
+        .anchor_x = 120,
+        .anchor_y = 48,
+        .width = font_8x8[FONT_WIDTH],
+        .height = font_8x8[FONT_HEIGHT]};
+    display->show(&degree_unit, unit4_area);
+
+    std::string roll_title = "R:";
+    std::string pitch_title = "P:";
+
+    frame_data_t roll_1_area = {
+        .anchor_x = 0,
+        .anchor_y = 0,
+        .width = font_8x8[FONT_WIDTH]*2,
+        .height = font_8x8[FONT_HEIGHT]};
+
+    Framebuffer roll_1 = Framebuffer(roll_1_area.width, roll_1_area.height, Framebuffer_format::MONO_VLSB);
     roll_1.text(font_8x8, roll_title, 0, 0);
-    display->show_render_area(roll_1.buffer, roll_1_area);
+    display->show(&roll_1, roll_1_area);
 
-    Framebuffer pitch_1 = Framebuffer(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t pitch_1_area = SSD1306::compute_render_area(0, font_8x8[FONT_WIDTH] * 6 - 1, 8, 8 + 7);
+    frame_data_t pitch_1_area = {
+        .anchor_x = 0,
+        .anchor_y = 8,
+        .width = font_8x8[FONT_WIDTH]*2,
+        .height = font_8x8[FONT_HEIGHT]};
+
+    Framebuffer pitch_1 = Framebuffer(pitch_1_area.width, pitch_1_area.height, Framebuffer_format::MONO_VLSB);
     pitch_1.text(font_8x8, pitch_title, 0, 0);
-    display->show_render_area(pitch_1.buffer, pitch_1_area);
+    display->show(&pitch_1, pitch_1_area);
 
-    Framebuffer roll_2 = Framebuffer(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t roll_2_area = SSD1306::compute_render_area(0, font_8x8[FONT_WIDTH] * 6 - 1, 32, 32 + 7);
+    frame_data_t roll_2_area = {
+        .anchor_x = 0,
+        .anchor_y = 32,
+        .width = font_8x8[FONT_WIDTH]*2,
+        .height = font_8x8[FONT_HEIGHT]};
+
+    Framebuffer roll_2 = Framebuffer(roll_2_area.width, roll_2_area.height, Framebuffer_format::MONO_VLSB);
     roll_2.text(font_8x8, roll_title, 0, 0);
-    display->show_render_area(roll_2.buffer, roll_2_area);
+    display->show(&roll_2, roll_2_area);
 
-    Framebuffer pitch_2 = Framebuffer(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t pitch_2_area = SSD1306::compute_render_area(0, font_8x8[FONT_WIDTH] * 6 - 1, 48, 48 + 7);
+    frame_data_t pitch_2_area = {
+        .anchor_x = 0,
+        .anchor_y = 48,
+        .width = font_8x8[FONT_WIDTH]*2,
+        .height = font_8x8[FONT_HEIGHT]};
+    Framebuffer pitch_2 = Framebuffer(pitch_2_area.width, pitch_2_area.height, Framebuffer_format::MONO_VLSB);
     pitch_2.text(font_8x8, pitch_title, 0, 0);
-    display->show_render_area(pitch_2.buffer, pitch_2_area);
+    display->show(&pitch_2, pitch_2_area);
 
-    Framebuffer roll_1_value = Framebuffer(font_8x8[FONT_WIDTH] * 8, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t roll_1_value_area = SSD1306::compute_render_area(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_WIDTH] * 15 - 1, 0, 7);
-    Framebuffer pitch_1_value = Framebuffer(font_8x8[FONT_WIDTH] * 8, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t pitch_1_value_area = SSD1306::compute_render_area(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_WIDTH] * 15 - 1, 8, 8 + 7);
-    Framebuffer roll_2_value = Framebuffer(font_8x8[FONT_WIDTH] * 8, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t roll_2_value_area = SSD1306::compute_render_area(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_WIDTH] * 15 - 1, 32, 32 + 7);
-    Framebuffer pitch_2_value = Framebuffer(font_8x8[FONT_WIDTH] * 8, font_8x8[FONT_HEIGHT], Framebuffer_format::MONO_VLSB);
-    render_area_t pitch_2_value_area = SSD1306::compute_render_area(font_8x8[FONT_WIDTH] * 6, font_8x8[FONT_WIDTH] * 15 - 1, 48, 48 + 7);
+    frame_data_t roll_1_value_area = {
+        .anchor_x = font_8x8[FONT_WIDTH]*2,
+        .anchor_y = 0,
+        .width = font_8x8[FONT_WIDTH] * 13,
+        .height = font_8x8[FONT_HEIGHT]};
+    Framebuffer roll_1_value = Framebuffer(roll_1_value_area.width, roll_1_value_area.height, Framebuffer_format::MONO_VLSB);
+    frame_data_t pitch_1_value_area = {
+        .anchor_x = font_8x8[FONT_WIDTH]*2,
+        .anchor_y = 8,
+        .width = font_8x8[FONT_WIDTH] * 13,
+        .height = font_8x8[FONT_HEIGHT]};
+    Framebuffer pitch_1_value = Framebuffer(pitch_1_value_area.width, pitch_1_value_area.height, Framebuffer_format::MONO_VLSB);
+    frame_data_t roll_2_value_area = {
+        .anchor_x = font_8x8[FONT_WIDTH]*2,
+        .anchor_y = 32,
+        .width = font_8x8[FONT_WIDTH] * 13,
+        .height = font_8x8[FONT_HEIGHT]};
+    Framebuffer roll_2_value = Framebuffer(roll_2_value_area.width, roll_2_value_area.height, Framebuffer_format::MONO_VLSB);
+    frame_data_t pitch_2_value_area = {
+        .anchor_x = font_8x8[FONT_WIDTH]*2,
+        .anchor_y = 48,
+        .width = font_8x8[FONT_WIDTH] * 13,
+        .height = font_8x8[FONT_HEIGHT]};
+    Framebuffer pitch_2_value = Framebuffer(pitch_2_value_area.width, pitch_2_value_area.height, Framebuffer_format::MONO_VLSB);
 
     std::ostringstream roll_1_str_value = std::ostringstream();
+    roll_1_str_value.setf(std::ios_base::right, std::ios_base::adjustfield);
+    roll_1_str_value.setf(std::ios_base::showpos);
+    roll_1_str_value.width(13);
+    roll_1_str_value.precision(5);
+
     std::ostringstream pitch_1_str_value = std::ostringstream();
+    pitch_1_str_value.setf(std::ios_base::right, std::ios_base::adjustfield);
+    pitch_1_str_value.setf(std::ios_base::showpos);
+    pitch_1_str_value.width(13);
+    pitch_1_str_value.precision(5);
+
     std::ostringstream roll_2_str_value = std::ostringstream();
     roll_2_str_value.setf(std::ios_base::right, std::ios_base::adjustfield);
     roll_2_str_value.setf(std::ios_base::showpos);
-    roll_2_str_value.width(8);
-    roll_2_str_value.precision(3);
+    roll_2_str_value.fill('_');
+    roll_2_str_value.width(13);
+    roll_2_str_value.precision(5);
+
     std::ostringstream pitch_2_str_value = std::ostringstream();
-    pitch_2_str_value.copyfmt(roll_2_str_value);
+    pitch_2_str_value.setf(std::ios_base::left, std::ios_base::adjustfield);
+    pitch_2_str_value.setf(std::ios_base::showpos);
+    pitch_2_str_value.setf(std::ios_base::showpoint);
+    pitch_2_str_value.fill('_');
+    pitch_2_str_value.width(10);
+    pitch_2_str_value.precision(5);
 
     float roll, pitch;
-    roll = 100;
-    pitch = -123;
+    roll = 195;
+    pitch = -1095;
 
-    roll_1_str_value << std::showpoint << std::showpos << std::setprecision(3) << std::setw(5) << std::right << roll;
-    pitch_1_str_value << std::setprecision(4) << pitch;
+    roll_1_str_value<< roll;
+    pitch_1_str_value << pitch;
     roll_2_str_value << roll;
     pitch_2_str_value << pitch;
 
     roll_1_value.text(font_8x8, roll_1_str_value.str(), 0, 0);
-    display->show_render_area(roll_1_value.buffer, roll_1_value_area);
+    display->show(&roll_1_value, roll_1_value_area);
 
     pitch_1_value.text(font_8x8, pitch_1_str_value.str(), 0, 0);
-    display->show_render_area(pitch_1_value.buffer, pitch_1_value_area);
+    display->show(&pitch_1_value, pitch_1_value_area);
 
     roll_2_value.text(font_8x8, roll_2_str_value.str(), 0, 0);
-    display->show_render_area(roll_2_value.buffer, roll_2_value_area);
+    display->show(&roll_2_value, roll_2_value_area);
 
     pitch_2_value.text(font_8x8, pitch_2_str_value.str(), 0, 0);
-    display->show_render_area(pitch_2_value.buffer, pitch_2_value_area);
+    display->show(&pitch_2_value, pitch_2_value_area);
 
     pr_D4.lo();
-
-    // for (int i = -180; i < 180; i = i + 5)
-    // {
-    //     roll = i;
-    //     pitch = i;
-
-    //     pr_D6.hi();
-    //     value1.clear_buffer();
-    //     pr_D6.lo();
-    //     sleep_us(1);
-    //     pr_D6.hi();
-    //     std::string roll_str = std::to_string(roll) + " " + DEGREE;
-    //     std::string pitch_str = std::to_string(pitch) + " " + DEGREE;
-    //     value1.text(font_8x8, roll_str, 0, 0);
-    //     value1.text(font_8x8, pitch_str, 0, 9);
-    //     display->show_render_area(value1.buffer, value1_area);
-    //     pr_D6.lo();
-
-    //     pr_D7.hi();
-    //     value2.clear_buffer();
-    //     roll2_str_value.str("");
-    //     pitch2_str_value.str("");
-    //     roll2_str_value << std::setprecision(3) << std::setw(5) << std::right << roll;
-    //     // pitch2_str_value << pitch << std::iostream::showpos << std::iostream::right << pitch2_str_value.width(8);
-    //     pitch2_str_value<<std::showpos << std::setprecision(3) << std::setw(5) << std::left << pitch; //<< std::iostream::showpos << std::iostream::right << pitch2_str_value.width(8);
-
-    //     value2.text(font_8x8, roll2_str_value.str(), 0, 0);
-    //     value2.text(font_8x8, pitch2_str_value.str(), 0, 16);
-    //     display->show_render_area(value2.buffer, value2_area);
-    //     pr_D7.lo();
-    //     sleep_ms(100);
-    // }
     sleep_ms(1000);
 }
 
@@ -471,8 +529,8 @@ int main()
         // test_fb_rect(&display);
         // test_fb_circle(&display);
         // test_fb_in_fb(&display);
-        // test_text(&display);
-        test_full_screen_text(&display);
+        test_text_and_graph(&display);
+        // test_full_screen_text(&display);
         // test_text_stream(&display);
     }
 
