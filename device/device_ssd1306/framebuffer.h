@@ -26,12 +26,18 @@ enum class Framebuffer_color
     white = 1
 };
 
+typedef struct struct_frame_data
+{
+    int anchor_x{0};
+    int anchor_y{0};
+    int width{0};
+    int height{0};
+}frame_data_t;
+
 
 class Framebuffer
 {
 private:
-    uint8_t frame_width;
-    uint8_t frame_height;
     size_t buffer_size;
     Framebuffer_format format;
 
@@ -51,8 +57,11 @@ private:
 public:
 
     uint8_t *buffer;
+    uint8_t frame_width;
+    uint8_t frame_height;
 
     Framebuffer(size_t width, size_t height, Framebuffer_format format);
+    Framebuffer(frame_data_t data, Framebuffer_format format);
     ~Framebuffer();
 
     void fill(Framebuffer_color c);
