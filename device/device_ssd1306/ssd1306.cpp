@@ -141,6 +141,11 @@ void SSD1306::show_render_area(uint8_t *data_buffer, const render_area_t buffer_
     }
 }
 
+void SSD1306::show()
+{
+    this->show_render_area(this->buffer,this->compute_render_area(0,SSD1306_WIDTH-1,0,SSD1306_HEIGHT-1));
+}
+
 void SSD1306::init_display_vertical_shift(uint8_t value)
 {
     assert((value >= 0) & (value <= 63));
