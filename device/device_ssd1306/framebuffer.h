@@ -61,7 +61,7 @@ public:
     uint8_t frame_height;
 
     Framebuffer(size_t width, size_t height, Framebuffer_format format);
-    Framebuffer(frame_data_t data, Framebuffer_format format);
+    // Framebuffer(frame_data_t data, Framebuffer_format format);
     ~Framebuffer();
 
     void fill(Framebuffer_color c);
