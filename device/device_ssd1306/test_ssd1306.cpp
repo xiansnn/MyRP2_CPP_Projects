@@ -126,6 +126,24 @@ void test_scrolling(SSD1306 *display)
     sleep_ms(5000);
     display->vertical_scroll(false, scroll_data);
 };
+void test_line(SSD1306 *display)
+{
+    int y0,x1,y1;
+    display->clear_buffer_and_show_GDDRAM();
+    x1=64;
+    y1=70;
+    y0=-10;
+
+    for (int x = -10; x < 138; x++)
+    {
+        Framebuffer_color c = Framebuffer_color::white;
+        display->line(x, y0, x1, y1, c);
+        display->show();
+        c = Framebuffer_color::black;
+        display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
+        display->show();
+    }
+};
 void test_fb_line(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
@@ -150,6 +168,7 @@ void test_fb_line(SSD1306 *display)
             display->show();
         }
     }
+
     sleep_ms(1000);
     for (int i = 0; i < 2; i++)
     {
@@ -175,6 +194,7 @@ void test_fb_line(SSD1306 *display)
     }
     sleep_ms(1000);
 };
+
 void test_fb_hline(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
@@ -250,65 +270,75 @@ void test_fb_circle(SSD1306 *display)
     display->show();
     sleep_ms(2000);
 }
+
 void test_text_and_graph(SSD1306 *display)
 {
     display->clear_buffer_and_show_GDDRAM();
+    uint8_t w = font_8x8[FONT_WIDTH];
+    uint8_t h = font_8x8[FONT_HEIGHT];
+
+    // draw titles
     frame_data_t title_area{
         .anchor_x = 0,
-        .anchor_y = 40,
-        .width = 64,
-        .height = 24};
+        .anchor_y = h * 6,
+        .width = w * 8,
+        .height = h * 2};
     Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
-
     title.text(font_8x8, "ROLL:", 0, 0);
-    title.text(font_8x8, "PITCH:", 0, 16);
+    title.text(font_8x8, "PITCH:", 0, h);
     display->show(&title, title_area.anchor_x, title_area.anchor_y);
-    sleep_ms(500);
+
+    // draw values
+    frame_data_t values_area{
+        .anchor_x = w * 8,
+        .anchor_y = h * 6,
+        .width = w * 8,
+        .height = h * 2};
+    Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
+
     // draw graph
     frame_data_t graph_area{
-        .anchor_x = 20,
+        .anchor_x = 16,
         .anchor_y = 0,
-        .width = 88,
-        .height = 31};
-
+        .width = w * 12,
+        .height = h * 5};
     Framebuffer graph = Framebuffer(graph_area.width, graph_area.height, Framebuffer_format::MONO_VLSB);
     graph.fill(Framebuffer_color::black);
     display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
-    // draw values
-    frame_data_t values_area{
-        .anchor_x = 64,
-        .anchor_y = 40,
-        .width = 64,
-        .height = 24};
 
-    Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
     int roll, pitch;
 
-    for (int i = -45; i < 45; i++)
+    for (int i = -90; i < 90; i++)
     {
         values.clear_buffer();
         roll = i;
-        pitch = i;
+        // pitch = i;
+        pitch = i / 3;
         std::string roll_str = std::to_string(roll) + " " + DEGREE;
         std::string pitch_str = std::to_string(pitch) + " " + DEGREE;
         values.text(font_8x8, roll_str, 0, 0);
-        values.text(font_8x8, pitch_str, 0, 16);
+        values.text(font_8x8, pitch_str, 0, h);
 
         float xc = graph_area.width / 2;
         float yc = graph_area.height / 2;
-        float yl = graph_area.height / 2 - pitch / 2;
-        float t = tan(std::numbers::pi / 180.0 * roll);
-        float dy1 = xc * t;
-        int x0 = 0;
-        int y0 = yl + dy1;
-        int x1 = graph_area.width - 1;
-        int y1 = yl - dy1;
+        float yl = graph_area.height / 2 - pitch;
+        float radius = yc - 2; // radius -2 to fit inside the rectangle
+
+        // float tan_roll = tan(std::numbers::pi / 180.0 * roll);
+        float sin_roll = sin(std::numbers::pi / 180.0 * roll);
+        float cos_roll = cos(std::numbers::pi / 180.0 * roll);
+        // float dy1 = xc * tan_roll;
+        int x0 = xc - radius * cos_roll;
+        int y0 = yl - radius * sin_roll;
+        int x1 = xc + radius * cos_roll;
+        int y1 = yl + radius * sin_roll;
         graph.rect(0, 0, graph_area.width, graph_area.height); // point coordinates are relative to the local frame
-        graph.circle(yc, xc, yc);
+        graph.circle(radius, xc, yl);
         graph.line(x0, y0, x1, y1);
         display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
         display->show(&values, values_area.anchor_x, values_area.anchor_y);
         graph.line(x0, y0, x1, y1, Framebuffer_color::black);
+        graph.circle(radius, xc, yl, false, Framebuffer_color::black);
         sleep_ms(50);
     }
     sleep_ms(1000);
@@ -451,6 +481,7 @@ int main()
         // test_scrolling(&display);
 
         // test_fb_line(&display);
+        test_line(&display);
         // test_fb_hline(&display);
         // test_fb_vline(&display);
         // test_fb_rect(&display);
@@ -458,7 +489,7 @@ int main()
         // test_fb_in_fb(&display);
         // test_text_and_graph(&display);
         // test_full_screen_text(&display);
-        test_text_stream(&display);
+        // test_text_stream(&display);
     }
 
     return 0;
