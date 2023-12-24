@@ -126,13 +126,13 @@ void test_scrolling(SSD1306 *display)
     sleep_ms(5000);
     display->vertical_scroll(false, scroll_data);
 };
-void test_line(SSD1306 *display)
+void test_outofframe_line(SSD1306 *display)
 {
-    int y0,x1,y1;
+    int y0, x1, y1;
     display->clear_buffer_and_show_GDDRAM();
-    x1=64;
-    y1=70;
-    y0=-10;
+    x1 = 64;
+    y1 = 70;
+    y0 = -10;
 
     for (int x = -10; x < 138; x++)
     {
@@ -140,7 +140,7 @@ void test_line(SSD1306 *display)
         display->line(x, y0, x1, y1, c);
         display->show();
         c = Framebuffer_color::black;
-        display->line(x, 0, SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, c);
+        display->line(x, y0, x1, y1, c);
         display->show();
     }
 };
@@ -345,6 +345,9 @@ void test_text_and_graph(SSD1306 *display)
 }
 void test_full_screen_text(SSD1306 *display)
 {
+    const unsigned char *current_font;
+    current_font = font_8x8;
+
     display->clear_buffer_and_show_GDDRAM();
     uint8_t c = 31;
     std::string s{""};
@@ -353,11 +356,11 @@ void test_full_screen_text(SSD1306 *display)
     {
         for (size_t j = 0; j < 16; j++)
         {
-            x = j * font_8x8[FONT_WIDTH];
-            y = i * font_8x8[FONT_HEIGHT];
+            x = j * current_font[FONT_WIDTH];
+            y = i * current_font[FONT_HEIGHT];
             c += 1;
             s = c;
-            display->text(font_8x8, s, x, y);
+            display->text(current_font, s, x, y);
             display->show();
         }
     }
@@ -367,106 +370,153 @@ void test_full_screen_text(SSD1306 *display)
     {
         for (size_t j = 0; j < 16; j++)
         {
-            x = j * font_8x8[FONT_WIDTH];
-            y = i * font_8x8[FONT_HEIGHT];
+            x = j * current_font[FONT_WIDTH];
+            y = i * current_font[FONT_HEIGHT];
             c += 1;
             s = c;
-            display->text(font_8x8, s, x, y);
+            display->text(current_font, s, x, y);
             display->show();
         }
     }
     sleep_ms(1000);
 }
-void test_text_stream(SSD1306 *display)
+// void test_text_stream(SSD1306 *display)
+// {
+//     pr_D4.hi();
+//     display->clear_buffer_and_show_GDDRAM();
+//     pr_D4.lo(); // 25 ms
+
+//     uint8_t w = font_8x8[FONT_WIDTH];
+//     uint8_t h = font_8x8[FONT_HEIGHT];
+//     uint8_t nb_text_line = SSD1306_HEIGHT / h;
+
+//     for (int i = 0; i < nb_text_line; i++)
+//     {
+//         frame_data_t data = {
+//             .anchor_x = 120,
+//             .anchor_y = i * h,
+//             .width = w,
+//             .height = h};
+//         Framebuffer degree_unit = Framebuffer(w, h, Framebuffer_format::MONO_VLSB);
+//         degree_unit.text(font_8x8, DEGREE, 0, 0);
+//         display->show(&degree_unit, data);
+//     }
+
+//     for (int i = 0; i < nb_text_line; i++)
+//     {
+//         frame_data_t title_frame = {
+//             .anchor_x = 0,
+//             .anchor_y = i * h,
+//             .width = w * 2,
+//             .height = h};
+//         Framebuffer title = Framebuffer(title_frame.width, title_frame.height, Framebuffer_format::MONO_VLSB);
+//         title.text(font_8x8, std::to_string(i) + ":", 0, 0);
+//         display->show(&title, title_frame);
+//     }
+
+//     Framebuffer *value_frames[nb_text_line];
+//     frame_data_t data[nb_text_line];
+//     for (int i = 0; i < nb_text_line; i++)
+//     {
+//         data[i] = {
+//             .anchor_x = w * 2,
+//             .anchor_y = i * h,
+//             .width = w * 13,
+//             .height = h};
+//         value_frames[i] = new Framebuffer(data[i].width, data[i].height, Framebuffer_format::MONO_VLSB);
+//     }
+//     std::ostringstream str_values[nb_text_line];
+//     for (int value = -180; value < 180; value += 1)
+//     {
+//         uint8_t value_length = std::to_string(value).length();
+//         for (int i = 0; i < nb_text_line; i++)
+//         {
+//             if (i == 0)
+//             {
+//                 pr_D5.hi();
+//                 value_frames[i]->text(font_8x8, std::to_string(value_length), 15, 0);
+//                 pr_D5.lo(); // 323 us
+//                 pr_D7.hi();
+//                 display->show(value_frames[i], data[i]);
+//                 pr_D7.lo(); // 3.27 ms
+//             }
+//             else
+//             {
+//                 pr_D6.hi();
+//                 str_values[i].width(13);
+//                 // (value < 100) ? str_values[i].precision(3) : str_values[i].precision(4);
+//                 str_values[i].precision((value < 0) ? value_length + 1 : value_length + 2);
+//                 str_values[i].fill('_');
+//                 str_values[i].setf(std::ios_base::right, std::ios_base::adjustfield);
+//                 str_values[i].setf(std::ios_base::showpos);
+//                 str_values[i] << (float)value;
+//                 value_frames[i]->text(font_8x8, str_values[i].str(), 0, 0);
+//                 pr_D6.lo(); // 395 us pour les chaines 13 char et 247 us pour les chaines 7 char
+//                 pr_D7.hi();
+//                 display->show(value_frames[i], data[i]);
+//                 pr_D7.lo();
+//             }
+//             value_frames[i]->clear_buffer();
+//             str_values[i].str("");
+//         }
+//         sleep_ms(1);
+//     }
+
+//     for (int i = 0; i < nb_text_line; i++)
+//         delete value_frames[i];
+
+//     sleep_ms(1000);
+// }
+
+void test_font_size(SSD1306 *display)
 {
-    pr_D4.hi();
     display->clear_buffer_and_show_GDDRAM();
-    pr_D4.lo(); // 25 ms
+    const unsigned char *current_font[4]{font_5x8, font_8x8, font_12x16, font_16x32};
+    uint8_t x{0}, y{0};
+    std::string s{"test"};
 
-    uint8_t w = font_8x8[FONT_WIDTH];
-    uint8_t h = font_8x8[FONT_HEIGHT];
-    uint8_t nb_text_line = SSD1306_HEIGHT / h;
+    display->text(current_font[0], s, x, y);
+    y += current_font[0][FONT_HEIGHT];
 
-    for (int i = 0; i < nb_text_line; i++)
-    {
-        frame_data_t data = {
-            .anchor_x = 120,
-            .anchor_y = i * h,
-            .width = w,
-            .height = h};
-        Framebuffer degree_unit = Framebuffer(w, h, Framebuffer_format::MONO_VLSB);
-        degree_unit.text(font_8x8, DEGREE, 0, 0);
-        display->show(&degree_unit, data);
-    }
+    display->text(current_font[1], s, x, y);
+    y += current_font[1][FONT_HEIGHT];
 
-    for (int i = 0; i < nb_text_line; i++)
-    {
-        frame_data_t title_frame = {
-            .anchor_x = 0,
-            .anchor_y = i * h,
-            .width = w * 2,
-            .height = h};
-        Framebuffer title = Framebuffer(title_frame.width, title_frame.height, Framebuffer_format::MONO_VLSB);
-        title.text(font_8x8, std::to_string(i) + ":", 0, 0);
-        display->show(&title, title_frame);
-    }
+    display->text(current_font[2], s, x, y);
+    y += current_font[2][FONT_HEIGHT];
 
-    Framebuffer *value_frames[nb_text_line];
-    frame_data_t data[nb_text_line];
-    for (int i = 0; i < nb_text_line; i++)
-    {
-        data[i] = {
-            .anchor_x = w * 2,
-            .anchor_y = i * h,
-            .width = w * 13,
-            .height = h};
-        value_frames[i] = new Framebuffer(data[i].width, data[i].height, Framebuffer_format::MONO_VLSB);
-    }
-    std::ostringstream str_values[nb_text_line];
-    for (int value = -180; value < 180; value += 1)
-    {
-        uint8_t value_length = std::to_string(value).length();
-        for (int i = 0; i < nb_text_line; i++)
-        {
-            if (i == 0)
-            {
-                pr_D5.hi();
-                value_frames[i]->text(font_8x8, std::to_string(value_length), 15, 0);
-                pr_D5.lo(); // 323 us
-                pr_D7.hi();
-                display->show(value_frames[i], data[i]);
-                pr_D7.lo(); // 3.27 ms
-            }
-            else
-            {
-                pr_D6.hi();
-                str_values[i].width(13);
-                // (value < 100) ? str_values[i].precision(3) : str_values[i].precision(4);
-                str_values[i].precision((value < 0) ? value_length + 1 : value_length + 2);
-                str_values[i].fill('_');
-                str_values[i].setf(std::ios_base::right, std::ios_base::adjustfield);
-                str_values[i].setf(std::ios_base::showpos);
-                str_values[i] << (float)value;
-                value_frames[i]->text(font_8x8, str_values[i].str(), 0, 0);
-                pr_D6.lo(); // 395 us pour les chaines 13 char et 247 us pour les chaines 7 char
-                pr_D7.hi();
-                display->show(value_frames[i], data[i]);
-                pr_D7.lo();
-            }
-            value_frames[i]->clear_buffer();
-            str_values[i].str("");
-        }
-        sleep_ms(1);
-    }
+    display->text(current_font[3], s, x, y);
+    y += current_font[3][FONT_HEIGHT];
 
-    for (int i = 0; i < nb_text_line; i++)
-        delete value_frames[i];
+    display->show();
 
-    sleep_ms(1000);
+    sleep_ms(500);
 }
+// void test_text_stream_2(SSD1306 *display)
+// {
+//     pr_D4.hi();
+//     display->clear_buffer_and_show_GDDRAM();
+//     pr_D4.lo(); // 25 ms
+//     const unsigned char *current_font{font_8x8};
+//     std::string text = "test";
+//     // std::string [] lines{""}; // faire un ttableau de 4 ou 5 string avec des formatages differents
+//     int n = 10;
+//     float f = 10.5;
+//     std::ostringstream text_stream;
+
+//     text_stream << text<<" "<<f;
+//     std::string s = text_stream.str();
+
+//     uint8_t w = current_font[FONT_WIDTH];
+//     uint8_t h = current_font[FONT_HEIGHT];
+//     // uint8_t nb_text_line = SSD1306_HEIGHT / h;
+//     // printf(s.c_str(),"\n");
+//     display->text(current_font, s.c_str(), 0, 0);
+//     display->show();
+
+//     sleep_ms(1000);
+// }
 
 int main()
-
 {
     stdio_init_all();
     // create I2C bus hw peripheral and display
@@ -475,21 +525,23 @@ int main()
 
     while (true)
     {
-        // test_blink(&display);
-        // test_contrast(&display);
-        // test_addressing_mode(&display);
-        // test_scrolling(&display);
+        test_blink(&display);
+        test_contrast(&display);
+        test_addressing_mode(&display);
+        test_scrolling(&display);
 
-        // test_fb_line(&display);
-        test_line(&display);
-        // test_fb_hline(&display);
-        // test_fb_vline(&display);
-        // test_fb_rect(&display);
-        // test_fb_circle(&display);
-        // test_fb_in_fb(&display);
-        // test_text_and_graph(&display);
-        // test_full_screen_text(&display);
+        test_fb_line(&display);
+        test_outofframe_line(&display);
+        test_fb_hline(&display);
+        test_fb_vline(&display);
+        test_fb_rect(&display);
+        test_fb_circle(&display);
+        test_fb_in_fb(&display);
+        test_text_and_graph(&display);
+        test_font_size(&display);
+        test_full_screen_text(&display);
         // test_text_stream(&display);
+        // test_text_stream_2(&display);
     }
 
     return 0;
