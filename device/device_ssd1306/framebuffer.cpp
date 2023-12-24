@@ -42,7 +42,7 @@ void Framebuffer::clear_buffer()
     memset(this->buffer, 0x00, this->buffer_size);
 }
 
-void Framebuffer::pixel(uint8_t x, uint8_t y, Framebuffer_color c)
+void Framebuffer::pixel(int x, int y, Framebuffer_color c)
 {
     assert(format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
 
@@ -73,7 +73,7 @@ void Framebuffer::vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c)
         this->pixel(x, y + i, c);
 }
 
-void Framebuffer::line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, Framebuffer_color c) // TODO clipping line outside frame
+void Framebuffer::line(int x0, int y0, int x1, int y1, Framebuffer_color c) // TODO clipping line outside frame
 {
     int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;

@@ -52,7 +52,7 @@ private:
     void ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c);
 
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y);
-    void pixel(uint8_t x, uint8_t y, Framebuffer_color c = Framebuffer_color::white);
+    void pixel(int x, int y, Framebuffer_color c = Framebuffer_color::white);
 
 public:
 
@@ -68,7 +68,7 @@ public:
     void clear_buffer();
     void hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c = Framebuffer_color::white);
     void vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c = Framebuffer_color::white);
-    void line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, Framebuffer_color c = Framebuffer_color::white);
+    void line(int x1, int y1, int x2, int y2, Framebuffer_color c = Framebuffer_color::white);
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y);
