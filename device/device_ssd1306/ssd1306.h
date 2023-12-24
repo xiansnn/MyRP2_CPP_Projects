@@ -3,7 +3,7 @@
 
 #include "commands_SSD1306.h"
 #include "pico/stdlib.h"
-#include "hw_I2C/hw_i2c.h"
+#include "hw_i2c.h"
 #include "framebuffer.h"
 
 // Time_frame_interval
