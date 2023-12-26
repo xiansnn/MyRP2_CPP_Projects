@@ -12,7 +12,8 @@
 #define SG90_H
 
 #include "pico/stdlib.h"
-#include "hw_PWM/hw_pwm.h"
+#include "hw_pwm.h"
+
 
 #define STEP_ns 2000        // arbitrary value, gives resolution step_ns/(pos_max_us - pos_min_us) = 100ppm.
 #define PHASE_CORRECT false // if PHASE_CORRECt = true, channel B is used as a synch pulse in the begining of channel A pulse

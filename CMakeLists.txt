@@ -22,7 +22,8 @@ add_compile_options(-Wall
 
 include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
                     ${PROJECT_SOURCE_DIR}/device/device_ssd1306
-                    ${PROJECT_SOURCE_DIR}/hw/hw_I2C)
+                    ${PROJECT_SOURCE_DIR}/hw/hw_I2C
+                    ${PROJECT_SOURCE_DIR}/hw/hw_PWM)
 
 add_subdirectory(utilities)
 add_subdirectory(hw)
