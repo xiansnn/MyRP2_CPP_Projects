@@ -73,7 +73,7 @@ void Framebuffer::vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c)
         this->pixel(x, y + i, c);
 }
 
-void Framebuffer::line(int x0, int y0, int x1, int y1, Framebuffer_color c) // TODO clipping line outside frame
+void Framebuffer::line(int x0, int y0, int x1, int y1, Framebuffer_color c)
 {
     int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
@@ -212,16 +212,32 @@ void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anch
 {
     uint8_t font_width = font[0];
 
-    char *cstr = new char[text.length() + 1];
-    std::strcpy(cstr, text.c_str());
+    char *c_str = new char[text.length() + 1];
+    std::strcpy(c_str, text.c_str());
 
     uint16_t n = 0;
-    while (cstr[n] != '\0')
+    while (c_str[n] != '\0')
     {
-        drawChar(font, cstr[n], anchor_x + (n * font_width), anchor_y);
+        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
         n++;
     }
-    delete[] cstr;
+    delete[] c_str;
+}
+
+void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y)
+{
+    uint8_t font_width = font[0];
+
+    // char *cstr = new char[text.length() + 1];
+    // std::strcpy(cstr, text.c_str());
+
+    uint16_t n = 0;
+    while (c_str[n] != '\0')
+    {
+        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
+        n++;
+    }
+    // delete[] cstr;
 }
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)

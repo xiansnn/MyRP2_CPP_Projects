@@ -4,7 +4,7 @@
 #include "pico/stdlib.h"
 #include <string>
 
-#define  SSD1306_ASCII_FULL
+#define SSD1306_ASCII_FULL
 #define FONT_WIDTH 0
 #define FONT_HEIGHT 1
 #include "5x8_font.h"
@@ -32,8 +32,7 @@ typedef struct struct_frame_data
     int anchor_y{0};
     int width{0};
     int height{0};
-}frame_data_t;
-
+} frame_data_t;
 
 class Framebuffer
 {
@@ -42,20 +41,19 @@ private:
     Framebuffer_format format;
 
     /// @brief dosn't work! waiting to be fixed
-    /// @param x_center 
-    /// @param y_center 
-    /// @param x_radius 
-    /// @param y_radius 
-    /// @param fill 
-    /// @param quadrant 
-    /// @param c 
+    /// @param x_center
+    /// @param y_center
+    /// @param x_radius
+    /// @param y_radius
+    /// @param fill
+    /// @param quadrant
+    /// @param c
     void ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c);
 
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y);
     void pixel(int x, int y, Framebuffer_color c = Framebuffer_color::white);
 
 public:
-
     uint8_t *buffer;
     uint8_t frame_width;
     uint8_t frame_height;
@@ -72,6 +70,7 @@ public:
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y);
-    };
+    void text(const unsigned char *font, char * c_str, uint8_t anchor_x, uint8_t anchor_y);
+};
 
 #endif // FRAMEBUFFER_H
