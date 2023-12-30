@@ -75,7 +75,7 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
     this->show_render_area(image, area);
 }
 
-void SSD1306::clear_buffer_and_show_GDDRAM()
+void SSD1306::clear_buffer_and_show_full_screen()
 {
     render_area_t full_screen_area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     memset(this->buffer, 0x00, full_screen_area.buflen);

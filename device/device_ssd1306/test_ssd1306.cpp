@@ -35,7 +35,7 @@ init_config_SSD1306_t cfg_ssd1306{
 
 void test_contrast(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     render_area_t area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     display->fill_pattern_and_show_GDDRAM(0x55, area);
     area = SSD1306::compute_render_area(32, 96, 16, 32);
@@ -56,7 +56,7 @@ void test_addressing_mode(SSD1306 *display)
     uint8_t image[128 * 8]{0x00};
     memset(image, 0xFE, sizeof(image));
     sleep_ms(1000);
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     render_area_t area;
     // HORIZONTAL_ADDRESSING_MODE
     for (size_t i = 0; i < 4; i++)
@@ -65,7 +65,7 @@ void test_addressing_mode(SSD1306 *display)
         area = SSD1306::compute_render_area(10 * i, 90 + 10 * i, 8 * i, 2 + 8 * i);
         display->show_render_area(image, area, HORIZONTAL_ADDRESSING_MODE);
         sleep_ms(1000);
-        display->clear_buffer_and_show_GDDRAM();
+        display->clear_buffer_and_show_full_screen();
     }
     // VERTICAL_ADDRESSING_MODE
     for (size_t i = 0; i < 4; i++)
@@ -74,7 +74,7 @@ void test_addressing_mode(SSD1306 *display)
         area = SSD1306::compute_render_area(40 + 10 * i, 50 + 10 * i, 8 * i, 30 + 8 * i);
         display->show_render_area(image, area, VERTICAL_ADDRESSING_MODE);
         sleep_ms(1000);
-        display->clear_buffer_and_show_GDDRAM();
+        display->clear_buffer_and_show_full_screen();
     }
     // PAGE_ADDRESSING_MODE
     for (size_t i = 0; i < 8; i++)
@@ -89,7 +89,7 @@ void test_addressing_mode(SSD1306 *display)
 void test_blink(SSD1306 *display)
 {
     render_area_t area;
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     display->fill_pattern_and_show_GDDRAM(0x81, area);
     area = SSD1306::compute_render_area(64, 96, 15, 40);
@@ -104,7 +104,7 @@ void test_blink(SSD1306 *display)
 };
 void test_scrolling(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     // render 3 cute little raspberries
     render_area_t area = SSD1306::compute_render_area(0, IMG_WIDTH - 1, 0, IMG_HEIGHT - 1);
     uint8_t offset = 5 + IMG_WIDTH; // 5px padding
@@ -129,7 +129,7 @@ void test_scrolling(SSD1306 *display)
 void test_outofframe_line(SSD1306 *display)
 {
     int y0, x1, y1;
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     x1 = 64;
     y1 = 70;
     y0 = -10;
@@ -146,7 +146,7 @@ void test_outofframe_line(SSD1306 *display)
 };
 void test_fb_line(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     Framebuffer_color c = Framebuffer_color::black;
     render_area_t full_screen_area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
     for (int i = 0; i < 2; i++)
@@ -197,7 +197,7 @@ void test_fb_line(SSD1306 *display)
 
 void test_fb_hline(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     display->hline(0, 0, 32); //, Framebuffer_color::white);
     display->show();
     sleep_ms(1000);
@@ -214,7 +214,7 @@ void test_fb_hline(SSD1306 *display)
 }
 void test_fb_vline(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     display->vline(0, 0, 16); //, Framebuffer_color::white);
     display->show();
     sleep_ms(1000);
@@ -232,7 +232,7 @@ void test_fb_vline(SSD1306 *display)
 
 void test_fb_rect(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     display->rect(0, 0, 128, 64); //, false, Framebuffer_color::white);
     display->show();
     sleep_ms(1000);
@@ -242,7 +242,7 @@ void test_fb_rect(SSD1306 *display)
 }
 void test_fb_in_fb(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     display->rect(0, 0, SSD1306_WIDTH, SSD1306_HEIGHT); //, false, Framebuffer_color::white);
     display->rect(10, 10, 108, 44, true);               //, true, Framebuffer_color::black);
     display->line(5, 60, 120, 5, Framebuffer_color::black);
@@ -262,7 +262,7 @@ void test_fb_in_fb(SSD1306 *display)
 
 void test_fb_circle(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     display->circle(50, 63, 31);
     display->show();
     sleep_ms(1000);
@@ -273,7 +273,7 @@ void test_fb_circle(SSD1306 *display)
 
 void test_text_and_graph(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     uint8_t w = font_8x8[FONT_WIDTH];
     uint8_t h = font_8x8[FONT_HEIGHT];
 
@@ -284,8 +284,10 @@ void test_text_and_graph(SSD1306 *display)
         .width = w * 8,
         .height = h * 2};
     Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
-    title.text(font_8x8, "ROLL:", 0, 0);
-    title.text(font_8x8, "PITCH:", 0, h);
+    std::string s = "ROLL:";
+    title.text(font_8x8, s, 0, 0);
+    char c_str[] = "PITCH:";
+    title.text(font_8x8, c_str, 0, h);
     display->show(&title, title_area.anchor_x, title_area.anchor_y);
 
     // draw values
@@ -348,7 +350,7 @@ void test_full_screen_text(SSD1306 *display)
     const unsigned char *current_font;
     current_font = font_8x8;
 
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     uint8_t c = 31;
     std::string s{""};
     uint8_t x{0}, y{0};
@@ -364,7 +366,7 @@ void test_full_screen_text(SSD1306 *display)
             display->show();
         }
     }
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     sleep_ms(1000);
     for (size_t i = 0; i < 8; i++)
     {
@@ -383,7 +385,7 @@ void test_full_screen_text(SSD1306 *display)
 // void test_text_stream(SSD1306 *display)
 // {
 //     pr_D4.hi();
-//     display->clear_buffer_and_show_GDDRAM();
+//     display->clear_buffer_and_show_full_screen();
 //     pr_D4.lo(); // 25 ms
 
 //     uint8_t w = font_8x8[FONT_WIDTH];
@@ -470,7 +472,7 @@ void test_full_screen_text(SSD1306 *display)
 
 void test_font_size(SSD1306 *display)
 {
-    display->clear_buffer_and_show_GDDRAM();
+    display->clear_buffer_and_show_full_screen();
     const unsigned char *current_font[4]{font_5x8, font_8x8, font_12x16, font_16x32};
     uint8_t x{0}, y{0};
     std::string s{"test"};
@@ -494,7 +496,7 @@ void test_font_size(SSD1306 *display)
 // void test_text_stream_2(SSD1306 *display)
 // {
 //     pr_D4.hi();
-//     display->clear_buffer_and_show_GDDRAM();
+//     display->clear_buffer_and_show_full_screen();
 //     pr_D4.lo(); // 25 ms
 //     const unsigned char *current_font{font_8x8};
 //     std::string text = "test";

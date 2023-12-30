@@ -86,7 +86,7 @@ public:
     void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y);
     void show(Framebuffer *frame, frame_data_t data);
     void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
-    void clear_buffer_and_show_GDDRAM();
+    void clear_buffer_and_show_full_screen();
 
     void set_display_from_RAM();
     void set_all_pixel_ON();
