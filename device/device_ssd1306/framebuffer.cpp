@@ -180,13 +180,13 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
 //     this->buffer[byte_idx] ^= byte;
 // }
 
-void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y)
+void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
 {
     if (!font || c < 32)
         return;
 
-    uint8_t font_width = font[0];
-    uint8_t font_height = font[1];
+    uint8_t font_width = font[FONT_WIDTH];
+    uint8_t font_height = font[FONT_HEIGHT];
 
     uint16_t seek = (c - 32) * (font_width * font_height) / 8 + 2;
 
@@ -197,7 +197,7 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
         for (uint8_t y = 0; y < font_height; y++)
         {
             if (font[seek] >> b_seek & 0b00000001)
-                this->pixel(x + anchor_x, y + anchor_y);
+                this->pixel(x + anchor_x, y + anchor_y, color);
             b_seek++;
             if (b_seek == 8)
             {
@@ -208,36 +208,25 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
     }
 }
 
-void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y)
+void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
 {
-    uint8_t font_width = font[0];
-
     char *c_str = new char[text.length() + 1];
     std::strcpy(c_str, text.c_str());
 
-    uint16_t n = 0;
-    while (c_str[n] != '\0')
-    {
-        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
-        n++;
-    }
+    this->text(font, c_str, anchor_x, anchor_y, color);
+
     delete[] c_str;
 }
 
-void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y)
+void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
 {
-    uint8_t font_width = font[0];
-
-    // char *cstr = new char[text.length() + 1];
-    // std::strcpy(cstr, text.c_str());
-
+    uint8_t font_width = font[FONT_WIDTH];
     uint16_t n = 0;
     while (c_str[n] != '\0')
     {
-        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
+        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y, color);
         n++;
     }
-    // delete[] cstr;
 }
 
 void Framebuffer::circle(int radius, int x_center, int y_center, bool fill, Framebuffer_color c)
@@ -301,3 +290,5 @@ fin de procédure ;
         m += 8 * x + 4;
     }
 }
+
+
