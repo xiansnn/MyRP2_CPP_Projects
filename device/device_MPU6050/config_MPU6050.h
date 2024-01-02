@@ -2,7 +2,7 @@
 #define CONFIG_MPU6050_H
 
 //-----------------------------------------------------------------------------
-//                               MPU config
+//                               MPU device_config
 //-----------------------------------------------------------------------------
 
 //set Digital Low-Pass Filter bandwidth
@@ -41,7 +41,7 @@
 #define ACCEL_RANGE_16G 0x03 << 3
 
 
-// ==== Register 35 0x23– FIFO Enable : config which measures will be written into the FIFO
+// ==== Register 35 0x23– FIFO Enable : device_config which measures will be written into the FIFO
 // values to be selected :
 #define FIFO_NO_SELECTION 0x00
 #define GYRO_FIFO_EN XG_FIFO_EN | YG_FIFO_EN | ZG_FIFO_EN
@@ -89,7 +89,7 @@
 // end values
 
 // ==== Register 106 0x6A– User Control
-// config FIFO, I2C, signal path
+// device_config FIFO, I2C, signal path
 #define FIFO_DISABLE 0x00   // disable FIFO operations
 #define FIFO_EN 0x40        // enables FIFO operations
 #define I2C_MST_EN 0x20     // enables I2C master mode

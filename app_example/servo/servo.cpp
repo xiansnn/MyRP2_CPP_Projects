@@ -4,7 +4,7 @@
 #include "probe.h"
 
 //-----------------------------------------------------------------------------
-//                             MPU6050 I2C bus and sensor config
+//                             MPU6050 I2C bus and sensor device_config
 config_master_i2c_t i2c_bus_cfg{
     .i2c = i2c0,
     .sda_pin = 8,
@@ -19,7 +19,7 @@ config_MPU6050_t sensor_config{
     .FIFO_SELECTED_SENSORS = FIFO_NO_SELECTION,
     .FIFO_OP = FIFO_DISABLE};
 //-----------------------------------------------------------------------------
-//                             SG90 config
+//                             SG90 device_config
 config_sg90_t motor_config{
     .command_pin = 7,
     .sync_pin = 6,

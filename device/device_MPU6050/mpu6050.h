@@ -62,7 +62,7 @@ class MPU6050
 {
 private:
     hw_I2C_master *master;
-    config_MPU6050_t config;
+    config_MPU6050_t device_config;
     float acceleration_factor{};
     float gyro_factor{};
     float temperature_gain = 1.0 / 340.0;

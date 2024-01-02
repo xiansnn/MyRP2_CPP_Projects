@@ -62,7 +62,7 @@ class SSD1306 : public Framebuffer
 {
 private:
     hw_I2C_master *i2c_master;
-    init_config_SSD1306_t config;
+    init_config_SSD1306_t device_config;
 
     void init();
     void init_MUX_ratio(uint8_t value);
@@ -78,7 +78,7 @@ private:
     void send_buf(uint8_t buf[], size_t buflen);
 
 public:
-    SSD1306(hw_I2C_master *master, init_config_SSD1306_t config);
+    SSD1306(hw_I2C_master *master, init_config_SSD1306_t device_config);
     void set_contrast(uint8_t value);
     static render_area_t compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
     void show_render_area(uint8_t *data_buffer, render_area_t screen_area, uint8_t addressing_mode = HORIZONTAL_ADDRESSING_MODE);

@@ -34,21 +34,21 @@ PWM::PWM(uint gpio_ch_A,
     gpio_set_function(gpio_ch_A, GPIO_FUNC_PWM);
     gpio_set_function(gpio_ch_B, GPIO_FUNC_PWM);
     this->slice = pwm_gpio_to_slice_num(gpio_ch_A);
-    pwm_config config = pwm_get_default_config();
-    pwm_config_set_output_polarity(&config, ch_A_inverted, ch_B_inverted);
-    pwm_config_set_phase_correct(&config, phase_correct);
-    pwm_config_set_clkdiv_mode(&config, PWM_DIV_FREE_RUNNING);
+    pwm_config device_config = pwm_get_default_config();
+    pwm_config_set_output_polarity(&device_config, ch_A_inverted, ch_B_inverted);
+    pwm_config_set_phase_correct(&device_config, phase_correct);
+    pwm_config_set_clkdiv_mode(&device_config, PWM_DIV_FREE_RUNNING);
 
     this->step_ns = step_ns;
     this->period_us = period_us;
     uint ph = phase_correct ? 2 : 1;
     uint32_t clk_sys_period_ns = 1000000000/clock_get_hz(clk_sys);
     float div = ((float)this->step_ns / (clk_sys_period_ns * ph)); 
-    pwm_config_set_clkdiv(&config, div);
+    pwm_config_set_clkdiv(&device_config, div);
     uint16_t top = ((this->period_us * 1000) / this->step_ns) - 1;
 
-    pwm_config_set_wrap(&config, top);
-    pwm_init(this->slice, &config, false);
+    pwm_config_set_wrap(&device_config, top);
+    pwm_init(this->slice, &device_config, false);
 
     PWM::slice_mask |= 0x1 << this->slice;
 }
@@ -133,17 +133,17 @@ PWMgatedMeasure::PWMgatedMeasure(uint pin_gate, uint resolution_ns, uint measure
     gpio_set_function(pin_gate, GPIO_FUNC_PWM); // ch_b
     // gpio_set_function(pin_gate-1, GPIO_FUNC_PWM); // ch_A
     this->slice = pwm_gpio_to_slice_num(pin_gate);
-    pwm_config config = pwm_get_default_config(); // TOP default value =0xffffu  and DIV = 1
-    pwm_config_set_output_polarity(&config, false, false);
-    pwm_config_set_phase_correct(&config, false);
-    pwm_config_set_clkdiv_mode(&config, PWM_DIV_B_HIGH); // counter is gated be signal on pin ch_B
+    pwm_config device_config = pwm_get_default_config(); // TOP default value =0xffffu  and DIV = 1
+    pwm_config_set_output_polarity(&device_config, false, false);
+    pwm_config_set_phase_correct(&device_config, false);
+    pwm_config_set_clkdiv_mode(&device_config, PWM_DIV_B_HIGH); // counter is gated be signal on pin ch_B
 
     this->resolution_ns = resolution_ns;
     float min_clock_step = 1000000000 / clock_get_hz(clk_sys); // in ns
     this->measure_duration_us = measure_duration_us;
     float div = ((float)resolution_ns / min_clock_step);
-    pwm_config_set_clkdiv(&config, div);
-    pwm_init(this->slice, &config, false);
+    pwm_config_set_clkdiv(&device_config, div);
+    pwm_init(this->slice, &device_config, false);
 }
 
 /**

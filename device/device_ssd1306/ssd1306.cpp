@@ -5,7 +5,7 @@ void SSD1306::send_cmd(uint8_t cmd)
 {
     // I2C write process expects a control byte followed by data
     // this "data" can be a command or data to follow up a command
-    this->i2c_master->single_byte_write(this->config.i2c_address, I2C_CMD_FLAG, cmd);
+    this->i2c_master->single_byte_write(this->device_config.i2c_address, I2C_CMD_FLAG, cmd);
 }
 
 void SSD1306::send_cmd_list(uint8_t *cmd_list, int cmd_list_size)
@@ -16,14 +16,14 @@ void SSD1306::send_cmd_list(uint8_t *cmd_list, int cmd_list_size)
 
 void SSD1306::send_buf(uint8_t buffer[], size_t buffer_size)
 {
-    this->i2c_master->burst_byte_write(this->config.i2c_address, I2C_DATA_FLAG, buffer, buffer_size);
+    this->i2c_master->burst_byte_write(this->device_config.i2c_address, I2C_DATA_FLAG, buffer, buffer_size);
 }
 
 SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config)
     : Framebuffer(SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
 {
     this->i2c_master = master;
-    this->config = init_config;
+    this->device_config = init_config;
     this->init();
 }
 
@@ -85,16 +85,16 @@ void SSD1306::clear_buffer_and_show_full_screen()
 void SSD1306::init()
 {
     this->set_display_OFF();
-    this->init_MUX_ratio(config.mux_ratio_value);
-    this->init_display_vertical_shift(config.vertical_offset);
-    this->init_RAM_start_line(config.GDDRAM_start_line);
-    this->init_SEG_scan_inverse_direction(config.scan_SEG_inverse_direction);
-    this->init_COM_scan_inverse_direction(config.scan_COM_inverse_direction);
-    this->init_COM_cfg(config.sequential_COM, config.enable_COM_L_R_remap);
-    this->set_contrast(config.contrast);
+    this->init_MUX_ratio(device_config.mux_ratio_value);
+    this->init_display_vertical_shift(device_config.vertical_offset);
+    this->init_RAM_start_line(device_config.GDDRAM_start_line);
+    this->init_SEG_scan_inverse_direction(device_config.scan_SEG_inverse_direction);
+    this->init_COM_scan_inverse_direction(device_config.scan_COM_inverse_direction);
+    this->init_COM_cfg(device_config.sequential_COM, device_config.enable_COM_L_R_remap);
+    this->set_contrast(device_config.contrast);
     this->set_display_from_RAM();
     this->set_inverse_color(false);
-    this->init_clock_frequency(config.frequency_divider, config.frequency_factor);
+    this->init_clock_frequency(device_config.frequency_divider, device_config.frequency_factor);
     this->init_charge_pump_enabled(true);
     this->set_display_ON();
 
