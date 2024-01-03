@@ -15,14 +15,12 @@ Framebuffer::Framebuffer(size_t width, size_t height, Framebuffer_format format)
         page_nb += 1;
     this->buffer_size = width * page_nb;
     this->buffer = new uint8_t[this->buffer_size];
-    // printf("create frame buffer: %d,%d,%d\n",this->frame_width,this->frame_height,this->buffer_size);
     clear_buffer();
 }
 
 Framebuffer::~Framebuffer()
 {
     delete[] this->buffer;
-    // printf("del frame buffer: %d,%d,%d\n",this->frame_width,this->frame_height,this->buffer_size);
 }
 
 void Framebuffer::fill(Framebuffer_color c)
@@ -40,6 +38,8 @@ void Framebuffer::clear_buffer()
 {
     assert(this->format == Framebuffer_format::MONO_VLSB);
     memset(this->buffer, 0x00, this->buffer_size);
+    current_char_column = 0;
+    current_char_line = 0;
 }
 
 void Framebuffer::pixel(int x, int y, Framebuffer_color c)
@@ -180,7 +180,7 @@ void Framebuffer::ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, 
 //     this->buffer[byte_idx] ^= byte;
 // }
 
-void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
+void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y)
 {
     if (!font || c < 32)
         return;
@@ -197,7 +197,10 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
         for (uint8_t y = 0; y < font_height; y++)
         {
             if (font[seek] >> b_seek & 0b00000001)
-                this->pixel(x + anchor_x, y + anchor_y, color);
+                this->pixel(x + anchor_x, y + anchor_y, this->text_config.fg_color);
+            else
+                this->pixel(x + anchor_x, y + anchor_y, this->text_config.bg_color);
+
             b_seek++;
             if (b_seek == 8)
             {
@@ -206,6 +209,13 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
             }
         }
     }
+}
+
+void Framebuffer::drawChar(char c, uint8_t char_column, uint8_t char_line)
+{
+    uint8_t anchor_x = char_column * text_config.font[FONT_WIDTH];
+    uint8_t anchor_y = char_line * text_config.font[FONT_HEIGHT];
+    drawChar(this->text_config.font, c, anchor_x, anchor_y);
 }
 
 void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
@@ -224,7 +234,88 @@ void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x,
     uint16_t n = 0;
     while (c_str[n] != '\0')
     {
-        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y, color);
+        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
+        n++;
+    }
+}
+
+void Framebuffer::set_text_config(text_config_t device_config)
+{
+    this->text_config = device_config;
+    this->max_column = this->frame_width / device_config.font[FONT_WIDTH];
+    this->max_line = this->frame_height / device_config.font[FONT_HEIGHT];
+}
+
+void Framebuffer::set_font(const unsigned char *font)
+{
+    this->text_config.font = font;
+    this->max_column = this->frame_width / text_config.font[FONT_WIDTH];
+    this->max_line = this->frame_height / text_config.font[FONT_HEIGHT];
+}
+
+void Framebuffer::next_line()
+{
+    current_char_column = 0;
+    current_char_line++;
+    if (current_char_line >= max_line)
+    {
+        current_char_line = 0;
+    }
+    clear_line();
+}
+
+void Framebuffer::next_char()
+{
+    current_char_column++;
+    if (current_char_column >= max_column)
+    {
+        next_line();
+    }
+}
+
+void Framebuffer::clear_line()
+{ // TODO ecrire 0x00 dans le buffer sur la largeur de frame et sur anchor_y
+    for (uint8_t i = 0; i < this->max_line; i++)
+    {
+        drawChar(' ', i, current_char_line);
+    }
+}
+
+void Framebuffer::print_text(const char *c_str)
+{
+    uint16_t n = 0;
+    while (c_str[n] != '\0')
+    {
+        switch (c_str[n])
+        {
+        case LINE_FEED:
+            next_line();
+            break;
+        case HORIZONTAL_TAB:
+            for (uint8_t i = 0; i < text_config.tab_size; i++)
+            {
+                drawChar(' ', current_char_column, current_char_line);
+                next_char();
+            }
+            break;
+        case BACKSPACE: // TODO
+            current_char_column--;
+            drawChar(' ', current_char_column, current_char_line);
+            break;
+        case FORM_FEED: // TODO
+            clear_buffer();
+            current_char_column = 0;
+            current_char_line = 0;
+            break;
+        case CARRIAGE_RETURN: // TODO
+            current_char_column = 0;
+            break;
+
+        default:
+            drawChar(c_str[n], current_char_column, current_char_line);
+            next_char();
+            break;
+        }
         n++;
     }
 }
@@ -290,5 +381,3 @@ fin de procédure ;
         m += 8 * x + 4;
     }
 }
-
-

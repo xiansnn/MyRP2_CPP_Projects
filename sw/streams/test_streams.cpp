@@ -34,7 +34,7 @@ init_config_SSD1306_t cfg_ssd1306{
     .frequency_divider = 1,
     .frequency_factor = 0};
 
-void test_string_and_stream_format(SSD1306 *display)
+void test_ostringstream_format(SSD1306 *display)
 {
     pr_D4.hi();
     display->clear_buffer_and_show_full_screen();
@@ -62,80 +62,96 @@ void test_string_and_stream_format(SSD1306 *display)
     display->text(current_font, stream2.str(), 0, 2 * h);
     pr_D5.lo(); // 1.246 ms
 
-    char buf[20];
-
-    pr_D6.hi();
-    sprintf(buf, "%-20s", "test");
-    display->text(current_font, buf, 0, 4 * h);
-    sprintf(buf, "%5d|%#5x|%#5o", n, n, n);
-    display->text(current_font, buf, 0, 5 * h);
-    sprintf(buf, "PI = %12.3f", f);
-    display->text(current_font, buf, 0, 6 * h);
-    pr_D6.lo(); // 0.581 ms
-
     pr_D7.hi();
     display->show();
     pr_D7.lo(); // 25.77 ms
 
-    sleep_ms(1000);
+    sleep_ms(2000);
 }
 void test_sprintf_format(SSD1306 *display)
 {
     display->clear_buffer_and_show_full_screen();
-    const unsigned char *current_font{font_5x8};
 
-    uint8_t h = current_font[FONT_HEIGHT];
-    uint8_t char_per_line = SSD1306_WIDTH / current_font[FONT_WIDTH];
+    display->set_font(font_8x8);
+
+    char *c_str = new char[display->max_line + 1];
+
 
     const char *s = "Hello";
-    // char buf[25]; // nb of char per line is 25 with 5x8 font
-    char *c_str = new char[char_per_line + 1];
+    display->print_text("\f");  // Form Feed, idem display->clear_buffer()
 
-    sprintf(c_str, "Strings:");
-    display->text(current_font, c_str, 0, 0 * h);
-    sprintf(c_str, " padding:");
-    display->text(current_font, c_str, 0, 1 * h);
-    sprintf(c_str, "  [%10s]", s);
-    display->text(current_font, c_str, 0, 2 * h);
-    sprintf(c_str, "  [%-10s]", s);
-    display->text(current_font, c_str, 0, 3 * h);
-    sprintf(c_str, "  [%*s]", 10, s);
-    display->text(current_font, c_str, 0, 4 * h);
-    sprintf(c_str, " truncating:");
-    display->text(current_font, c_str, 0, 5 * h);
-    sprintf(c_str, "  %.4s", s);
-    display->text(current_font, c_str, 0, 6 * h);
-    sprintf(c_str, "  %.*s\n", 3, s);
-    display->text(current_font, c_str, 0, 7 * h);
-
+    display->print_text("Strings:\n\tpadding:\n");
+    sprintf(c_str, "\t[%7s]\n", s);
+    display->print_text(c_str);
+    sprintf(c_str, "\t[%-7s]\n", s);
+    display->print_text(c_str);
+    sprintf(c_str, "\t[%*s]\n", 7, s);
+    display->print_text(c_str);
+    display->print_text("\ttruncating:\n");
+    sprintf(c_str, "\t%.4s\n", s);
+    display->print_text(c_str);
+    sprintf(c_str, "\t\t%.*s\n", 3, s);
+    display->print_text(c_str);
     display->show();
     sleep_ms(2000);
+
+
     display->clear_buffer();
-
-    printf("Characters:\t%c %%\n", 'A');
-    sprintf(c_str, "Characters:  %c %%", 'A');
-    display->text(current_font, c_str, 0, 0 * h);
-
+    sprintf(c_str, "Characters: %c %%", 'A');
+    display->print_text(c_str);
     display->show();
     sleep_ms(2000);
+
+
+    display->clear_buffer();
+    display->set_font(font_5x8);
+
+    display->print_text("Integers:\n");
+    sprintf(c_str, "\tDec:  %i %d %.3i %i %.0i %+i %i\n", 1, 2, 3, 0, 0, 4, -4);
+    display->print_text(c_str);
+    sprintf(c_str, "\tHex:  %x %x %X %#x\n", 5, 10, 10, 6);
+    display->print_text(c_str);
+    sprintf(c_str, "\tOct:    %o %#o %#o\n", 10, 10, 4);
+    display->print_text(c_str);
+    display->print_text("Floating point:\n");
+    sprintf(c_str, "\tRnd:  %f %.0f %.3f\n", 1.5, 1.5, 1.5);
+    display->print_text(c_str);
+    sprintf(c_str, "\tPad:  %05.2f %.2f %5.2f\n", 1.5, 1.5, 1.5);
+    display->print_text(c_str);
+    sprintf(c_str, "\tSci:  %.3E %.1e\n", 1.5, 1.5);
+    display->print_text(c_str);
+    display->show();
+    sleep_ms(2000);
+
+
     display->clear_buffer();
 
-    sprintf(c_str, "Integers:");
-    display->text(current_font, c_str, 0, 0 * h);
-    sprintf(c_str, "  Dec:  %i %d %.3i %i %.0i %+i %i", 1, 2, 3, 0, 0, 4, -4);
-    display->text(current_font, c_str, 0, 1 * h);
-    sprintf(c_str, "  Hex:  %x %x %X %#x", 5, 10, 10, 6);
-    display->text(current_font, c_str, 0, 2 * h);
-    sprintf(c_str, "  Oct:    %o %#o %#o", 10, 10, 4);
-    display->text(current_font, c_str, 0, 3 * h);
-    sprintf(c_str, "Floating point:");
-    display->text(current_font, c_str, 0, 4 * h);
-    sprintf(c_str, "  Rnd:  %f %.0f %.3f", 1.5, 1.5, 1.5);
-    display->text(current_font, c_str, 0, 5 * h);
-    sprintf(c_str, "  Pad:  %05.2f %.2f %5.2f", 1.5, 1.5, 1.5);
-    display->text(current_font, c_str, 0, 6 * h);
-    sprintf(c_str, "  Sci:  %.3E %.1e", 1.5, 1.5);
-    display->text(current_font, c_str, 0, 7 * h);
+    #define DELAY 300
+
+    display->set_font(font_8x8);
+    pr_D4.hi();
+    display->print_text(" !\"#$%&'()*+,-./0123456789:;<=>?");// ca 1000us -> 2000us
+    pr_D4.lo();
+    display->show(); sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_");// ca 1000us -> 2000us
+    pr_D4.lo();
+    display->show(); sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("`abcdefghijklmnopqrstuvwxyz{|}~\x7F");// ca 1000us-> 2000us
+    pr_D4.lo();
+    display->show(); sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("1234567890\n"); // ca 400us -> 800us
+    pr_D4.lo();
+    display->show(); sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t1234567890\n");// ca 400us -> 800us
+    pr_D4.lo();
+    display->show(); sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t\t1234567890\n");// ca 400us -> 800us
+    pr_D4.lo();
 
     display->show();
     sleep_ms(2000);
@@ -166,9 +182,7 @@ int main()
     while (true)
     {
         test_sprintf_format(&display);
-        // test_string_and_stream_format(&display);
+        // test_ostringstream_format(&display);
         // test_string_and_framebuffer(&display);
     }
-
-    // return 0;
 }
