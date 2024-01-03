@@ -76,32 +76,35 @@ void test_sprintf_format(SSD1306 *display)
 
     char *c_str = new char[display->max_line + 1];
 
-
     const char *s = "Hello";
-    display->print_text("\f");  // Form Feed, idem display->clear_buffer()
+    // display->print_text("\f");  // Form Feed, idem display->clear_buffer()
 
     display->print_text("Strings:\n\tpadding:\n");
+    display->show();
     sprintf(c_str, "\t[%7s]\n", s);
     display->print_text(c_str);
+    display->show();
     sprintf(c_str, "\t[%-7s]\n", s);
     display->print_text(c_str);
+    display->show();
     sprintf(c_str, "\t[%*s]\n", 7, s);
     display->print_text(c_str);
+    display->show();
     display->print_text("\ttruncating:\n");
+    display->show();
     sprintf(c_str, "\t%.4s\n", s);
     display->print_text(c_str);
+    display->show();
     sprintf(c_str, "\t\t%.*s\n", 3, s);
     display->print_text(c_str);
     display->show();
     sleep_ms(2000);
-
 
     display->clear_buffer();
     sprintf(c_str, "Characters: %c %%", 'A');
     display->print_text(c_str);
     display->show();
     sleep_ms(2000);
-
 
     display->clear_buffer();
     display->set_font(font_5x8);
@@ -123,39 +126,78 @@ void test_sprintf_format(SSD1306 *display)
     display->show();
     sleep_ms(2000);
 
-
     display->clear_buffer();
 
-    #define DELAY 300
+#define DELAY 500
 
     display->set_font(font_8x8);
     pr_D4.hi();
-    display->print_text(" !\"#$%&'()*+,-./0123456789:;<=>?");// ca 1000us -> 2000us
+    display->print_text(" !\"#$%&'()*+,-./0123456789:;<=>?"); // ca 1000us -> 2000us
     pr_D4.lo();
-    display->show(); sleep_ms(DELAY);
+    display->show();
+    sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_");// ca 1000us -> 2000us
+    display->print_text("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"); // ca 1000us -> 2000us
     pr_D4.lo();
-    display->show(); sleep_ms(DELAY);
+    display->show();
+    sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("`abcdefghijklmnopqrstuvwxyz{|}~\x7F");// ca 1000us-> 2000us
+    display->print_text("`abcdefghijklmnopqrstuvwxyz{|}~\x7F"); // ca 1000us-> 2000us
     pr_D4.lo();
-    display->show(); sleep_ms(DELAY);
+    display->show();
+    sleep_ms(DELAY);
     pr_D4.hi();
     display->print_text("1234567890\n"); // ca 400us -> 800us
     pr_D4.lo();
-    display->show(); sleep_ms(DELAY);
+    display->show();
+    sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("\t1234567890\n");// ca 400us -> 800us
+    display->print_text("\t1234567890\n"); // ca 400us -> 800us
     pr_D4.lo();
-    display->show(); sleep_ms(DELAY);
+    display->show();
+    sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("\t\t1234567890\n");// ca 400us -> 800us
+    display->print_text("\t\tABCD\t\n"); // ca 400us -> 800us
+    pr_D4.lo();
+    display->show();
+    sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t\t\tABCD\n"); // ca 400us -> 800us
+    pr_D4.lo();
+    display->show();
+    sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t\t\t\tABCD\n"); // ca 400us -> 800us
+    pr_D4.lo();
+    display->show();
+    sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t\t\t\t\tABCDE\n"); // ca 400us -> 800us
+    pr_D4.lo();
+    display->show();
+    sleep_ms(DELAY);
+    pr_D4.hi();
+    display->print_text("\t\t\t\tABCDEF\t\n"); // ca 400us -> 800us
     pr_D4.lo();
 
     display->show();
     sleep_ms(2000);
     display->clear_buffer();
+
+    display->set_font(font_12x16);
+    display->print_text("090\b:56\n");
+    display->print_text("03 JAN 24");
+    display->show();
+    sleep_ms(2000);
+    display->clear_buffer();
+
+    display->set_font(font_16x32);
+    display->print_text(" 15:06 \n");
+    display->print_text("03/01/24");
+    display->show();
+    sleep_ms(2000);
+    display->clear_buffer();
+
 
     delete[] c_str;
 
@@ -182,7 +224,7 @@ int main()
     while (true)
     {
         test_sprintf_format(&display);
-        // test_ostringstream_format(&display);
+        test_ostringstream_format(&display);
         // test_string_and_framebuffer(&display);
     }
 }

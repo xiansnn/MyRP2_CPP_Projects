@@ -255,13 +255,10 @@ void Framebuffer::set_font(const unsigned char *font)
 
 void Framebuffer::next_line()
 {
-    current_char_column = 0;
     current_char_line++;
+    current_char_column = 0;
     if (current_char_line >= max_line)
-    {
         current_char_line = 0;
-    }
-    clear_line();
 }
 
 void Framebuffer::next_char()
@@ -269,13 +266,14 @@ void Framebuffer::next_char()
     current_char_column++;
     if (current_char_column >= max_column)
     {
+        current_char_column = 0;
         next_line();
     }
 }
 
 void Framebuffer::clear_line()
 { // TODO ecrire 0x00 dans le buffer sur la largeur de frame et sur anchor_y
-    for (uint8_t i = 0; i < this->max_line; i++)
+    for (uint8_t i = 0; i < this->max_column; i++)
     {
         drawChar(' ', i, current_char_line);
     }
@@ -290,14 +288,15 @@ void Framebuffer::print_text(const char *c_str)
         {
         case LINE_FEED:
             next_line();
+            current_char_column = 0;
             break;
-        case HORIZONTAL_TAB:
-            for (uint8_t i = 0; i < text_config.tab_size; i++)
-            {
-                drawChar(' ', current_char_column, current_char_line);
-                next_char();
-            }
-            break;
+        // case HORIZONTAL_TAB:
+        //     for (uint8_t i = 0; i < text_config.tab_size; i++)
+        //     {
+        //         drawChar(' ', current_char_column, current_char_line);
+        //         next_char();
+        //     }
+        //     break;
         case BACKSPACE: // TODO
             current_char_column--;
             drawChar(' ', current_char_column, current_char_line);
@@ -310,10 +309,22 @@ void Framebuffer::print_text(const char *c_str)
         case CARRIAGE_RETURN: // TODO
             current_char_column = 0;
             break;
-
         default:
-            drawChar(c_str[n], current_char_column, current_char_line);
-            next_char();
+            if (current_char_column == 0)
+                clear_line(); // start a new line
+            if (c_str[n] == HORIZONTAL_TAB)
+            {
+                for (uint8_t i = 0; i < text_config.tab_size; i++)
+                {
+                    drawChar(' ', current_char_column, current_char_line);
+                    next_char();
+                }
+            }
+            else
+            {
+                drawChar(c_str[n], current_char_column, current_char_line);
+                next_char();
+            }
             break;
         }
         n++;
