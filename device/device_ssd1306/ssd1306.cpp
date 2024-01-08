@@ -31,9 +31,9 @@ render_area_t SSD1306::compute_render_area(uint8_t start_col, uint8_t end_col, u
 {
     render_area_t area;
     area.start_col = start_col;
-    area.end_col = end_col;
+    area.end_col = end_col; // TODO limiter à max display size
     area.start_page = start_line / SSD1306_PAGE_HEIGHT;
-    area.end_page = end_line / SSD1306_PAGE_HEIGHT;
+    area.end_page = end_line / SSD1306_PAGE_HEIGHT; // TODO limiter à max display size
     area.width = end_col - start_col + 1;
     area.height = end_line - start_line + 1;
     area.buflen = (area.width) * (area.end_page - area.start_page + 1);
@@ -77,9 +77,8 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
 
 void SSD1306::clear_buffer_and_show_full_screen()
 {
-    render_area_t full_screen_area = SSD1306::compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1);
-    memset(this->buffer, 0x00, full_screen_area.buflen);
-    this->show_render_area(this->buffer, full_screen_area);
+    this->clear_buffer();
+    this->show();
 }
 
 void SSD1306::init()
@@ -146,16 +145,16 @@ void SSD1306::show()
     this->show_render_area(this->buffer, this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1));
 }
 
-void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
+void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)  
 {
     this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, anchor_x + frame->frame_width - 1, anchor_y, anchor_y + frame->frame_height - 1));
 }
 
-void SSD1306::show(Framebuffer *frame, frame_data_t data)
-{
-    this->show_render_area(frame->buffer, this->compute_render_area(data.anchor_x, data.anchor_x + frame->frame_width - 1,
-                                                                    data.anchor_y, data.anchor_y + frame->frame_height - 1));
-}
+// void SSD1306::show(Framebuffer *frame, frame_data_t data)
+// {
+//     this->show_render_area(frame->buffer, this->compute_render_area(data.anchor_x, data.anchor_x + frame->frame_width - 1,
+//                                                                     data.anchor_y, data.anchor_y + frame->frame_height - 1));
+// }
 
 void SSD1306::init_display_vertical_shift(uint8_t value)
 {
