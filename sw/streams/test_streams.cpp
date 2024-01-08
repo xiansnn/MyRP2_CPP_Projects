@@ -198,7 +198,6 @@ void test_sprintf_format(SSD1306 *display)
     sleep_ms(2000);
     display->clear_buffer();
 
-
     delete[] c_str;
 
     //----------------------------------------
@@ -211,11 +210,153 @@ void test_sprintf_format(SSD1306 *display)
     //----------------------------------------
 }
 
-void test_string_and_framebuffer(SSD1306 *display)
+void test_text_and_graph(SSD1306 *display)
 {
+#define DEGREE "\xF8"
+    display->clear_buffer_and_show_full_screen();
+    text_config_t title_config = {
+        .font = font_8x8};
+    uint8_t w = title_config.font[FONT_WIDTH];
+    uint8_t h = title_config.font[FONT_HEIGHT];
+
+    // draw titles
+    frame_data_t title_area{
+        .anchor_x = 0,
+        .anchor_y = h * 6,
+        .width = w * 8,
+        .height = h * 2};
+    Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
+    title.set_text_config(title_config);
+    title.print_text("ROLL:\nPITCH:");
+    display->show(&title, title_area.anchor_x, title_area.anchor_y);
+
+    // draw values
+    frame_data_t values_area{
+        .anchor_x = w * 8,
+        .anchor_y = h * 6,
+        .width = w * 8,
+        .height = h * 2};
+    Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
+    values.set_font(font_8x8);
+
+    // draw graph
+    frame_data_t graph_area{
+        .anchor_x = 16,
+        .anchor_y = 0,
+        .width = w * 12,
+        .height = h * 5};
+    Framebuffer graph = Framebuffer(graph_area.width, graph_area.height, Framebuffer_format::MONO_VLSB);
+    graph.fill(Framebuffer_color::black);
+    display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
+
+    int roll, pitch;
+    char *c_str = new char[2 * values.max_line + 1];
+
+    for (int i = -90; i < 90; i++)
+    {
+        values.clear_buffer();
+        roll = i;
+        pitch = i / 3;
+        sprintf(c_str, "%+3d \xF8\n%+3d \xF8", roll, pitch);
+        values.print_text(c_str);
+        display->show(&values, values_area.anchor_x, values_area.anchor_y);
+
+        float xc = graph_area.width / 2;
+        float yc = graph_area.height / 2;
+        float yl = graph_area.height / 2 - pitch;
+        float radius = yc - 2; // radius -2 to fit inside the rectangle
+
+        float sin_roll = sin(std::numbers::pi / 180.0 * roll);
+        float cos_roll = cos(std::numbers::pi / 180.0 * roll);
+        int x0 = xc - radius * cos_roll;
+        int y0 = yl - radius * sin_roll;
+        int x1 = xc + radius * cos_roll;
+        int y1 = yl + radius * sin_roll;
+        graph.rect(0, 0, graph_area.width, graph_area.height); // point coordinates are relative to the local frame
+        graph.circle(radius, xc, yl);
+        graph.line(x0, y0, x1, y1);
+        display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
+        display->show(&values, values_area.anchor_x, values_area.anchor_y);
+        graph.line(x0, y0, x1, y1, Framebuffer_color::black);
+        graph.circle(radius, xc, yl, false, Framebuffer_color::black);
+        sleep_ms(50);
+    }
+    delete[] c_str;
+    sleep_ms(1000);
+}
+void test_font_size(SSD1306 *display)
+{
+    display->clear_buffer_and_show_full_screen();
+    const unsigned char *current_font[4]{font_5x8, font_8x8, font_12x16, font_16x32};
+    char *c_str = new char[display->max_line + 1];
+    sprintf(c_str, "Test");
+
+    Framebuffer font_size_0 = Framebuffer(128, 8);
+    font_size_0.set_font(current_font[0]);
+    font_size_0.print_text(c_str);
+    display->show(&font_size_0, 0, 0);
+
+    Framebuffer * font_size_1 = new Framebuffer(64, 8);
+    font_size_1->set_font(current_font[1]);
+    font_size_1->print_text(c_str);
+    display->show(font_size_1, 64, 8);
+    delete font_size_1;
+
+    Framebuffer * font_size_2 = new Framebuffer(64, 16);
+    font_size_2->set_font(current_font[2]);
+    font_size_2->print_text(c_str);
+    display->show(font_size_2, 0, 16);
+    delete font_size_2;
+ 
+    Framebuffer font_size_3 = Framebuffer(64, 32);
+    font_size_3.set_font(current_font[3]);
+    font_size_3.print_text(c_str);
+    display->show(&font_size_3, 64, 32);
+
+    delete[] c_str;
+
+    sleep_ms(500);
+}
+void test_full_screen_text(SSD1306 *display)
+{
+    const unsigned char *current_font;
+    current_font = font_8x8;
+
+    display->clear_buffer_and_show_full_screen();
+    uint8_t c = 31;
+    std::string s{""};
+    uint8_t x{0}, y{0};
+    for (size_t i = 0; i < 8; i++)
+    {
+        for (size_t j = 0; j < 16; j++)
+        {
+            x = j * current_font[FONT_WIDTH];
+            y = i * current_font[FONT_HEIGHT];
+            c += 1;
+            s = c;
+            display->text(current_font, s, x, y);
+            display->show();
+        }
+    }
+    display->clear_buffer_and_show_full_screen();
+    sleep_ms(1000);
+    for (size_t i = 0; i < 8; i++)
+    {
+        for (size_t j = 0; j < 16; j++)
+        {
+            x = j * current_font[FONT_WIDTH];
+            y = i * current_font[FONT_HEIGHT];
+            c += 1;
+            s = c;
+            display->text(current_font, s, x, y);
+            display->show();
+        }
+    }
+    sleep_ms(1000);
 }
 
 int main()
+
 {
     stdio_init_all();
     hw_I2C_master master = hw_I2C_master(cfg_i2c);
@@ -223,8 +364,10 @@ int main()
 
     while (true)
     {
-        test_sprintf_format(&display);
-        test_ostringstream_format(&display);
-        // test_string_and_framebuffer(&display);
+        test_font_size(&display);
+        // test_sprintf_format(&display);
+        // test_ostringstream_format(&display);
+        // test_full_screen_text(&display);
+        // test_text_and_graph(&display);
     }
 }
