@@ -45,10 +45,10 @@ typedef struct struct_frame_data
 typedef struct struct_text_frame
 {
     const unsigned char *font{nullptr};
-    uint8_t tab_size {2};
+    uint8_t tab_size{2};
     Framebuffer_color fg_color{Framebuffer_color::white};
     Framebuffer_color bg_color{Framebuffer_color::black};
-
+    bool wrap {true};
 } text_config_t;
 
 class Framebuffer
@@ -62,7 +62,7 @@ private:
 
     void ellipse(uint8_t x_center, uint8_t y_center, uint8_t x_radius, uint8_t y_radius, bool fill, uint8_t quadrant, Framebuffer_color c);
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y);
-    void drawChar( char c, uint8_t char_column, uint8_t char_line);
+    void drawChar(char c, uint8_t char_column, uint8_t char_line);
     void pixel(int x, int y, Framebuffer_color c = Framebuffer_color::white);
     void next_line();
     void next_char();
@@ -75,9 +75,10 @@ public:
     uint8_t max_line{0};
     uint8_t max_column{0};
 
-    Framebuffer(size_t width, size_t height, Framebuffer_format format);
+    Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB);
     ~Framebuffer();
 
+    /* graphic primitives*/
     void fill(Framebuffer_color c);
     void clear_buffer();
     void hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c = Framebuffer_color::white);
@@ -86,13 +87,12 @@ public:
     void rect(uint8_t x, uint8_t y, size_t w, size_t h, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
 
+    /* textual primitives*/
     void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
     void text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
     void set_text_config(text_config_t device_config);
-    void set_font( const unsigned char * font);
+    void set_font(const unsigned char *font);
     void print_text(const char *c_str);
-
-
 };
 
 #endif // FRAMEBUFFER_H
