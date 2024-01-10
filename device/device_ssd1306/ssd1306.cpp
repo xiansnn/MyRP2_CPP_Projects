@@ -31,9 +31,9 @@ render_area_t SSD1306::compute_render_area(uint8_t start_col, uint8_t end_col, u
 {
     render_area_t area;
     area.start_col = start_col;
-    area.end_col = end_col; // TODO limiter à max display size
+    area.end_col = end_col;
     area.start_page = start_line / SSD1306_PAGE_HEIGHT;
-    area.end_page = end_line / SSD1306_PAGE_HEIGHT; // TODO limiter à max display size
+    area.end_page = end_line / SSD1306_PAGE_HEIGHT;
     area.width = end_col - start_col + 1;
     area.height = end_line - start_line + 1;
     area.buflen = (area.width) * (area.end_page - area.start_page + 1);
@@ -145,9 +145,15 @@ void SSD1306::show()
     this->show_render_area(this->buffer, this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1));
 }
 
-void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)  
+void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
 {
-    this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, anchor_x + frame->frame_width - 1, anchor_y, anchor_y + frame->frame_height - 1));
+    uint8_t end_col = anchor_x + frame->frame_width - 1;
+    uint8_t end_line = anchor_y + frame->frame_height - 1;
+
+    assert(end_col <= SSD1306_WIDTH - 1);
+    assert(end_line <= SSD1306_HEIGHT - 1);
+
+    this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, end_col, anchor_y, end_line));
 }
 
 // void SSD1306::show(Framebuffer *frame, frame_data_t data)
