@@ -156,12 +156,6 @@ void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
     this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, end_col, anchor_y, end_line));
 }
 
-// void SSD1306::show(Framebuffer *frame, frame_data_t data)
-// {
-//     this->show_render_area(frame->buffer, this->compute_render_area(data.anchor_x, data.anchor_x + frame->frame_width - 1,
-//                                                                     data.anchor_y, data.anchor_y + frame->frame_height - 1));
-// }
-
 void SSD1306::init_display_vertical_shift(uint8_t value)
 {
     assert((value >= 0) & (value <= 63));
