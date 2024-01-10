@@ -49,6 +49,7 @@ typedef struct struct_text_frame
     Framebuffer_color fg_color{Framebuffer_color::white};
     Framebuffer_color bg_color{Framebuffer_color::black};
     bool wrap {true};
+    bool auto_next_char{true};
 } text_config_t;
 
 class Framebuffer
@@ -64,8 +65,6 @@ private:
     void drawChar(const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y);
     void drawChar(char c, uint8_t char_column, uint8_t char_line);
     void pixel(int x, int y, Framebuffer_color c = Framebuffer_color::white);
-    void next_line();
-    void next_char();
     void clear_line();
 
 public:
@@ -88,11 +87,14 @@ public:
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
 
     /* textual primitives*/
-    void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
-    void text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
+    // void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
+    // void text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
     void set_text_config(text_config_t device_config);
     void set_font(const unsigned char *font);
     void print_text(const char *c_str);
+    void print_char(char c);
+    void next_line();
+    void next_char();
 };
 
 #endif // FRAMEBUFFER_H

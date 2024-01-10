@@ -1,17 +1,13 @@
 #include "probe.h"
-// #include <stdlib.h>
 #include "hw_i2c.h"
-#include <pico/stdio.h>
 #include "ssd1306.h"
 #include "framebuffer.h"
 
-// #include <string.h>
+#include <pico/stdio.h>
 #include <math.h>
 #include <numbers>
 #include <sstream>
 #include <iomanip>
-// #include "../../../../../../Program Files/Raspberry Pi/Pico SDK v1.5.1/gcc-arm-none-eabi/arm-none-eabi/include/c++/10.3.1/bits/ios_base.h"
-// #include <vector>
 #include <string>
 
 Probe pr_D4 = Probe(4);
@@ -41,7 +37,11 @@ void test_ostringstream_format(SSD1306 *display)
     pr_D4.lo(); // 25.74 ms
 
     const unsigned char *current_font{font_5x8};
-    uint8_t h = current_font[FONT_HEIGHT];
+
+    text_config_t txt_conf = {
+        .font = current_font,
+        .wrap = false};
+    display->set_text_config(txt_conf);
 
     int n = 42;
     float f = std::numbers::pi;
@@ -54,16 +54,30 @@ void test_ostringstream_format(SSD1306 *display)
     stream2.width(20);
 
     pr_D5.hi(); // 1.5 ms since  pr_D4.lo();
-    stream0 << std::left << std::setw(6) << "test";
-    display->text(current_font, stream0.str(), 0, 0);
-    stream1 << std::setw(5) << std::dec << n << "|" << std::setw(5) << std::showbase << std::hex << n << "|" << std::showbase << std::setw(5) << std::oct << n;
-    display->text(current_font, stream1.str(), 0, 1 * h);
-    stream2 << "PI = " << std::left << f;
-    display->text(current_font, stream2.str(), 0, 2 * h);
+    stream0 << std::left << std::setw(6) << "test" << std::endl;
+    display->print_text(stream0.str().c_str());
+
+    pr_D7.hi();
+    display->show();
+    sleep_ms(500);
+    pr_D7.lo(); // 25.77 ms
+
+    stream1 << std::setw(5) << std::dec << n << "|" << std::setw(5)
+            << std::showbase << std::hex << n << "|" << std::showbase << std::setw(5) << std::oct << n << std::endl;
+    display->print_text(stream1.str().c_str());
+
+    pr_D7.hi();
+    display->show();
+    sleep_ms(500);
+    pr_D7.lo(); // 25.77 ms
+
+    stream2 << "PI = " << std::left << f << std::endl;
+    display->print_text(stream2.str().c_str());
     pr_D5.lo(); // 1.246 ms
 
     pr_D7.hi();
     display->show();
+    sleep_ms(500);
     pr_D7.lo(); // 25.77 ms
 
     sleep_ms(2000);
@@ -72,12 +86,14 @@ void test_sprintf_format(SSD1306 *display)
 {
     display->clear_buffer_and_show_full_screen();
 
-    display->set_font(font_8x8);
+    text_config_t txt_conf = {
+        .font = font_8x8,
+        .wrap = false};
+    display->set_text_config(txt_conf);
 
     char *c_str = new char[display->max_line + 1];
 
     const char *s = "Hello";
-    // display->print_text("\f");  // Form Feed, idem display->clear_buffer()
 
     display->print_text("Strings:\n\tpadding:\n");
     display->show();
@@ -132,17 +148,17 @@ void test_sprintf_format(SSD1306 *display)
 
     display->set_font(font_8x8);
     pr_D4.hi();
-    display->print_text(" !\"#$%&'()*+,-./0123456789:;<=>?"); // ca 1000us -> 2000us
+    display->print_text(" !\"#$%&'()*+,-./0123456789:;<=>?\n"); // ca 1000us -> 2000us
     pr_D4.lo();
     display->show();
     sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"); // ca 1000us -> 2000us
+    display->print_text("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n"); // ca 1000us -> 2000us
     pr_D4.lo();
     display->show();
     sleep_ms(DELAY);
     pr_D4.hi();
-    display->print_text("`abcdefghijklmnopqrstuvwxyz{|}~\x7F"); // ca 1000us-> 2000us
+    display->print_text("`abcdefghijklmnopqrstuvwxyz{|}~\x7F\n"); // ca 1000us-> 2000us
     pr_D4.lo();
     display->show();
     sleep_ms(DELAY);
@@ -200,14 +216,14 @@ void test_sprintf_format(SSD1306 *display)
 
     delete[] c_str;
 
-    //----------------------------------------
-    // undefined result for this compiler
-    // printf("\tHexadecimal:\t%a %A\n", 1.5, 1.5);
-    // printf("\tSpecial values:\t0/0=%g 1/0=%g\n", 0.0 / 0.0, 1.0 / 0.0);
-    // printf("Fixed-width types:\n");
-    // printf("\tLargest 32-bit value is %" PRIu32 " or %#" PRIx32 "\n",
-    //        UINT32_MAX, UINT32_MAX);
-    //----------------------------------------
+    /*
+    undefined result for this compiler
+    printf("\tHexadecimal:\t%a %A\n", 1.5, 1.5);
+    printf("\tSpecial values:\t0/0=%g 1/0=%g\n", 0.0 / 0.0, 1.0 / 0.0);
+    printf("Fixed-width types:\n");
+    printf("\tLargest 32-bit value is %" PRIu32 " or %#" PRIx32 "\n",
+           UINT32_MAX, UINT32_MAX);
+    */
 }
 
 void test_text_and_graph(SSD1306 *display)
@@ -296,18 +312,18 @@ void test_font_size(SSD1306 *display)
     font_size_0.print_text(c_str);
     display->show(&font_size_0, 0, 0);
 
-    Framebuffer * font_size_1 = new Framebuffer(64, 8);
+    Framebuffer *font_size_1 = new Framebuffer(64, 8);
     font_size_1->set_font(current_font[1]);
     font_size_1->print_text(c_str);
     display->show(font_size_1, 64, 8);
     delete font_size_1;
 
-    Framebuffer * font_size_2 = new Framebuffer(64, 16);
+    Framebuffer *font_size_2 = new Framebuffer(64, 16);
     font_size_2->set_font(current_font[2]);
     font_size_2->print_text(c_str);
     display->show(font_size_2, 0, 16);
     delete font_size_2;
- 
+
     Framebuffer font_size_3 = Framebuffer(64, 32);
     font_size_3.set_font(current_font[3]);
     font_size_3.print_text(c_str);
@@ -315,44 +331,55 @@ void test_font_size(SSD1306 *display)
 
     delete[] c_str;
 
-    sleep_ms(500);
+    sleep_ms(1000);
 }
+
 void test_full_screen_text(SSD1306 *display)
 {
-    const unsigned char *current_font;
-    current_font = font_8x8;
+    text_config_t txt_conf = {
+        .font = font_8x8,
+        .wrap = true,
+    };
+    display->set_text_config(txt_conf);
 
-    display->clear_buffer_and_show_full_screen();
-    uint8_t c = 31;
-    std::string s{""};
-    uint8_t x{0}, y{0};
-    for (size_t i = 0; i < 8; i++)
+    display->print_char(FORM_FEED);
+    uint16_t nb = display->max_column * display->max_line;
+    uint16_t n{0};
+    for (uint16_t c = 32; c < 256; c++)
     {
-        for (size_t j = 0; j < 16; j++)
+        n++;
+        display->print_char(c);
+        display->show();
+        if (n == nb)
         {
-            x = j * current_font[FONT_WIDTH];
-            y = i * current_font[FONT_HEIGHT];
-            c += 1;
-            s = c;
-            display->text(current_font, s, x, y);
-            display->show();
+            sleep_ms(500);
+            display->print_char(FORM_FEED);
         }
     }
-    display->clear_buffer_and_show_full_screen();
-    sleep_ms(1000);
-    for (size_t i = 0; i < 8; i++)
+    sleep_ms(2000);
+}
+
+void test_auto_next_char(SSD1306 *display)
+{
+    text_config_t txt_conf = {
+        .font = font_8x8,
+        .wrap = true,
+        .auto_next_char = false};
+    display->set_text_config(txt_conf);
+    display->print_char(FORM_FEED);
+
+    uint16_t n{0};
+    for (uint16_t c = 32; c < 128; c++)
     {
-        for (size_t j = 0; j < 16; j++)
+        n++;
+        display->print_char(c);
+        display->show();
+        if (n % 5 == 0)
         {
-            x = j * current_font[FONT_WIDTH];
-            y = i * current_font[FONT_HEIGHT];
-            c += 1;
-            s = c;
-            display->text(current_font, s, x, y);
-            display->show();
+            display->next_char();
         }
     }
-    sleep_ms(1000);
+    sleep_ms(2000);
 }
 
 int main()
@@ -365,9 +392,10 @@ int main()
     while (true)
     {
         test_font_size(&display);
-        // test_sprintf_format(&display);
-        // test_ostringstream_format(&display);
-        // test_full_screen_text(&display);
-        // test_text_and_graph(&display);
+        test_sprintf_format(&display);
+        test_ostringstream_format(&display);
+        test_text_and_graph(&display);
+        test_full_screen_text(&display);
+        test_auto_next_char(&display);
     }
 }

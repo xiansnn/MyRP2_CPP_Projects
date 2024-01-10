@@ -218,26 +218,26 @@ void Framebuffer::drawChar(char c, uint8_t char_column, uint8_t char_line)
     drawChar(this->text_config.font, c, anchor_x, anchor_y);
 }
 
-void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
-{
-    char *c_str = new char[text.length() + 1];
-    std::strcpy(c_str, text.c_str());
+// void Framebuffer::text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
+// {
+//     char *c_str = new char[text.length() + 1];
+//     std::strcpy(c_str, text.c_str());
 
-    this->text(font, c_str, anchor_x, anchor_y, color);
+//     this->text(font, c_str, anchor_x, anchor_y, color);
 
-    delete[] c_str;
-}
+//     delete[] c_str;
+// }
 
-void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
-{
-    uint8_t font_width = font[FONT_WIDTH];
-    uint16_t n = 0;
-    while (c_str[n] != '\0')
-    {
-        drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
-        n++;
-    }
-}
+// void Framebuffer::text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color color)
+// {
+//     uint8_t font_width = font[FONT_WIDTH];
+//     uint16_t n = 0;
+//     while (c_str[n] != '\0')
+//     {
+//         drawChar(font, c_str[n], anchor_x + (n * font_width), anchor_y);
+//         n++;
+//     }
+// }
 
 void Framebuffer::set_text_config(text_config_t device_config)
 {
@@ -255,8 +255,8 @@ void Framebuffer::set_font(const unsigned char *font)
 
 void Framebuffer::next_line()
 {
-    current_char_line++;
     current_char_column = 0;
+    current_char_line++;
     if (current_char_line >= max_line)
         current_char_line = 0;
 }
@@ -266,8 +266,11 @@ void Framebuffer::next_char()
     current_char_column++;
     if (current_char_column >= max_column)
     {
-        current_char_column = 0;
-        next_line();
+        if (this->text_config.wrap)
+        {
+            current_char_column = 0;
+            next_line();
+        }
     }
 }
 
@@ -284,50 +287,56 @@ void Framebuffer::print_text(const char *c_str)
     uint16_t n = 0;
     while (c_str[n] != '\0')
     {
-        switch (c_str[n])
+        print_char(c_str[n]);
+        n++;
+    }
+}
+
+void Framebuffer::print_char(char c)
+{
+    switch (c)
+    {
+    case VERTICAL_TAB:
+        break;
+    case LINE_FEED:
+        next_line();
+        current_char_column = 0;
+        break;
+    case BACKSPACE:
+        current_char_column--;
+        drawChar(' ', current_char_column, current_char_line);
+        break;
+    case FORM_FEED: // TO CHECK
+        clear_buffer();
+        break;
+    case CARRIAGE_RETURN: // TO CHECK
+        current_char_column = 0;
+        break;
+    default:
+        if (current_char_column == 0)
+            clear_line(); // start a new line
+        if (c == HORIZONTAL_TAB)
         {
-        case LINE_FEED:
-            next_line();
-            current_char_column = 0;
-            break;
-        // case HORIZONTAL_TAB:
-        //     for (uint8_t i = 0; i < text_config.tab_size; i++)
-        //     {
-        //         drawChar(' ', current_char_column, current_char_line);
-        //         next_char();
-        //     }
-        //     break;
-        case BACKSPACE: // TODO
-            current_char_column--;
-            drawChar(' ', current_char_column, current_char_line);
-            break;
-        case FORM_FEED: // TODO
-            clear_buffer();
-            current_char_column = 0;
-            current_char_line = 0;
-            break;
-        case CARRIAGE_RETURN: // TODO
-            current_char_column = 0;
-            break;
-        default:
-            if (current_char_column == 0)
-                clear_line(); // start a new line
-            if (c_str[n] == HORIZONTAL_TAB)
+            for (uint8_t i = 0; i < text_config.tab_size; i++)
             {
-                for (uint8_t i = 0; i < text_config.tab_size; i++)
-                {
-                    drawChar(' ', current_char_column, current_char_line);
-                    next_char();
-                }
+                drawChar(' ', current_char_column, current_char_line);
+                next_char();
+            }
+        }
+        else
+        {
+            if (this->text_config.auto_next_char)
+            {
+                drawChar(c, current_char_column, current_char_line);
+                next_char();
             }
             else
             {
-                drawChar(c_str[n], current_char_column, current_char_line);
-                next_char();
+                drawChar(' ', current_char_column, current_char_line);
+                drawChar(c, current_char_column, current_char_line);
             }
-            break;
         }
-        n++;
+        break;
     }
 }
 
