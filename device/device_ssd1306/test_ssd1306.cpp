@@ -4,7 +4,6 @@
 #include <string.h>
 #include <string>
 #include "raspberry26x32.h"
-#include "framebuffer.h"
 #include <math.h>
 #include <numbers>
 #include "probe.h"
