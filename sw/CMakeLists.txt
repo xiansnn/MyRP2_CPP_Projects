@@ -1,1 +1,2 @@
 add_subdirectory(streams)
+add_subdirectory(gpio_irq)
