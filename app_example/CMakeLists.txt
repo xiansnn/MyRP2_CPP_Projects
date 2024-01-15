@@ -1,1 +1,2 @@
 add_subdirectory(servo)
+add_subdirectory(encoder_and_display)
