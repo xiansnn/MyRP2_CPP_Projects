@@ -235,35 +235,33 @@ void test_text_and_graph(SSD1306 *display)
     uint8_t w = title_config.font[FONT_WIDTH];
     uint8_t h = title_config.font[FONT_HEIGHT];
 
-    // draw titles
-    frame_data_t title_area{
-        .anchor_x = 0,
-        .anchor_y = h * 6,
-        .width = w * 8,
-        .height = h * 2};
-    Framebuffer title = Framebuffer(title_area.width, title_area.height, Framebuffer_format::MONO_VLSB);
+    int title_area_width = w * 8;
+    int title_area_height = h * 2;
+    int title_area_anchor_x = 0;
+    int title_area_anchor_y = h * 6;
+
+    Framebuffer title = Framebuffer(title_area_width, title_area_height, Framebuffer_format::MONO_VLSB);
     title.set_text_config(title_config);
     title.print_text("ROLL:\nPITCH:");
-    display->show(&title, title_area.anchor_x, title_area.anchor_y);
+    display->show(&title, title_area_anchor_x, title_area_anchor_y);
 
     // draw values
-    frame_data_t values_area{
-        .anchor_x = w * 8,
-        .anchor_y = h * 6,
-        .width = w * 8,
-        .height = h * 2};
-    Framebuffer values = Framebuffer(values_area.width, values_area.height, Framebuffer_format::MONO_VLSB);
+    int values_area_anchor_x = w * 8;
+    int values_area_anchor_y = h * 6;
+    int values_area_width = w * 8;
+    int values_area_height = h * 2;
+    Framebuffer values = Framebuffer(values_area_width, values_area_height, Framebuffer_format::MONO_VLSB);
     values.set_font(font_8x8);
 
     // draw graph
-    frame_data_t graph_area{
-        .anchor_x = 16,
-        .anchor_y = 0,
-        .width = w * 12,
-        .height = h * 5};
-    Framebuffer graph = Framebuffer(graph_area.width, graph_area.height, Framebuffer_format::MONO_VLSB);
+    int graph_area_anchor_x = 16;
+    int graph_area_anchor_y = 0;
+    int graph_area_width = w * 12;
+    int graph_area_height = h * 5;
+
+    Framebuffer graph = Framebuffer(graph_area_width, graph_area_height, Framebuffer_format::MONO_VLSB);
     graph.fill(Framebuffer_color::black);
-    display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
+    display->show(&graph, graph_area_anchor_x, graph_area_anchor_y);
 
     int roll, pitch;
     char *c_str = new char[2 * values.max_line + 1];
@@ -275,11 +273,11 @@ void test_text_and_graph(SSD1306 *display)
         pitch = i / 3;
         sprintf(c_str, "%+3d \xF8\n%+3d \xF8", roll, pitch);
         values.print_text(c_str);
-        display->show(&values, values_area.anchor_x, values_area.anchor_y);
+        display->show(&values, values_area_anchor_x, values_area_anchor_y);
 
-        float xc = graph_area.width / 2;
-        float yc = graph_area.height / 2;
-        float yl = graph_area.height / 2 - pitch;
+        float xc = graph_area_width / 2;
+        float yc = graph_area_height / 2;
+        float yl = graph_area_height / 2 - pitch;
         float radius = yc - 2; // radius -2 to fit inside the rectangle
 
         float sin_roll = sin(std::numbers::pi / 180.0 * roll);
@@ -288,11 +286,11 @@ void test_text_and_graph(SSD1306 *display)
         int y0 = yl - radius * sin_roll;
         int x1 = xc + radius * cos_roll;
         int y1 = yl + radius * sin_roll;
-        graph.rect(0, 0, graph_area.width, graph_area.height); // point coordinates are relative to the local frame
+        graph.rect(0, 0, graph_area_width, graph_area_height); // point coordinates are relative to the local frame
         graph.circle(radius, xc, yl);
         graph.line(x0, y0, x1, y1);
-        display->show(&graph, graph_area.anchor_x, graph_area.anchor_y);
-        display->show(&values, values_area.anchor_x, values_area.anchor_y);
+        display->show(&graph, graph_area_anchor_x, graph_area_anchor_y);
+        display->show(&values, values_area_anchor_x, values_area_anchor_y);
         graph.line(x0, y0, x1, y1, Framebuffer_color::black);
         graph.circle(radius, xc, yl, false, Framebuffer_color::black);
         sleep_ms(50);

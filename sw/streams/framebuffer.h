@@ -34,14 +34,6 @@ enum class Framebuffer_color
     white = 1
 };
 
-typedef struct struct_frame_data
-{
-    int anchor_x{0};
-    int anchor_y{0};
-    int width{0};
-    int height{0};
-} frame_data_t;
-
 typedef struct struct_text_frame
 {
     const unsigned char *font{nullptr};
@@ -69,6 +61,7 @@ private:
 
 public:
     uint8_t *buffer;
+    char *txt_buffer ;
     uint8_t frame_width;
     uint8_t frame_height;
     uint8_t max_line{0};
