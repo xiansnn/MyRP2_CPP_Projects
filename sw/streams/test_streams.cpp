@@ -33,7 +33,7 @@ init_config_SSD1306_t cfg_ssd1306{
 void test_ostringstream_format(SSD1306 *display)
 {
     pr_D4.hi();
-    display->clear_buffer_and_show_full_screen();
+    display->clear_pixel_buffer_and_show_full_screen();
     pr_D4.lo(); // 25.74 ms
 
     const unsigned char *current_font{font_5x8};
@@ -72,77 +72,78 @@ void test_ostringstream_format(SSD1306 *display)
     pr_D7.lo(); // 25.77 ms
 
     stream2 << "PI = " << std::left << f << std::endl;
-    display->print_text(stream2.str().c_str());
+    display->print_text(stream2.str().c_str()); 
     pr_D5.lo(); // 1.246 ms
 
     pr_D7.hi();
     display->show();
-    sleep_ms(500);
     pr_D7.lo(); // 25.77 ms
 
     sleep_ms(2000);
 }
+
+
 void test_sprintf_format(SSD1306 *display)
 {
-    display->clear_buffer_and_show_full_screen();
+    display->clear_pixel_buffer_and_show_full_screen();
 
     text_config_t txt_conf = {
         .font = font_8x8,
         .wrap = false};
     display->set_text_config(txt_conf);
 
-    char *c_str = new char[display->max_line + 1];
-
     const char *s = "Hello";
 
     display->print_text("Strings:\n\tpadding:\n");
     display->show();
-    sprintf(c_str, "\t[%7s]\n", s);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\t[%7s]\n", s);
+    display->print_text();
     display->show();
-    sprintf(c_str, "\t[%-7s]\n", s);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\t[%-7s]\n", s);
+    display->print_text();
     display->show();
-    sprintf(c_str, "\t[%*s]\n", 7, s);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\t[%*s]\n", 7, s);
+    display->print_text();
     display->show();
     display->print_text("\ttruncating:\n");
     display->show();
-    sprintf(c_str, "\t%.4s\n", s);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\t%.4s\n", s);
+    display->print_text();
     display->show();
-    sprintf(c_str, "\t\t%.*s\n", 3, s);
-    display->print_text(c_str);
-    display->show();
-    sleep_ms(2000);
-
-    display->clear_buffer();
-    sprintf(c_str, "Characters: %c %%", 'A');
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\t\t%.*s\n", 3, s);
+    display->print_text();
     display->show();
     sleep_ms(2000);
 
-    display->clear_buffer();
+    display->clear_pixel_buffer();
+    display->clear_text_buffer();
+    sprintf(display->text_buffer, "Characters: %c %%", 'A');
+    display->print_text();
+    display->show();
+    sleep_ms(2000);
+
+    display->clear_pixel_buffer();
     display->set_font(font_5x8);
+    display->clear_text_buffer();
 
     display->print_text("Integers:\n");
-    sprintf(c_str, "\tDec:  %i %d %.3i %i %.0i %+i %i\n", 1, 2, 3, 0, 0, 4, -4);
-    display->print_text(c_str);
-    sprintf(c_str, "\tHex:  %x %x %X %#x\n", 5, 10, 10, 6);
-    display->print_text(c_str);
-    sprintf(c_str, "\tOct:    %o %#o %#o\n", 10, 10, 4);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\tDec:  %i %d %.3i %i %.0i %+i %i\n", 1, 2, 3, 0, 0, 4, -4);
+    display->print_text();
+    sprintf(display->text_buffer, "\tHex:  %x %x %X %#x\n", 5, 10, 10, 6);
+    display->print_text();
+    sprintf(display->text_buffer, "\tOct:    %o %#o %#o\n", 10, 10, 4);
+    display->print_text();
     display->print_text("Floating point:\n");
-    sprintf(c_str, "\tRnd:  %f %.0f %.3f\n", 1.5, 1.5, 1.5);
-    display->print_text(c_str);
-    sprintf(c_str, "\tPad:  %05.2f %.2f %5.2f\n", 1.5, 1.5, 1.5);
-    display->print_text(c_str);
-    sprintf(c_str, "\tSci:  %.3E %.1e\n", 1.5, 1.5);
-    display->print_text(c_str);
+    sprintf(display->text_buffer, "\tRnd:  %f %.0f %.3f\n", 1.5, 1.5, 1.5);
+    display->print_text();
+    sprintf(display->text_buffer, "\tPad:  %05.2f %.2f %5.2f\n", 1.5, 1.5, 1.5);
+    display->print_text();
+    sprintf(display->text_buffer, "\tSci:  %.3E %.1e\n", 1.5, 1.5);
+    display->print_text();
     display->show();
     sleep_ms(2000);
 
-    display->clear_buffer();
+    display->clear_pixel_buffer();
 
 #define DELAY 500
 
@@ -198,26 +199,25 @@ void test_sprintf_format(SSD1306 *display)
 
     display->show();
     sleep_ms(2000);
-    display->clear_buffer();
+    display->clear_pixel_buffer();
 
     display->set_font(font_12x16);
     display->print_text("090\b:56\n");
     display->print_text("03 JAN 24");
     display->show();
     sleep_ms(2000);
-    display->clear_buffer();
+    display->clear_pixel_buffer();
 
     display->set_font(font_16x32);
     display->print_text(" 15:06 \n");
     display->print_text("03/01/24");
     display->show();
     sleep_ms(2000);
-    display->clear_buffer();
+    display->clear_pixel_buffer();
 
-    delete[] c_str;
 
     /*
-    undefined result for this compiler
+    undefined result for the used compiler
     printf("\tHexadecimal:\t%a %A\n", 1.5, 1.5);
     printf("\tSpecial values:\t0/0=%g 1/0=%g\n", 0.0 / 0.0, 1.0 / 0.0);
     printf("Fixed-width types:\n");
@@ -229,7 +229,7 @@ void test_sprintf_format(SSD1306 *display)
 void test_text_and_graph(SSD1306 *display)
 {
 #define DEGREE "\xF8"
-    display->clear_buffer_and_show_full_screen();
+    display->clear_pixel_buffer_and_show_full_screen();
     text_config_t title_config = {
         .font = font_8x8};
     uint8_t w = title_config.font[FONT_WIDTH];
@@ -268,7 +268,7 @@ void test_text_and_graph(SSD1306 *display)
 
     for (int i = -90; i < 90; i++)
     {
-        values.clear_buffer();
+        values.clear_pixel_buffer();
         roll = i;
         pitch = i / 3;
         sprintf(c_str, "%+3d \xF8\n%+3d \xF8", roll, pitch);
@@ -300,7 +300,7 @@ void test_text_and_graph(SSD1306 *display)
 }
 void test_font_size(SSD1306 *display)
 {
-    display->clear_buffer_and_show_full_screen();
+    display->clear_pixel_buffer_and_show_full_screen();
     const unsigned char *current_font[4]{font_5x8, font_8x8, font_12x16, font_16x32};
     char *c_str = new char[display->max_line + 1];
     sprintf(c_str, "Test");
