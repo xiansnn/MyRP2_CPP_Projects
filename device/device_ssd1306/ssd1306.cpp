@@ -75,9 +75,9 @@ void SSD1306::fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area)
     this->show_render_area(image, area);
 }
 
-void SSD1306::clear_buffer_and_show_full_screen()
+void SSD1306::clear_pixel_buffer_and_show_full_screen()
 {
-    this->clear_buffer();
+    this->clear_pixel_buffer();
     this->show();
 }
 
@@ -142,7 +142,7 @@ void SSD1306::show_render_area(uint8_t *data_buffer, const render_area_t screen_
 
 void SSD1306::show()
 {
-    this->show_render_area(this->buffer, this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1));
+    this->show_render_area(this->pixel_buffer, this->compute_render_area(0, SSD1306_WIDTH - 1, 0, SSD1306_HEIGHT - 1));
 }
 
 void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
@@ -153,7 +153,7 @@ void SSD1306::show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y)
     assert(end_col <= SSD1306_WIDTH - 1);
     assert(end_line <= SSD1306_HEIGHT - 1);
 
-    this->show_render_area(frame->buffer, this->compute_render_area(anchor_x, end_col, anchor_y, end_line));
+    this->show_render_area(frame->pixel_buffer, this->compute_render_area(anchor_x, end_col, anchor_y, end_line));
 }
 
 void SSD1306::init_display_vertical_shift(uint8_t value)

@@ -85,7 +85,7 @@ public:
     // void show(Framebuffer *frame, frame_data_t data);
     void show_render_area(uint8_t *data_buffer, render_area_t screen_area, uint8_t addressing_mode = HORIZONTAL_ADDRESSING_MODE); // when we need to show a render area with a given framebuffer
     void fill_pattern_and_show_GDDRAM(uint8_t pattern, render_area_t area);
-    void clear_buffer_and_show_full_screen();
+    void clear_pixel_buffer_and_show_full_screen();
 
     void set_contrast(uint8_t value);
     void set_display_from_RAM();
