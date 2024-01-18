@@ -40,14 +40,15 @@ typedef struct struct_text_frame
     uint8_t tab_size{2};
     Framebuffer_color fg_color{Framebuffer_color::white};
     Framebuffer_color bg_color{Framebuffer_color::black};
-    bool wrap {true};
+    bool wrap{true};
     bool auto_next_char{true};
 } text_config_t;
 
 class Framebuffer
 {
 private:
-    size_t buffer_size;
+    size_t pixel_buffer_size;
+    size_t text_buffer_size;
     Framebuffer_format format;
     text_config_t text_config{};
     uint8_t current_char_line{0};
@@ -60,19 +61,19 @@ private:
     void clear_line();
 
 public:
-    uint8_t *buffer;
-    char *txt_buffer ;
+    uint8_t* pixel_buffer;
+    char* text_buffer;
     uint8_t frame_width;
     uint8_t frame_height;
     uint8_t max_line{0};
     uint8_t max_column{0};
 
-    Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB);
+    Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, text_config_t txt_cnf = {.font = font_8x8});
     ~Framebuffer();
 
     /* graphic primitives*/
+    void clear_pixel_buffer();
     void fill(Framebuffer_color c);
-    void clear_buffer();
     void hline(uint8_t x, uint8_t y, size_t w, Framebuffer_color c = Framebuffer_color::white);
     void vline(uint8_t x, uint8_t y, size_t h, Framebuffer_color c = Framebuffer_color::white);
     void line(int x1, int y1, int x2, int y2, Framebuffer_color c = Framebuffer_color::white);
@@ -80,10 +81,10 @@ public:
     void circle(int radius, int x_center, int y_center, bool fill = false, Framebuffer_color c = Framebuffer_color::white);
 
     /* textual primitives*/
-    // void text(const unsigned char *font, std::string text, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
-    // void text(const unsigned char *font, char *c_str, uint8_t anchor_x, uint8_t anchor_y, Framebuffer_color c = Framebuffer_color::white);
+    void clear_text_buffer();
     void set_text_config(text_config_t device_config);
     void set_font(const unsigned char *font);
+    void print_text();
     void print_text(const char *c_str);
     void print_char(char c);
     void next_line();
