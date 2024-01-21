@@ -48,7 +48,6 @@ SwitchButtonEvent SwitchButton::get_event()
             previous_change_time_us = current_time_us;
             if (switch_is_pushed)
             {
-                // printf("%10d pressed. delta_ms:%10d\n", time_us_32(), delta_us / 1000);
                 current_status = SwitchButtonStatus::PRESSED;
                 return SwitchButtonEvent::PUSH;
             }
@@ -56,18 +55,6 @@ SwitchButtonEvent SwitchButton::get_event()
             {
                 current_status = SwitchButtonStatus::RELEASED;
                 return (delta_us < long_press_delay_us) ? SwitchButtonEvent::RELEASE : SwitchButtonEvent::LONG_PUSH;
-                /*
-            if (delta_us < long_press_delay_us)
-            {
-                printf("%10d released. delta_ms:%10d\n", time_us_32(), delta_us / 1000);
-                return SwitchButtonEvent::RELEASE;
-            }
-            else
-            {
-                printf("%10d long push. delta_ms:%10d\n", time_us_32(), delta_us / 1000);
-                return SwitchButtonEvent::LONG_PUSH;
-            }
-                */
             }
         }
     }
@@ -82,4 +69,14 @@ bool SwitchButton::check_switch_pushed()
 {
     bool current_gpio_value = gpio_get(this->gpio);
     return ((current_gpio_value && !active_lo) || (active_lo && !current_gpio_value)) ? true : false;
+}
+
+SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, uint32_t sw_event_mask, gpio_irq_callback_t call_back, switch_button_config_t conf)
+    : SwitchButton(gpio, conf)
+{
+    gpio_set_irq_enabled_with_callback(gpio, sw_event_mask, true, call_back);
+}
+
+SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
+{
 }

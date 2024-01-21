@@ -10,12 +10,14 @@
 #define GPIO_HI true
 #define GPIO_LO false
 
-enum class SwitchButtonStatus {
+enum class SwitchButtonStatus
+{
     PRESSED,
     RELEASED,
 };
 
-enum class SwitchButtonEvent {
+enum class SwitchButtonEvent
+{
     NOOP,
     PUSH,
     LONG_PUSH,
@@ -43,11 +45,20 @@ private:
     bool active_lo;
 
 public:
-    SwitchButton(uint gpio, switch_button_config_t conf={});
+    SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
     SwitchButtonEvent get_event();
     SwitchButtonStatus get_status();
     bool check_switch_pushed();
+};
+
+class SwitchButtonWithIRQ : public SwitchButton
+{
+private:
+    /* data */
+public:
+    SwitchButtonWithIRQ(uint gpio, uint32_t sw_event_mask, gpio_irq_callback_t call_back, switch_button_config_t conf = {});
+    ~SwitchButtonWithIRQ();
 };
 
 #endif // SWITCH_BUTTON_H
