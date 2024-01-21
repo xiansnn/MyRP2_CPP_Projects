@@ -81,5 +81,5 @@ SwitchButtonStatus SwitchButton::get_status()
 bool SwitchButton::check_switch_pushed()
 {
     bool current_gpio_value = gpio_get(this->gpio);
-    return (current_gpio_value ^ active_lo ) ? true : false;
+    return ((current_gpio_value && !active_lo) || (active_lo && !current_gpio_value)) ? true : false;
 }
