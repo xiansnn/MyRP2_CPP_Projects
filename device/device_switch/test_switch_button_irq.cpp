@@ -16,8 +16,8 @@ switch_button_config_t clk_conf{
 };
 
 void sw_call_back(uint gpio, uint32_t event_mask);
-SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, &sw_call_back, sw_conf);
-SwitchButtonWithIRQ clk = SwitchButtonWithIRQ(ENCODER_CLK, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, &sw_call_back, clk_conf);
+SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &sw_call_back, sw_conf);
+SwitchButtonWithIRQ clk = SwitchButtonWithIRQ(ENCODER_CLK, &sw_call_back, clk_conf);
 
 void sw_call_back(uint gpio, uint32_t event_mask)
 {
