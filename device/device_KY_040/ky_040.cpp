@@ -28,10 +28,10 @@ EncoderEvent KY040::get_event()
     }
 }
 
-KY040_IRQ::KY040_IRQ(uint encoder_dt_gpio, uint encoder_clk_gpio, gpio_irq_callback_t call_back,
-                     switch_button_config_t clk_gpio_conf, uint32_t clk_event_mask)
-    : KY040(encoder_clk_gpio, encoder_dt_gpio, clk_gpio_conf)
+KY040_IRQ::KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back, switch_button_config_t clk_conf, uint32_t clk_event_mask)
+: KY040(encoder_clk_gpio, encoder_dt_gpio, clk_conf)
 {
+    gpio_set_irq_enabled_with_callback(gpio, clk_event_mask, true, call_back);
 }
 
 KY040_IRQ::~KY040_IRQ()
