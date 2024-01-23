@@ -1,2 +1,2 @@
-add_subdirectory(streams)
+add_subdirectory(framebuffer)
 add_subdirectory(gpio_irq)
