@@ -69,11 +69,11 @@ void call_back(uint gpio, uint32_t event_mask)
     switch (sw_event)
     {
     case SwitchButtonEvent::PUSHED:
-        reset_cursor();
         break;
     case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
         break;
     case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
+        reset_cursor();
         break;
 
     default:
