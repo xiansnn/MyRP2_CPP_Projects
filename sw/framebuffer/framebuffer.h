@@ -50,7 +50,6 @@ private:
     size_t pixel_buffer_size;
     size_t text_buffer_size;
     Framebuffer_format format;
-    text_config_t text_config{};
     uint8_t current_char_line{0};
     uint8_t current_char_column{0};
 
@@ -63,6 +62,7 @@ private:
 public:
     uint8_t* pixel_buffer;
     char* text_buffer;
+    text_config_t text_config{};
     uint8_t frame_width;
     uint8_t frame_height;
     uint8_t max_line{0};

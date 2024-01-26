@@ -1,0 +1,6 @@
+add_library(widgets widget.cpp)
+target_link_libraries(widgets pico_stdlib framebuffer)
+
+add_executable(test_single_bar test_single_bar.cpp)
+target_link_libraries(test_single_bar widgets pico_stdlib ssd1306 ky040 switch_button)
+pico_add_extra_outputs(test_single_bar)
