@@ -20,24 +20,24 @@ switch_button_config_t clk_conf{
 int cursor;
 int cursor_max{20};
 int cursor_min{0};
-int cursor_middle{(cursor_max + cursor_min) / 2};
+int cursor_zero{(cursor_max + cursor_min) / 2};
 
 void reset_cursor()
 {
-    cursor = cursor_middle;
+    cursor = cursor_zero;
     printf("%*c\n", cursor, '|');
 }
 void increment_cursor()
 {
     cursor++;
     cursor = std::min(cursor_max, std::max(cursor_min, cursor));
-    printf("%+*d\n", cursor, cursor - cursor_middle);
+    printf("%+*d\n", cursor, cursor - cursor_zero);
 }
 void decrement_cursor()
 {
     cursor--;
     cursor = std::min(cursor_max, std::max(cursor_min, cursor));
-    printf("%+*d\n", cursor, cursor - cursor_middle);
+    printf("%+*d\n", cursor, cursor - cursor_zero);
 }
 
 void call_back(uint gpio, uint32_t event_mask);
