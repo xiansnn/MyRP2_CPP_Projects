@@ -39,8 +39,8 @@ switch_button_config_t clk_conf{
 };
 
 bar_widget_config_t bar_conf{
-    .cursor_max = 10,
-    .cursor_min = 0,
+    .level_max = 10,
+    .level_min = 0,
     .width = 100,
     .height = 8,
     .border = false};
@@ -72,7 +72,7 @@ void call_back(uint gpio, uint32_t event_mask)
     case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
         break;
     case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-        value_bar.reset_cursor();
+        value_bar.reset_level();
         break;
 
     default:
@@ -82,10 +82,10 @@ void call_back(uint gpio, uint32_t event_mask)
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
-        value_bar.increment_cursor();
+        value_bar.increment_level();
         break;
     case EncoderEvent::DECREMENT:
-        value_bar.decrement_cursor();
+        value_bar.decrement_level();
         break;
     default:
         break;
@@ -103,8 +103,8 @@ int main(void)
     display.clear_pixel_buffer_and_show_full_screen();
 
     bar_widget_config_t bar_conf{
-        .cursor_max = 10,
-        .cursor_min = 0,
+        .level_max = 10,
+        .level_min = 0,
         .width = 100,
         .height = 8,
         .border = false};
@@ -119,7 +119,7 @@ int main(void)
     while (true)
     {
         value_txt.clear_text_buffer();
-        sprintf(value_txt.text_buffer, "%2d", value_bar.cursor);
+        sprintf(value_txt.text_buffer, "%2d", value_bar.level);
         value_txt.print_text();
         value_bar.draw();
         display.show(&value_txt, 0, 0);
