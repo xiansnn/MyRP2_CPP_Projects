@@ -1,4 +1,4 @@
-#include "widget.h"
+#include "widget_bar.h"
 
 #define MAX_LEVEL_VALUE_SIZE 5
 
@@ -11,8 +11,28 @@ uint8_t Bar::convert_level_to_px(int level)
 
 Bar::Bar(bar_widget_config_t config) : Framebuffer(config.width, config.height)
 {
-    this->config = config;
+    this->init(config);
+    // this->config = config;
 
+    // if (config.draw_value)
+    //     value_max_width = MAX_LEVEL_VALUE_SIZE * config.font[FONT_WIDTH];
+    // else
+    //     value_max_width = 0;
+
+    // px_max = frame_width;
+    // px_min = value_max_width;
+    // level_coef = (float)(px_max - px_min) / (config.level_max - config.level_min);
+    // level_offset = px_max - level_coef * config.level_max;
+    // reset_px();
+}
+
+Bar::~Bar()
+{
+}
+
+void Bar::init(bar_widget_config_t conf)
+{
+    this->config = conf;
     if (config.draw_value)
         value_max_width = MAX_LEVEL_VALUE_SIZE * config.font[FONT_WIDTH];
     else
@@ -23,10 +43,6 @@ Bar::Bar(bar_widget_config_t config) : Framebuffer(config.width, config.height)
     level_coef = (float)(px_max - px_min) / (config.level_max - config.level_min);
     level_offset = px_max - level_coef * config.level_max;
     reset_px();
-}
-
-Bar::~Bar()
-{
 }
 
 void Bar::reset_px()
@@ -68,7 +84,6 @@ void Bar::draw()
     }
     if (config.draw_border)
         rect(px_min, 0, px_max - px_min, frame_height);
-        
 
     uint8_t bar_start, bar_end;
     if (level >= 0)

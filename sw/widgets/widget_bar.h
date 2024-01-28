@@ -1,5 +1,5 @@
-#if !defined(WIDGETS_H)
-#define WIDGETS_H
+#if !defined(WIDGETS_BAR_H)
+#define WIDGETS_BAR_H
 
 #include "framebuffer.h"
 
@@ -22,18 +22,18 @@ private:
     uint8_t px_min;
     float level_coef;
     int level_offset;
+    bar_widget_config_t config{};
 
     uint8_t convert_level_to_px(int level);
-
-    
 
 public:
     Bar(bar_widget_config_t bar_config);
     ~Bar();
 
-    bar_widget_config_t config{};
     int level{0};
     uint8_t px;
+
+    void init(bar_widget_config_t conf);
 
     void reset_px();
     void increment_level();
@@ -41,4 +41,4 @@ public:
     void draw();
 };
 
-#endif // WIDGETS_H
+#endif // WIDGETS_BAR_H

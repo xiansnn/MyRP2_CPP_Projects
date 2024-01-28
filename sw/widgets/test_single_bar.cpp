@@ -4,7 +4,7 @@
 #include "probe.h"
 #include "ssd1306.h"
 #include "../device_KY_040/ky_040.h"
-#include "widget.h"
+#include "widget_bar.h"
 
 #define SW_K0 6
 #define ENCODER_CLK 26
@@ -50,7 +50,7 @@ bar_widget_config_t bar_conf{
 void call_back(uint gpio, uint32_t event_mask);
 SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, sw_conf);
 KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, clk_conf);
-Bar single_bar = Bar(bar_conf);
+Bar bar = Bar(bar_conf);
 
 void call_back(uint gpio, uint32_t event_mask)
 {
@@ -62,7 +62,7 @@ void call_back(uint gpio, uint32_t event_mask)
     case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
         break;
     case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-        single_bar.reset_px();
+        bar.reset_px();
         break;
 
     default:
@@ -72,10 +72,10 @@ void call_back(uint gpio, uint32_t event_mask)
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
-        single_bar.increment_level();
+        bar.increment_level();
         break;
     case EncoderEvent::DECREMENT:
-        single_bar.decrement_level();
+        bar.decrement_level();
         break;
     default:
         break;
@@ -94,10 +94,10 @@ int main(void)
     while (true)
     {
         pr_D4.hi();
-        single_bar.draw();
+        bar.draw();
         pr_D4.lo();
         pr_D5.hi();
-        display.show(&single_bar, 0, 16);
+        display.show(&bar, 0, 16);
         pr_D5.lo();
         sleep_ms(15);
     }
