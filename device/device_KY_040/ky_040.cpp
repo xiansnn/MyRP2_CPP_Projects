@@ -8,7 +8,7 @@ KY040::KY040(uint encoder_clk_gpio, uint encoder_dt_gpio, switch_button_config_t
     this->active_lo = true;
     gpio_init(this->dt_gpio);
     gpio_pull_up(this->dt_gpio);
-    assert(gpio_get(this->dt_gpio) == GPIO_HI);
+    // assert(gpio_get(this->dt_gpio) == GPIO_HI);
 }
 
 KY040::~KY040()

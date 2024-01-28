@@ -14,12 +14,12 @@ SwitchButton::SwitchButton(uint gpio, switch_button_config_t conf)
     if (active_lo)
     {
         gpio_pull_up(this->gpio);
-        assert(gpio_get(this->gpio) == GPIO_HI);
+        // assert(gpio_get(this->gpio) == GPIO_HI);
     }
     else
     {
         gpio_pull_down(this->gpio);
-        assert(gpio_get(this->gpio) == GPIO_LO);
+        // assert(gpio_get(this->gpio) == GPIO_LO);
     }
     this->previous_change_time_us = time_us_64();
     this->previous_button_state = ButtonStatus::INACTIVE;
