@@ -1,49 +1,89 @@
 #include "widget.h"
 
+#define MAX_LEVEL_VALUE_SIZE 5
+
+uint8_t Bar::convert_level_to_px(int level)
+{
+    uint8_t position = level * level_coef + level_offset;
+    position = std::min(px_max, std::max(px_min, position));
+    return position;
+}
+
 Bar::Bar(bar_widget_config_t config) : Framebuffer(config.width, config.height)
 {
-    this->bar_config = config;
-    this->level_scale = this->frame_width / (bar_config.level_max - bar_config.level_min);
-    this->frame_width = (bar_config.level_max - bar_config.level_min) * this->level_scale;
-    this->bar_zero = std::abs(bar_config.level_min * this->level_scale);
-    this->level = 0;
-    this->bar_size = 0;
+    this->config = config;
+
+    if (config.draw_value)
+        value_max_width = MAX_LEVEL_VALUE_SIZE * config.font[FONT_WIDTH];
+    else
+        value_max_width = 0;
+
+    px_max = frame_width;
+    px_min = value_max_width;
+    level_coef = (float)(px_max - px_min) / (config.level_max - config.level_min);
+    level_offset = px_max - level_coef * config.level_max;
+    reset_px();
 }
 
 Bar::~Bar()
 {
 }
 
-void Bar::reset_level()
+void Bar::reset_px()
 {
-    this->level = 0;
+    if (config.level_max * config.level_min < 0)
+        level = 0;
+    else if (config.level_max < 0)
+        level = config.level_max;
+    else
+        level = config.level_min;
+    px = convert_level_to_px(level);
+    // printf("px: %d, level: %d\n", px, level);
 }
 
 void Bar::increment_level()
 {
     level++;
-    level = std::min(bar_config.level_max, std::max(bar_config.level_min, level));
+    level = std::min(config.level_max, std::max(config.level_min, level));
+    px = convert_level_to_px(level);
+    // printf("px: %d, level: %d\n", px, level);
 }
 
 void Bar::decrement_level()
 {
     level--;
-    level = std::min(bar_config.level_max, std::max(bar_config.level_min, level));
+    level = std::min(config.level_max, std::max(config.level_min, level));
+    px = convert_level_to_px(level);
+    // printf("px: %d, level: %d\n", px, level);
 }
 
 void Bar::draw()
 {
-    bar_size = std::abs(level * level_scale);
-    rect(0, 0, frame_width, frame_height, true, Framebuffer_color::black);
-    if (this->bar_config.border)
-        rect(0, 0, frame_width, frame_height);
+    rect(0, 0, frame_width, frame_height, true, Framebuffer_color::black); // clear the full framebuffer
+    if (config.draw_value)
+    {
+        this->clear_text_buffer();
+        sprintf(this->text_buffer, "%d", level);
+        print_text();
+    }
+    if (config.draw_border)
+        rect(px_min, 0, px_max - px_min, frame_height);
+        
+
+    uint8_t bar_start, bar_end;
+    if (level >= 0)
+    {
+        bar_start = convert_level_to_px(0);
+        bar_end = px;
+    }
+    else
+    {
+        bar_start = px;
+        bar_end = convert_level_to_px(0);
+    }
 
     if (level == 0)
-        rect(bar_zero, 0, 1, frame_height, true);
-
-    else if (level > 0)
-        rect(bar_zero, 0, bar_size, frame_height, true);
-
+        rect(bar_start, 0, 1, frame_height, true);
     else
-        rect(bar_zero - bar_size, 0, bar_size, frame_height, true);
+        rect(bar_start, 0, bar_end - bar_start, frame_height, true);
 }

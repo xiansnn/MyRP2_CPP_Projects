@@ -39,18 +39,18 @@ switch_button_config_t clk_conf{
 };
 
 bar_widget_config_t bar_conf{
-    .level_max = 10,
-    .level_min = 0,
-    .width = 100,
+    .level_max = -5,
+    .level_min = -15,
+    .width = 128,
     .height = 8,
-    .border = false};
-
-
+    .draw_border = true,
+    .draw_value = true,
+    .font = font_5x8};
 
 void call_back(uint gpio, uint32_t event_mask);
 SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, sw_conf);
 KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, clk_conf);
-Bar value_bar = Bar(bar_conf);
+Bar single_bar = Bar(bar_conf);
 
 void call_back(uint gpio, uint32_t event_mask)
 {
@@ -62,7 +62,7 @@ void call_back(uint gpio, uint32_t event_mask)
     case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
         break;
     case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-        value_bar.reset_level();
+        single_bar.reset_px();
         break;
 
     default:
@@ -72,10 +72,10 @@ void call_back(uint gpio, uint32_t event_mask)
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
-        value_bar.increment_level();
+        single_bar.increment_level();
         break;
     case EncoderEvent::DECREMENT:
-        value_bar.decrement_level();
+        single_bar.decrement_level();
         break;
     default:
         break;
@@ -83,30 +83,24 @@ void call_back(uint gpio, uint32_t event_mask)
 };
 
 int main(void)
+
 {
     stdio_init_all();
     hw_I2C_master master = hw_I2C_master(cfg_i2c);
     SSD1306 display = SSD1306(&master, cfg_ssd1306);
 
     display.clear_pixel_buffer_and_show_full_screen();
-    
-    text_config_t txt_conf = {
-        .font = font_8x8,
-        .wrap = false};
-    Framebuffer value_txt = Framebuffer(15, 8);
-    value_txt.set_text_config(txt_conf);
 
     while (true)
     {
-        value_txt.clear_text_buffer();
-        sprintf(value_txt.text_buffer, "%2d", value_bar.level);
-        value_txt.print_text();
-        value_bar.draw();
-        display.show(&value_txt, 0, 0);
-        display.show(&value_bar, 20, 0);
+        pr_D4.hi();
+        single_bar.draw();
+        pr_D4.lo();
+        pr_D5.hi();
+        display.show(&single_bar, 0, 16);
+        pr_D5.lo();
+        sleep_ms(15);
     }
-    
 
-    /* code */
     return 0;
 }
