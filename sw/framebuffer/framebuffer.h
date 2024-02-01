@@ -1,10 +1,7 @@
 #if !defined(FRAMEBUFFER_H)
 #define FRAMEBUFFER_H
 
-#include "pico/stdlib.h"
 #include <string>
-
-#include <cstdarg>
 
 #define SSD1306_ASCII_FULL
 #define FONT_WIDTH 0

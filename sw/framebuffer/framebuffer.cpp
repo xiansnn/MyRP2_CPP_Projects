@@ -1,4 +1,5 @@
 #include "framebuffer.h"
+#include "pico/stdlib.h"
 #include <string.h>
 #include <cstring>
 

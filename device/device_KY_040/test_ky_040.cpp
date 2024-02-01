@@ -3,48 +3,31 @@
 
 #include <string>
 
+#include "controlled_value.h"
+
 #define SW_K0 6
 #define ENCODER_CLK 26
 #define ENCODER_DT 21
+#define MAX_VALUE 20
+#define MIN_VALUE 0
 
 Probe pr_D5 = Probe(5);
 Probe pr_D4 = Probe(4);
 
 switch_button_config_t sw_conf{
     .debounce_delay_us = 1000,
-    .long_press_delay_us = 2500000};
+    .long_press_delay_us = 500000};
 
 switch_button_config_t clk_conf{
     .debounce_delay_us = 100,
 };
-int cursor;
-int cursor_max{20};
-int cursor_min{0};
-int cursor_middle{(cursor_max + cursor_min) / 2};
-
-void reset_cursor()
-{
-    cursor = cursor_middle;
-    printf("%*c\n", cursor, '|');
-}
-void increment_cursor()
-{
-    cursor++;
-    cursor = std::min(cursor_max, std::max(cursor_min, cursor));
-    printf("%+*d\n", cursor, cursor - cursor_middle);
-}
-void decrement_cursor()
-{
-    cursor--;
-    cursor = std::min(cursor_max, std::max(cursor_min, cursor));
-    printf("%+*d\n", cursor, cursor - cursor_middle);
-}
 
 int main()
 {
     stdio_init_all();
     SwitchButton sw = SwitchButton(SW_K0, sw_conf);
-    KY040 encoder_clk = KY040(ENCODER_CLK, ENCODER_DT, clk_conf);
+    KY040 encoder = KY040(ENCODER_CLK,ENCODER_DT, clk_conf);
+    ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 
     while (true)
     {
@@ -55,14 +38,14 @@ int main()
         switch (sw_event)
         {
         case SwitchButtonEvent::PUSHED:
-            // printf("SW event(%d) PUSHED\n", sw_event);
-            reset_cursor();
+            val.reset_value();
+            printf("%2d %+*c\n", val.get_value(), val.get_value(), '|');
             break;
         case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
-            // printf("SW event(%d) RELEASED_AFTER_LONG_TIME\n", sw_event);
+            printf("%2d %+*c\n", val.get_value(), val.get_value(), '|');
             break;
         case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-            // printf("SW event(%d) RELEASED_AFTER_SHORT_TIME\n", sw_event);
+            printf("%2d %+*c\n", val.get_value(), val.get_value(), '|');
             break;
 
         default:
@@ -70,22 +53,27 @@ int main()
         }
 
         pr_D5.hi();
-        EncoderEvent encoder_event = encoder_clk.get_event();
-        pr_D5.lo();
+        EncoderEvent encoder_event = encoder.get_event();
 
         switch (encoder_event)
         {
         case EncoderEvent::INCREMENT:
-            // printf("encoder CLK event(%d) INCREMENT\n", encoder_event);
-            increment_cursor();
+            val.increment_value();
+            printf("%2d %+*c\n", val.get_value(), val.get_value(), '|');
             break;
         case EncoderEvent::DECREMENT:
-            // printf("encoder CLK event(%d) DECREMENT\n", encoder_event);
-            decrement_cursor();
+            val.decrement_value();
+            printf("%2d %+*c\n", val.get_value(), val.get_value(), '|');
             break;
         default:
             break;
         }
+        pr_D5.lo();
+
+        sleep_ms(5);
+        /**
+         * caution : depending on the period of the scan, the value of the DT pahse of the encoder may be red when the true value has already changed.
+        */
     }
 
     return 0;
