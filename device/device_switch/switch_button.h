@@ -19,7 +19,8 @@ enum class ButtonStatus
 enum class SwitchButtonEvent
 {
     NOOP,
-    PUSHED,
+    PUSH,
+    LONG_PUSH,
     RELEASED_AFTER_LONG_TIME,
     RELEASED_AFTER_SHORT_TIME
 };

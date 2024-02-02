@@ -33,23 +33,23 @@ SwitchButton::~SwitchButton()
 SwitchButtonEvent SwitchButton::get_event()
 {
     uint64_t delta_time_us;
-    uint64_t current_change_time_us = time_us_64();
+    uint64_t current_time_us = time_us_64();
     bool switch_is_activated = get_switch_activation_state();
     if (switch_is_activated == previous_switch_active_state)
         return SwitchButtonEvent::NOOP;
     else
     {
-        delta_time_us = current_change_time_us - previous_change_time_us;
+        delta_time_us = current_time_us - previous_change_time_us;
         if (delta_time_us < debounce_delay_us)
             return SwitchButtonEvent::NOOP;
         else
         {
             previous_switch_active_state = switch_is_activated;
-            previous_change_time_us = current_change_time_us;
+            previous_change_time_us = current_time_us;
             if (switch_is_activated)
             {
                 current_button_state = ButtonStatus::ACTIVE;
-                return SwitchButtonEvent::PUSHED;
+                return SwitchButtonEvent::PUSH;
             }
             else
             {
