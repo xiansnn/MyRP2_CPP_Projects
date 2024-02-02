@@ -28,7 +28,7 @@ KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, clk_conf);
 ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 void call_back(uint gpio, uint32_t event_mask)
 {
-    EncoderEvent encoder_event = encoder.get_event();
+    EncoderEvent encoder_event = encoder.get_encoder_event();
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
@@ -87,7 +87,7 @@ int main()
         }
 
         pr_D5.hi();
-        EncoderEvent encoder_event = encoder.get_event();
+        EncoderEvent encoder_event = encoder.get_encoder_event();
 
         switch (encoder_event)
         {

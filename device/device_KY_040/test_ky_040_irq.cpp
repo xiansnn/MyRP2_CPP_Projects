@@ -29,6 +29,7 @@ ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 
 void call_back(uint gpio, uint32_t event_mask)
 {
+    pr_D4.hi();
     SwitchButtonEvent sw_event = sw.get_event();
     switch (sw_event)
     {
@@ -43,7 +44,9 @@ void call_back(uint gpio, uint32_t event_mask)
     default:
         break;
     }
-    EncoderEvent encoder_event = encoder.get_event();
+    pr_D4.lo();
+    pr_D5.hi();
+    EncoderEvent encoder_event = encoder.get_encoder_event();
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
@@ -55,6 +58,7 @@ void call_back(uint gpio, uint32_t event_mask)
     default:
         break;
     }
+    pr_D5.lo();
 }
 
 int main()
@@ -66,9 +70,9 @@ int main()
         if (val.has_changed)
         {
             printf("LOOP: %2d %*c\n",val.get_value(), std::abs( val.get_value()), '|');
-            sleep_ms(20);
             val.clear_change_flag();
         }
+            sleep_ms(20);
     }
 
     return 0;

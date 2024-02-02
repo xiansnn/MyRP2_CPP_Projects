@@ -72,7 +72,7 @@ void call_back(uint gpio, uint32_t event_mask)
     default:
         break;
     }
-    EncoderEvent encoder_event = encoder_clk.get_event();
+    EncoderEvent encoder_event = encoder_clk.get_encoder_event();
     switch (encoder_event)
     {
     case EncoderEvent::INCREMENT:
