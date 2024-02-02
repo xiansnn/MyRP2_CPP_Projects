@@ -32,7 +32,7 @@ void call_back(uint gpio, uint32_t event_mask)
     SwitchButtonEvent sw_event = sw.get_event();
     switch (sw_event)
     {
-    case SwitchButtonEvent::PUSHED:
+    case SwitchButtonEvent::PUSH:
         val.reset_value();
         break;
     case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
