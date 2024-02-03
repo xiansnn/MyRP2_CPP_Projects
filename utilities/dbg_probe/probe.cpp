@@ -45,6 +45,6 @@ void Probe::lo()
 void Probe::pulse_us(uint duration)
 {
     hi();
-    sleep_us(duration);
+    busy_wait_us(duration);
     lo();
 }
