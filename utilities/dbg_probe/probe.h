@@ -13,6 +13,7 @@ public:
     Probe(uint channel_);
     void hi();
     void lo();
+    void pulse_us(uint duration);
 };
 
 #endif

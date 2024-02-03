@@ -41,3 +41,10 @@ void Probe::lo()
 {
     gpio_put(this->_gpio, 0);
 }
+
+void Probe::pulse_us(uint duration)
+{
+    hi();
+    sleep_us(duration);
+    lo();
+}
