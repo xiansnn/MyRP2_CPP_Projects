@@ -7,23 +7,23 @@
 Probe pr_D5 = Probe(5);
 Probe pr_D4 = Probe(4);
 
-switch_button_config_t sw_conf{
+switch_button_config_t central_switch_conf{
     .debounce_delay_us = 1000,
-    .long_release_delay_us = 2500000};
-switch_button_config_t clk_conf{
+    .long_push_delay_us = 2500000};
+switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 100,
 };
 
 int main()
 {
     stdio_init_all();
-    SwitchButton sw = SwitchButton(SW_K0, sw_conf);
-    SwitchButton clk = SwitchButton(ENCODER_CLK, clk_conf);
+    SwitchButton central_switch = SwitchButton(SW_K0, central_switch_conf);
+    SwitchButton encoder_clk = SwitchButton(ENCODER_CLK, encoder_clk_conf);
 
     while (true)
     {
         pr_D4.hi();
-        SwitchButtonEvent sw_event = sw.get_event();
+        SwitchButtonEvent sw_event = central_switch.get_event();
         pr_D4.lo();
 
         if (sw_event != SwitchButtonEvent::NOOP)
@@ -32,7 +32,7 @@ int main()
         }
 
         pr_D5.hi();
-        SwitchButtonEvent clk_event = clk.get_event();
+        SwitchButtonEvent clk_event = encoder_clk.get_event();
         pr_D5.lo();
 
         if (clk_event != SwitchButtonEvent::NOOP)

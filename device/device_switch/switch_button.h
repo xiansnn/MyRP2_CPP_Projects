@@ -44,10 +44,10 @@ protected:
     uint64_t previous_change_time_us;
     uint debounce_delay_us;
     /*logical button state machine*/
-    ButtonStatus previous_button_logical_state;
-    ButtonStatus current_button_logical_state;
-    uint long_release_delay_us;
+    ButtonStatus previous_button_state;
+    ButtonStatus current_button_state;
     uint long_push_delay_us;
+    uint long_release_delay_us;
 
 public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});

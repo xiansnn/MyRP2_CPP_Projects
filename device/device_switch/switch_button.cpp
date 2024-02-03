@@ -21,7 +21,7 @@ SwitchButton::SwitchButton(uint gpio, switch_button_config_t conf)
         gpio_pull_down(this->gpio);
     }
     this->previous_change_time_us = time_us_64();
-    this->previous_button_logical_state = ButtonStatus::INACTIVE;
+    this->previous_button_state = ButtonStatus::INACTIVE;
     this->previous_switch_active_state = false;
 }
 
@@ -47,12 +47,12 @@ SwitchButtonEvent SwitchButton::get_event()
             previous_change_time_us = current_time_us;
             if (switch_is_activated)
             {
-                current_button_logical_state = ButtonStatus::ACTIVE;
+                current_button_state = ButtonStatus::ACTIVE;
                 return SwitchButtonEvent::PUSH;
             }
             else
             {
-                current_button_logical_state = ButtonStatus::INACTIVE;
+                current_button_state = ButtonStatus::INACTIVE;
                 return (time_since_previous_change < long_release_delay_us) ? SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME : SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
             }
         }
@@ -61,7 +61,7 @@ SwitchButtonEvent SwitchButton::get_event()
 
 ButtonStatus SwitchButton::get_button_logical_state()
 {
-    return this->current_button_logical_state;
+    return this->current_button_state;
 }
 
 /// @brief 

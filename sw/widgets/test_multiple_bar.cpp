@@ -34,7 +34,7 @@ switch_button_config_t sw_conf{
     .debounce_delay_us = 1000,
     .long_release_delay_us = 1000000};
 
-switch_button_config_t clk_conf{
+switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 100,
 };
 
@@ -51,7 +51,7 @@ bool next_bar{false};
 
 void call_back(uint gpio, uint32_t event_mask);
 SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, sw_conf);
-KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, clk_conf);
+KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, encoder_clk_conf);
 
 Bar bar = Bar(bar_conf);
 
