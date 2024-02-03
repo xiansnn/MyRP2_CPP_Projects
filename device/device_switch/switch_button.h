@@ -6,7 +6,8 @@
 #include <stdio.h>
 
 #define DEBOUNCE_us 10000
-#define LONG_PRESS_DELAY_us 1000000
+#define LONG_RELEASE_DELAY_us 3000000
+#define LONG_PUSH_DELAY_us 1000000
 #define GPIO_HI true
 #define GPIO_LO false
 
@@ -28,7 +29,8 @@ enum class SwitchButtonEvent
 typedef struct switch_button_config
 {
     uint debounce_delay_us = DEBOUNCE_us;
-    uint long_press_delay_us = LONG_PRESS_DELAY_us;
+    uint long_release_delay_us = LONG_RELEASE_DELAY_us;
+    uint long_push_delay_us = LONG_PUSH_DELAY_us;
     bool active_lo = true;
 } switch_button_config_t;
 
@@ -42,15 +44,16 @@ protected:
     uint64_t previous_change_time_us;
     uint debounce_delay_us;
     /*logical button state machine*/
-    ButtonStatus previous_button_state;
-    ButtonStatus current_button_state;
-    uint long_press_delay_us;
+    ButtonStatus previous_button_logical_state;
+    ButtonStatus current_button_logical_state;
+    uint long_release_delay_us;
+    uint long_push_delay_us;
 
 public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
     SwitchButtonEvent get_event();
-    ButtonStatus get_status();
+    ButtonStatus get_button_logical_state();
     bool get_switch_activation_state();
 };
 

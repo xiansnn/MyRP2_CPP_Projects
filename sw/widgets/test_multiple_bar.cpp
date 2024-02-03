@@ -32,7 +32,7 @@ init_config_SSD1306_t cfg_ssd1306{
 
 switch_button_config_t sw_conf{
     .debounce_delay_us = 1000,
-    .long_press_delay_us = 1000000};
+    .long_release_delay_us = 1000000};
 
 switch_button_config_t clk_conf{
     .debounce_delay_us = 100,

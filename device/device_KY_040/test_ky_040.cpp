@@ -17,7 +17,8 @@ Probe pr_D1 = Probe(1);
 
 switch_button_config_t sw_conf{
     .debounce_delay_us = 1000,
-    .long_press_delay_us = 500000};
+    .long_release_delay_us = 3000000,
+    .long_push_delay_us = 500000};
 
 switch_button_config_t clk_conf{
     .debounce_delay_us = 1000,
