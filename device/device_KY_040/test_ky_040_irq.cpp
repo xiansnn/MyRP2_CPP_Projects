@@ -13,7 +13,7 @@
 Probe pr_D5 = Probe(5);
 Probe pr_D4 = Probe(4);
 
-switch_button_config_t sw_conf{
+switch_button_config_t central_switch_conf{
     .debounce_delay_us = 1000,
     .long_release_delay_us = 3000000,
     .long_push_delay_us = 500000};
@@ -23,7 +23,7 @@ switch_button_config_t encoder_clk_conf{
 };
 
 void call_back(uint gpio, uint32_t event_mask);
-SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, sw_conf);
+SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, central_switch_conf);
 KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, encoder_clk_conf);
 ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 

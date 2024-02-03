@@ -11,7 +11,7 @@
 #define GPIO_HI true
 #define GPIO_LO false
 
-enum class ButtonStatus
+enum class ButtonState
 {
     ACTIVE,
     INACTIVE,
@@ -44,8 +44,7 @@ protected:
     uint64_t previous_change_time_us;
     uint debounce_delay_us;
     /*logical button state machine*/
-    ButtonStatus previous_button_state;
-    ButtonStatus current_button_state;
+    ButtonState button_state;
     uint long_push_delay_us;
     uint long_release_delay_us;
 
@@ -53,7 +52,7 @@ public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
     SwitchButtonEvent get_event();
-    ButtonStatus get_button_logical_state();
+    ButtonState get_button_logical_state();
     bool get_switch_activation_state();
 };
 

@@ -15,7 +15,7 @@ Probe pr_D5 = Probe(5);
 Probe pr_D4 = Probe(4);
 Probe pr_D1 = Probe(1);
 
-switch_button_config_t sw_conf{
+switch_button_config_t central_switch_conf{
     .debounce_delay_us = 1000,
     .long_release_delay_us = 3000000,
     .long_push_delay_us = 500000};
@@ -53,7 +53,7 @@ int get_tab(int val) { return a * val + b; };
 int main()
 {
     stdio_init_all();
-    SwitchButton sw = SwitchButton(SW_K0, sw_conf);
+    SwitchButton central_switch = SwitchButton(SW_K0, central_switch_conf);
 
     while (true)
     {
@@ -64,7 +64,7 @@ int main()
         }
 
         pr_D4.hi();
-        SwitchButtonEvent sw_event = sw.get_event();
+        SwitchButtonEvent sw_event = central_switch.get_event();
 
         switch (sw_event)
         {
