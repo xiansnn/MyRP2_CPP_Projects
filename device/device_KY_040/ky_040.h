@@ -18,7 +18,7 @@ private:
 public:
     KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio,
               gpio_irq_callback_t call_back,
-              switch_button_config_t clk_conf = {}, uint32_t clk_event_mask = GPIO_IRQ_EDGE_FALL);
+              switch_button_config_t clk_conf = {}, uint32_t clk_event_mask = GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE);
     ~KY040_IRQ();
     EncoderEvent get_encoder_event();
 };
