@@ -26,6 +26,7 @@ enum class SwitchButtonEvent
 #define DEBOUNCE_us 10000
 #define LONG_RELEASE_DELAY_us 3000000
 #define LONG_PUSH_DELAY_us 1000000
+
 typedef struct switch_button_config
 {
     uint debounce_delay_us = DEBOUNCE_us;
@@ -51,9 +52,9 @@ protected:
 public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
-    SwitchButtonEvent get_event();
+    virtual SwitchButtonEvent get_event();
     ButtonState get_button_logical_state();
-    bool get_switch_activation_state();
+    bool is_switch_active();
 };
 
 class SwitchButtonWithIRQ : public SwitchButton
@@ -61,8 +62,10 @@ class SwitchButtonWithIRQ : public SwitchButton
 private:
     /* data */
 public:
-    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {}, uint32_t sw_event_mask = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
+    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {}, 
+    uint32_t sw_event_mask = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
     ~SwitchButtonWithIRQ();
+    SwitchButtonEvent get_event();
 };
 
 #endif // SWITCH_BUTTON_H

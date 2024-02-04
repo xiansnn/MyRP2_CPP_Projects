@@ -33,8 +33,8 @@ SwitchButtonEvent SwitchButton::get_event()
 {
     uint64_t time_since_previous_change;
     uint64_t current_time_us = time_us_64();
-    bool switch_is_activated = get_switch_activation_state();
-    if (switch_is_activated == previous_switch_active_state)
+    bool switch_active_state = is_switch_active();
+    if (switch_active_state == previous_switch_active_state)
     {
         if (button_state != ButtonState::ACTIVE)
         {
@@ -60,9 +60,9 @@ SwitchButtonEvent SwitchButton::get_event()
             return SwitchButtonEvent::NOOP;
         else
         {
-            previous_switch_active_state = switch_is_activated;
+            previous_switch_active_state = switch_active_state;
             previous_change_time_us = current_time_us;
-            if (switch_is_activated)
+            if (switch_active_state)
             {
                 button_state = ButtonState::ACTIVE;
                 return SwitchButtonEvent::PUSH;
@@ -81,9 +81,8 @@ ButtonState SwitchButton::get_button_logical_state()
     return this->button_state;
 }
 
-/// @brief
-/// @return
-bool SwitchButton::get_switch_activation_state()
+
+bool SwitchButton::is_switch_active()
 {
     bool gpio_value = gpio_get(this->gpio);
     return ((active_lo && !gpio_value) || (!active_lo && gpio_value)) ? true : false;
@@ -97,4 +96,31 @@ SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_bac
 
 SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 {
+}
+
+SwitchButtonEvent SwitchButtonWithIRQ::get_event()
+{
+    uint64_t current_time_us = time_us_64();
+    uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
+    if (time_since_previous_change < debounce_delay_us)
+    {
+        return SwitchButtonEvent::NOOP;
+    }
+    else
+    {
+        previous_change_time_us = current_time_us;
+        if (button_state == ButtonState::INACTIVE)
+        {
+            button_state = ButtonState::ACTIVE;
+            return SwitchButtonEvent::PUSH;
+        }
+        else
+        {
+            button_state = ButtonState::INACTIVE;
+            if (time_since_previous_change < long_release_delay_us)
+                return SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME;
+            else
+                return SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
+        }
+    }
 }
