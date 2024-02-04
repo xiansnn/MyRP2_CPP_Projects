@@ -5,13 +5,6 @@
 #include "switch_button.h"
 #include "controlled_value.h"
 
-enum class EncoderEvent
-{
-    NOOP,
-    INCREMENT,
-    DECREMENT
-};
-
 class KY040_IRQ : public SwitchButtonWithIRQ
 {
 private:
@@ -25,6 +18,7 @@ public:
     ~KY040_IRQ();
     void process_encoder_event();
     void add_cntrl_value(ControlledValue* val);
+    ControlledValue* get_current_cntrl_value();
 };
 
 #endif // KY_040_H
