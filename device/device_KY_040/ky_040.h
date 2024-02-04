@@ -3,6 +3,7 @@
 
 #include <pico/stdio.h>
 #include "switch_button.h"
+#include "controlled_value.h"
 
 enum class EncoderEvent
 {
@@ -15,12 +16,15 @@ class KY040_IRQ : public SwitchButtonWithIRQ
 {
 private:
     uint dt_gpio;
-    public:
+    ControlledValue* cntrl_value;
+
+public:
     KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio,
-              gpio_irq_callback_t call_back, 
-              switch_button_config_t clk_conf = {});
+              gpio_irq_callback_t call_back, switch_button_config_t clk_conf = {},ControlledValue* ctrl_value = nullptr
+              );
     ~KY040_IRQ();
-    EncoderEvent get_encoder_event();
-    };
+    void process_encoder_event();
+    void add_cntrl_value(ControlledValue* val);
+};
 
 #endif // KY_040_H

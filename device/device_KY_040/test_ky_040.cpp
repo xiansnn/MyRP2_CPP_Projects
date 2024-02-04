@@ -25,30 +25,13 @@ switch_button_config_t encoder_clk_conf{
 };
 
 void encoder_irq_call_back(uint gpio, uint32_t event_mask);
-ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 
-
-KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, &encoder_irq_call_back,
+KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, encoder_irq_call_back,
                               encoder_clk_conf);
-
-
 
 void encoder_irq_call_back(uint gpio, uint32_t event_mask)
 {
-    pr_D5.hi();
-    EncoderEvent encoder_event = encoder.get_encoder_event();
-    switch (encoder_event)
-    {
-    case EncoderEvent::INCREMENT:
-        val.increment_value();
-        break;
-    case EncoderEvent::DECREMENT:
-        val.decrement_value();
-        break;
-    default:
-        break;
-    }
-    pr_D5.lo();
+    encoder.process_encoder_event();
 }
 
 float a = 79. / (MAX_VALUE - MIN_VALUE);
@@ -58,6 +41,8 @@ int main()
 {
     stdio_init_all();
     SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, central_switch_conf);
+    ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
+    encoder.add_cntrl_value(&val);
 
     while (true)
     {
