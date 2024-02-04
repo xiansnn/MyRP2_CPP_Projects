@@ -25,9 +25,13 @@ switch_button_config_t encoder_clk_conf{
 };
 
 void call_back(uint gpio, uint32_t event_mask);
-
-KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, encoder_clk_conf);
 ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
+
+
+KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back,
+                              encoder_clk_conf);
+
+
 
 void call_back(uint gpio, uint32_t event_mask)
 {

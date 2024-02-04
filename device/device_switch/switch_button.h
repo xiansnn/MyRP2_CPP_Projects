@@ -5,9 +5,6 @@
 #include "pico/stdlib.h"
 #include <stdio.h>
 
-#define DEBOUNCE_us 10000
-#define LONG_RELEASE_DELAY_us 3000000
-#define LONG_PUSH_DELAY_us 1000000
 #define GPIO_HI true
 #define GPIO_LO false
 
@@ -26,6 +23,9 @@ enum class SwitchButtonEvent
     RELEASED_AFTER_SHORT_TIME
 };
 
+#define DEBOUNCE_us 10000
+#define LONG_RELEASE_DELAY_us 3000000
+#define LONG_PUSH_DELAY_us 1000000
 typedef struct switch_button_config
 {
     uint debounce_delay_us = DEBOUNCE_us;
