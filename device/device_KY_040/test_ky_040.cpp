@@ -5,9 +5,9 @@
 
 #include "controlled_value.h"
 
-#define SW_K0 6
-#define ENCODER_CLK 26
-#define ENCODER_DT 21
+#define CENTRAL_SWITCH_GPIO 6
+#define ENCODER_CLK_GPIO 26
+#define ENCODER_DT_GPIO 21
 #define MAX_VALUE 20
 #define MIN_VALUE -20
 
@@ -24,16 +24,16 @@ switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 1000,
 };
 
-void call_back(uint gpio, uint32_t event_mask);
+void encoder_irq_call_back(uint gpio, uint32_t event_mask);
 ControlledValue val = ControlledValue(MIN_VALUE, MAX_VALUE);
 
 
-KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back,
+KY040_IRQ encoder = KY040_IRQ(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, &encoder_irq_call_back,
                               encoder_clk_conf);
 
 
 
-void call_back(uint gpio, uint32_t event_mask)
+void encoder_irq_call_back(uint gpio, uint32_t event_mask)
 {
     pr_D5.hi();
     EncoderEvent encoder_event = encoder.get_encoder_event();
@@ -57,7 +57,7 @@ int get_tab(int val) { return a * val + b; };
 int main()
 {
     stdio_init_all();
-    SwitchButton central_switch = SwitchButton(SW_K0, central_switch_conf);
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, central_switch_conf);
 
     while (true)
     {

@@ -11,7 +11,7 @@ enum class EncoderEvent
     DECREMENT
 };
 
-class KY040_IRQ : public SwitchButton
+class KY040_IRQ : public SwitchButtonWithIRQ
 {
 private:
     uint dt_gpio;
