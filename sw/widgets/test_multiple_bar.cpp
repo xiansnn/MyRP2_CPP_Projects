@@ -50,8 +50,8 @@ bar_widget_config_t bar_conf{
 bool next_bar{false};
 
 void call_back(uint gpio, uint32_t event_mask);
-SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(SW_K0, &call_back, sw_conf);
-KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK, ENCODER_DT, &call_back, encoder_clk_conf);
+SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &call_back, sw_conf);
+KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, &call_back, encoder_clk_conf);
 
 Bar bar = Bar(bar_conf);
 
