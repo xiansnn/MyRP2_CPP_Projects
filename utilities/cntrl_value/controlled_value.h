@@ -4,10 +4,10 @@
 class ControlledValue
 {
 private:
-    int min_value;
-    int max_value;
     int value{0};
     int increment{1};
+    int min_value;
+    int max_value;
 
 
 public:
@@ -17,6 +17,8 @@ public:
     bool has_changed{false};
 
     int get_value();
+    int get_min_value();
+    int get_max_value();
     void set_value(int new_value);
     void reset_value();
     void increment_value();

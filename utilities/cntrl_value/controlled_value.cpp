@@ -18,6 +18,16 @@ int ControlledValue::get_value()
     return value;
 }
 
+int ControlledValue::get_min_value()
+{
+    return this->min_value;
+}
+
+int ControlledValue::get_max_value()
+{
+    return this->max_value;
+}
+
 void ControlledValue::set_value(int new_value)
 {
     this->value = std::min(this->max_value, std::max(this->min_value, new_value));
