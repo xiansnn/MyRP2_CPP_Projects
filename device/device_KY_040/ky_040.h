@@ -16,9 +16,9 @@ public:
               gpio_irq_callback_t call_back, switch_button_config_t clk_conf = {},ControlledValue* ctrl_value = nullptr
               );
     ~KY040_IRQ();
-    void process_encoder_event();
-    void add_cntrl_value(ControlledValue* val);
-    ControlledValue* get_current_cntrl_value();
+    void interrupt_service_routine();
+    ControlledValue* set_cntrl_value(ControlledValue* val);
+    ControlledValue* get_cntrl_value();
 };
 
 #endif // KY_040_H

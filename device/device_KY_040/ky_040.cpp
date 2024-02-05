@@ -22,9 +22,9 @@ KY040_IRQ::~KY040_IRQ()
 {
 }
 
-void KY040_IRQ::process_encoder_event()
+void KY040_IRQ::interrupt_service_routine()
 {
-    SwitchButtonEvent clk_event = SwitchButtonWithIRQ::get_event();
+    SwitchButtonEvent clk_event = SwitchButtonWithIRQ::get_IRQ_event();
     bool clockwise_rotation = gpio_get(dt_gpio);
     if (clk_event == SwitchButtonEvent::PUSH)
     {
@@ -41,12 +41,13 @@ void KY040_IRQ::process_encoder_event()
     }
 }
 
-void KY040_IRQ::add_cntrl_value(ControlledValue *val)
+ControlledValue* KY040_IRQ::set_cntrl_value(ControlledValue* val)
 {
     this->cntrl_value = val;
+    return cntrl_value;
 }
 
-ControlledValue* KY040_IRQ::get_current_cntrl_value()
+ControlledValue* KY040_IRQ::get_cntrl_value()
 {
     return cntrl_value;
 }
