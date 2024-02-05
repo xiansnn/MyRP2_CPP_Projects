@@ -34,13 +34,13 @@ int main()
     while (true)
     {
         pr_D4.hi();
-        SwitchButtonEvent sw_event = central_switch.get_event();
+        SwitchButtonEvent sw_event = central_switch.get_sample_event();
         if (sw_event != SwitchButtonEvent::NOOP)
             printf("SW event(%s)\n", sw_events[sw_event].c_str());
         pr_D4.lo();
 
         pr_D5.hi();
-        SwitchButtonEvent clk_event = encoder_clk.get_event();
+        SwitchButtonEvent clk_event = encoder_clk.get_sample_event();
         if (clk_event != SwitchButtonEvent::NOOP)
             printf("CLK event(%s)\n", sw_events[clk_event].c_str());
         pr_D5.lo();

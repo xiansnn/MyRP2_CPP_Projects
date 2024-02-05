@@ -29,7 +29,7 @@ SwitchButton::~SwitchButton()
 {
 }
 
-SwitchButtonEvent SwitchButton::get_event()
+SwitchButtonEvent SwitchButton::get_sample_event()
 {
     uint64_t time_since_previous_change;
     uint64_t current_time_us = time_us_64();
@@ -91,19 +91,22 @@ bool SwitchButton::is_switch_active()
 SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf, uint32_t sw_event_mask)
     : SwitchButton(gpio, conf)
 {
-    gpio_set_irq_enabled_with_callback(gpio, sw_event_mask, true, call_back);
+    this->_call_back = call_back;
+    this->_sw_event_mask = sw_event_mask;
+    gpio_set_irq_enabled_with_callback(gpio, _sw_event_mask, true, _call_back);
 }
 
 SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 {
 }
 
-SwitchButtonEvent SwitchButtonWithIRQ::get_event()
+SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
 {
-    uint64_t current_time_us = time_us_64();
+        uint64_t current_time_us = time_us_64();
     uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
     if (time_since_previous_change < debounce_delay_us)
     {
+        previous_change_time_us = current_time_us;
         return SwitchButtonEvent::NOOP;
     }
     else
@@ -123,4 +126,4 @@ SwitchButtonEvent SwitchButtonWithIRQ::get_event()
                 return SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
         }
     }
-}
+    }

@@ -52,7 +52,7 @@ protected:
 public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
-    virtual SwitchButtonEvent get_event();
+    SwitchButtonEvent get_sample_event();
     ButtonState get_button_logical_state();
     bool is_switch_active();
 };
@@ -60,12 +60,13 @@ public:
 class SwitchButtonWithIRQ : public SwitchButton
 {
 private:
-    /* data */
+    gpio_irq_callback_t _call_back;
+    uint32_t _sw_event_mask;
 public:
     SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {}, 
     uint32_t sw_event_mask = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
     ~SwitchButtonWithIRQ();
-    SwitchButtonEvent get_event();
+    SwitchButtonEvent get_IRQ_event();
 };
 
 #endif // SWITCH_BUTTON_H

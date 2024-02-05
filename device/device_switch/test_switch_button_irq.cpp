@@ -35,7 +35,7 @@ void sw_call_back(uint gpio, uint32_t event_mask)
     if (gpio == CENTRAL_SWITCH_GPIO)
     {
         pr_D4.hi();
-        SwitchButtonEvent sw_event = sw.get_event();
+        SwitchButtonEvent sw_event = sw.get_IRQ_event();
         if (sw_event != SwitchButtonEvent::NOOP)
             printf("SW event(%s) mask(%d)\n", sw_events[sw_event].c_str(), event_mask);
         pr_D4.lo();
@@ -43,7 +43,7 @@ void sw_call_back(uint gpio, uint32_t event_mask)
     if (gpio == ENCODER_CLK_GPIO)
     {
         pr_D5.hi();
-        SwitchButtonEvent clk_event = clk.get_event();
+        SwitchButtonEvent clk_event = clk.get_IRQ_event();
         if (clk_event != SwitchButtonEvent::NOOP)
             printf("Encoder event(%s) mask(%d)\n", sw_events[clk_event].c_str(), event_mask);
         pr_D5.lo();
