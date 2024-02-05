@@ -4,7 +4,7 @@
 class ControlledValue
 {
 private:
-    int value{0};
+    int value;
     int increment{1};
     int min_value;
     int max_value;

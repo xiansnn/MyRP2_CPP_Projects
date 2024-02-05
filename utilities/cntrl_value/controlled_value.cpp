@@ -7,6 +7,7 @@ ControlledValue::ControlledValue(int min_value, int max_value, int increment)
     this->max_value = max_value;
     this->min_value = min_value;
     this->increment = increment;
+    this->value = std::min(this->max_value, std::max(this->min_value, 0));
 }
 
 ControlledValue::~ControlledValue()
