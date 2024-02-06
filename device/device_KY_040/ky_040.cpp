@@ -6,7 +6,7 @@
 
 Probe pr_D1 = Probe(1);
 
-KY040_IRQ::KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
+KY040::KY040(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
                      switch_button_config_t clk_conf, ControlledValue *ctrl_value)
     : SwitchButtonWithIRQ(encoder_clk_gpio, call_back, clk_conf)
 {
@@ -18,13 +18,13 @@ KY040_IRQ::KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callb
     gpio_pull_up(this->dt_gpio);
 }
 
-KY040_IRQ::~KY040_IRQ()
+KY040::~KY040()
 {
 }
 
-void KY040_IRQ::interrupt_service_routine()
+void KY040::interrupt_service_routine()
 {
-    SwitchButtonEvent clk_event = SwitchButtonWithIRQ::get_IRQ_event();
+    SwitchButtonEvent clk_event = get_IRQ_event();
     bool clockwise_rotation = gpio_get(dt_gpio);
     if (clk_event == SwitchButtonEvent::PUSH)
     {
@@ -41,13 +41,13 @@ void KY040_IRQ::interrupt_service_routine()
     }
 }
 
-ControlledValue* KY040_IRQ::set_cntrl_value(ControlledValue* val)
+ControlledValue* KY040::set_cntrl_value(ControlledValue* val)
 {
     this->cntrl_value = val;
     return cntrl_value;
 }
 
-ControlledValue* KY040_IRQ::get_cntrl_value()
+ControlledValue* KY040::get_cntrl_value()
 {
     return cntrl_value;
 }

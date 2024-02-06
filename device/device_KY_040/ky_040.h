@@ -5,17 +5,17 @@
 #include "switch_button.h"
 #include "controlled_value.h"
 
-class KY040_IRQ : public SwitchButtonWithIRQ
+class KY040 : public SwitchButtonWithIRQ
 {
 private:
     uint dt_gpio;
     ControlledValue* cntrl_value;
 
 public:
-    KY040_IRQ(uint encoder_clk_gpio, uint encoder_dt_gpio,
+    KY040(uint encoder_clk_gpio, uint encoder_dt_gpio,
               gpio_irq_callback_t call_back, switch_button_config_t clk_conf = {},ControlledValue* ctrl_value = nullptr
               );
-    ~KY040_IRQ();
+    ~KY040();
     void interrupt_service_routine();
     ControlledValue* set_cntrl_value(ControlledValue* val);
     ControlledValue* get_cntrl_value();
