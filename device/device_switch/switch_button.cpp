@@ -97,6 +97,7 @@ SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 
 SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
 {
+    bool switch_active_state = is_switch_active();
     uint64_t current_time_us = time_us_64();
     uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
     previous_change_time_us = current_time_us;
@@ -106,7 +107,7 @@ SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
     }
     else
     {
-        if (button_is_active == false)
+        if (switch_active_state == true)
         {
             button_is_active = true;
             return SwitchButtonEvent::PUSH;
