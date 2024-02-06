@@ -45,7 +45,7 @@ protected:
     uint64_t previous_change_time_us;
     uint debounce_delay_us;
     /*logical button state machine*/
-    ButtonState button_state;
+    bool button_is_active;
     uint long_push_delay_us;
     uint long_release_delay_us;
 
@@ -53,7 +53,7 @@ public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
     SwitchButtonEvent get_sample_event();
-    ButtonState get_button_logical_state();
+    bool is_button_active();
     bool is_switch_active();
 };
 
