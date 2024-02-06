@@ -100,7 +100,7 @@ SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
     uint64_t current_time_us = time_us_64();
     uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
     previous_change_time_us = current_time_us;
-    if (time_since_previous_change < debounce_delay_us)
+    if (time_since_previous_change <= debounce_delay_us)
     {
         return SwitchButtonEvent::NOOP;
     }
