@@ -15,7 +15,7 @@ SwitchButton::SwitchButton(uint gpio, switch_button_config_t conf)
         gpio_pull_up(this->gpio);
     else
         gpio_pull_down(this->gpio);
-    this->previous_change_time_us = time_us_64();
+    this->previous_change_time_us = time_us_32();
     this->button_is_active = false;
     this->previous_switch_active_state = false;
 }
@@ -26,8 +26,8 @@ SwitchButton::~SwitchButton()
 
 SwitchButtonEvent SwitchButton::process_sample_event()
 {
-    uint64_t time_since_previous_change;
-    uint64_t current_time_us = time_us_64();
+    uint32_t time_since_previous_change;
+    uint32_t current_time_us = time_us_32();
     bool switch_active_state = is_switch_active();
     if (switch_active_state == previous_switch_active_state)
     {
@@ -85,7 +85,8 @@ bool SwitchButton::is_switch_active()
 SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf, uint32_t event_mask_config)
     : SwitchButton(gpio, conf)
 {
-    gpio_set_irq_enabled_with_callback(gpio, event_mask_config, true, call_back);
+    this->irq_event_mask_config = event_mask_config;
+    gpio_set_irq_enabled_with_callback(gpio, irq_event_mask_config, true, call_back);
 }
 
 SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
@@ -93,10 +94,11 @@ SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 }
 
 SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_mask)
+// TODO bounces are not detected on rising edges!!
 {
     bool switch_active_state = is_switch_pushed(current_event_mask);
-    uint64_t current_time_us = time_us_64();
-    uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
+    uint32_t current_time_us = time_us_32();
+    uint32_t time_since_previous_change = current_time_us - previous_change_time_us;
     previous_change_time_us = current_time_us;
     if (time_since_previous_change <= debounce_delay_us)
     {
@@ -118,6 +120,11 @@ SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_
                 return SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
         }
     }
+}
+
+void SwitchButtonWithIRQ::irq_enabled(bool enabled)
+{
+    gpio_set_irq_enabled(this->gpio,this->irq_event_mask_config,enabled);
 }
 
 bool SwitchButtonWithIRQ::is_switch_pushed(uint32_t event_mask)
