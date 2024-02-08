@@ -95,9 +95,9 @@ SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 {
 }
 
-SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
+SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_mask)
 {
-    bool switch_active_state = is_switch_active();
+    bool switch_active_state = is_switch_pushed(current_event_mask);
     uint64_t current_time_us = time_us_64();
     uint64_t time_since_previous_change = current_time_us - previous_change_time_us;
     previous_change_time_us = current_time_us;
@@ -121,4 +121,12 @@ SwitchButtonEvent SwitchButtonWithIRQ::get_IRQ_event()
                 return SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
         }
     }
+}
+
+bool SwitchButtonWithIRQ::is_switch_pushed(uint32_t event_mask)
+{
+    bool only_rising_edge_present = (event_mask & GPIO_IRQ_EDGE_RISE) and !(event_mask & GPIO_IRQ_EDGE_FALL);
+    bool only_falling_edge_present = (event_mask & GPIO_IRQ_EDGE_FALL) and !(event_mask & GPIO_IRQ_EDGE_RISE);
+
+    return ((active_lo && only_falling_edge_present) || (!active_lo && only_rising_edge_present)) ? true : false;
 }

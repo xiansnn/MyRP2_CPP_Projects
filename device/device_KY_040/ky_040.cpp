@@ -4,13 +4,6 @@
 #include <string>
 #include "probe.h"
 
-/**
- * TODO : fix spurious error of rotation detection. occurs when rise edge is mistaken as falling edge. may be debounce doesn't work fine on rising edge?
- */
-
-Probe pr_D1 = Probe(1);
-Probe pr_D2 = Probe(2);
-
 KY040::KY040(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
              switch_button_config_t clk_conf, ControlledValue *ctrl_value)
     : SwitchButtonWithIRQ(encoder_clk_gpio, call_back, clk_conf)
@@ -27,24 +20,16 @@ KY040::~KY040()
 {
 }
 
-void KY040::interrupt_service_routine()
+void KY040::interrupt_service_routine(uint32_t irq_event_mask)
 {
-    SwitchButtonEvent clk_event = get_IRQ_event();
+    SwitchButtonEvent clk_event = process_IRQ_event(irq_event_mask);
     if (clk_event == SwitchButtonEvent::PUSH)
     {
-        pr_D1.hi();
         bool clockwise_rotation = gpio_get(dt_gpio);
         if (clockwise_rotation)
-        {
-            pr_D2.hi();
             this->cntrl_value->increment_value();
-        }
         else
-        {
-            pr_D2.lo();
             this->cntrl_value->decrement_value();
-        }
-        pr_D1.lo();
     }
 }
 

@@ -33,7 +33,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     {
     case ENCODER_CLK_GPIO:
         gpio_set_irq_enabled_with_callback(ENCODER_CLK_GPIO, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, false, shared_irq_call_back);
-        encoder.interrupt_service_routine();
+        encoder.interrupt_service_routine(event_mask);
         gpio_set_irq_enabled_with_callback(ENCODER_CLK_GPIO, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, shared_irq_call_back);
         break;
 

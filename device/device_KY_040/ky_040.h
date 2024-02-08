@@ -16,7 +16,7 @@ public:
               gpio_irq_callback_t call_back, switch_button_config_t clk_conf = {},ControlledValue* ctrl_value = nullptr
               );
     ~KY040();
-    void interrupt_service_routine();
+    void interrupt_service_routine(uint32_t irq_event_mask);
     ControlledValue* set_cntrl_value(ControlledValue* val);
     ControlledValue* get_cntrl_value();
 };
