@@ -38,13 +38,15 @@ typedef struct switch_button_config
 class SwitchButton
 {
 protected:
-    /*mechanical switch state machine*/
     uint gpio;
     bool active_lo;
-    bool previous_switch_active_state;
     uint64_t previous_change_time_us;
+    /*mechanical switch state machine*/
+    bool is_switch_active();
+    bool previous_switch_active_state;
     uint debounce_delay_us;
     /*logical button state machine*/
+    bool is_button_active();
     bool button_is_active;
     uint long_push_delay_us;
     uint long_release_delay_us;
@@ -52,20 +54,17 @@ protected:
 public:
     SwitchButton(uint gpio, switch_button_config_t conf = {});
     ~SwitchButton();
-    SwitchButtonEvent get_sample_event();
-    bool is_button_active();
-    bool is_switch_active();
+    SwitchButtonEvent process_sample_event();
 };
 
 class SwitchButtonWithIRQ : public SwitchButton
 {
-private:
-    gpio_irq_callback_t _call_back;
-    uint32_t _sw_event_mask;
+protected:
     bool is_switch_pushed(uint32_t current_event_mask);
+
 public:
-    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {}, 
-    uint32_t sw_event_mask = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
+    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {},
+                        uint32_t event_mask_config = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
     ~SwitchButtonWithIRQ();
     SwitchButtonEvent process_IRQ_event(uint32_t current_event_mask);
 };

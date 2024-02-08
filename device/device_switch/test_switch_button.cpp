@@ -11,7 +11,7 @@ Probe pr_D4 = Probe(4);
 
 switch_button_config_t central_switch_conf{
     .debounce_delay_us = 1000,
-    .long_release_delay_us = 3000000,
+    .long_release_delay_us = 2000000,
     .long_push_delay_us = 1000000};
 switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 1000,
@@ -34,13 +34,13 @@ int main()
     while (true)
     {
         pr_D4.hi();
-        SwitchButtonEvent sw_event = central_switch.get_sample_event();
+        SwitchButtonEvent sw_event = central_switch.process_sample_event();
         if (sw_event != SwitchButtonEvent::NOOP)
             printf("SW event(%s)\n", sw_events[sw_event].c_str());
         pr_D4.lo();
 
         pr_D5.hi();
-        SwitchButtonEvent clk_event = encoder_clk.get_sample_event();
+        SwitchButtonEvent clk_event = encoder_clk.process_sample_event();
         if (clk_event != SwitchButtonEvent::NOOP)
             printf("CLK event(%s)\n", sw_events[clk_event].c_str());
         pr_D5.lo();

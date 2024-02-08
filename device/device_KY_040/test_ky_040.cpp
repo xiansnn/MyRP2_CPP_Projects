@@ -80,7 +80,7 @@ int main()
             current_cntrl_value->clear_change_flag();
             pr_D5.lo();
         }
-        SwitchButtonEvent sw_event = central_switch.get_sample_event();
+        SwitchButtonEvent sw_event = central_switch.process_sample_event();
         switch (sw_event)
         {
         case SwitchButtonEvent::PUSH:

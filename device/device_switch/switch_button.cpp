@@ -1,7 +1,6 @@
 #include "switch_button.h"
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
-#include <string>
 
 SwitchButton::SwitchButton(uint gpio, switch_button_config_t conf)
 {
@@ -25,7 +24,7 @@ SwitchButton::~SwitchButton()
 {
 }
 
-SwitchButtonEvent SwitchButton::get_sample_event()
+SwitchButtonEvent SwitchButton::process_sample_event()
 {
     uint64_t time_since_previous_change;
     uint64_t current_time_us = time_us_64();
@@ -83,12 +82,10 @@ bool SwitchButton::is_switch_active()
     return ((active_lo && !gpio_value) || (!active_lo && gpio_value)) ? true : false;
 }
 
-SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf, uint32_t sw_event_mask)
+SwitchButtonWithIRQ::SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf, uint32_t event_mask_config)
     : SwitchButton(gpio, conf)
 {
-    this->_call_back = call_back;
-    this->_sw_event_mask = sw_event_mask;
-    gpio_set_irq_enabled_with_callback(gpio, _sw_event_mask, true, _call_back);
+    gpio_set_irq_enabled_with_callback(gpio, event_mask_config, true, call_back);
 }
 
 SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
