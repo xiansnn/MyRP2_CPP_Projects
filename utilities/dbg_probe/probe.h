@@ -14,6 +14,7 @@ public:
     void hi();
     void lo();
     void pulse_us(uint duration);
+    void copy(bool value);
 };
 
 #endif

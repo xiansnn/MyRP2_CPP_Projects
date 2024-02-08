@@ -48,3 +48,8 @@ void Probe::pulse_us(uint duration)
     busy_wait_us(duration);
     lo();
 }
+
+void Probe::copy(bool value)
+{
+    gpio_put(this->_gpio, value);
+}
