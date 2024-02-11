@@ -6,11 +6,14 @@
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 
-Probe pr_D1 = Probe(1);
-Probe pr_D2 = Probe(2);
-Probe pr_D3 = Probe(3);
-Probe pr_D4 = Probe(4);
-Probe pr_D5 = Probe(5);
+Probe pr_D1 = Probe(1); // copy of : encoder_clk.is_button_active()
+Probe pr_D2 = Probe(2); // copy of : encoder_central_sw.is_button_active()
+Probe pr_D3 = Probe(3); // sw_call_back is running
+Probe pr_D4 = Probe(4); // clk_event != SwitchButtonEvent::NOOP
+Probe pr_D5 = Probe(5); // bounces discarded
+// channel 0 : central switch pin
+// channel 6 : encoder DT pin
+// channel 7 : encoder clk pin
 
 switch_button_config_t central_switch_conf{
     .debounce_delay_us = 5000,
@@ -21,7 +24,7 @@ switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 1000,
 };
 
-std::map<SwitchButtonEvent, std::string> sw_events{
+std::map<SwitchButtonEvent, std::string> sw_button_events{
     {SwitchButtonEvent::NOOP, "NOOP"},
     {SwitchButtonEvent::PUSH, "PUSH"},
     {SwitchButtonEvent::LONG_PUSH, "LONG_PUSH"},
@@ -30,34 +33,40 @@ std::map<SwitchButtonEvent, std::string> sw_events{
 };
 
 void sw_call_back(uint gpio, uint32_t event_mask);
-SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &sw_call_back, central_switch_conf);
-SwitchButtonWithIRQ clk = SwitchButtonWithIRQ(ENCODER_CLK_GPIO, &sw_call_back, encoder_clk_conf);
+
+SwitchButtonWithIRQ encoder_central_sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &sw_call_back, central_switch_conf);
+
+SwitchButtonWithIRQ encoder_clk = SwitchButtonWithIRQ(ENCODER_CLK_GPIO, &sw_call_back, encoder_clk_conf);
 
 void sw_call_back(uint gpio, uint32_t event_mask)
 {
     pr_D3.hi();
     if (gpio == CENTRAL_SWITCH_GPIO)
     {
-        SwitchButtonEvent sw_event = sw.process_IRQ_event(event_mask);
+        SwitchButtonEvent sw_event = encoder_central_sw.process_IRQ_event(event_mask);
         if (sw_event != SwitchButtonEvent::NOOP)
         {
-            printf("SW event(%s) mask(%d)\n", sw_events[sw_event].c_str(), event_mask);
+            printf("Encoder central SW event(%s) mask(%d)\n", sw_button_events[sw_event].c_str(), event_mask);
+        }
+        else
+        {
+            pr_D5.pulse_us(1); // NOOP indicating bounces on sw_event
         }
     }
     if (gpio == ENCODER_CLK_GPIO)
     {
-        clk.irq_enabled(false);
-        SwitchButtonEvent clk_event = clk.process_IRQ_event(event_mask);
+        encoder_clk.irq_enabled(false);
+        SwitchButtonEvent clk_event = encoder_clk.process_IRQ_event(event_mask);
         if (clk_event != SwitchButtonEvent::NOOP)
         {
-            pr_D4.pulse_us(1);
-            printf("Encoder event(%s) mask(%d)\n", sw_events[clk_event].c_str(), event_mask);
+            pr_D4.pulse_us(1); // actual IRQ received
+            printf("Encoder clk event(%s) mask(%d)\n", sw_button_events[clk_event].c_str(), event_mask);
         }
         else
         {
-            pr_D5.pulse_us(1);
+            pr_D5.pulse_us(1); // NOOP indicating bounces on clk_event
         }
-        clk.irq_enabled(true);
+        encoder_clk.irq_enabled(true);
     }
     pr_D3.lo();
 }
@@ -70,8 +79,8 @@ int main()
 
     while (true)
     {
-        pr_D1.copy(clk.is_button_active());
-        pr_D2.copy(sw.is_button_active());
+        pr_D1.copy(encoder_clk.is_button_active());
+        pr_D2.copy(encoder_central_sw.is_button_active());
     }
 
     return 0;

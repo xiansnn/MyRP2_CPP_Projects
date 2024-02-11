@@ -14,7 +14,7 @@ switch_button_config_t encoder_clk_conf{
     .debounce_delay_us = 1000,
 };
 
-std::map<SwitchButtonEvent, std::string> sw_events{
+std::map<SwitchButtonEvent, std::string> sw_button_events{
     {SwitchButtonEvent::NOOP, "NOOP"},
     {SwitchButtonEvent::PUSH, "PUSH"},
     {SwitchButtonEvent::LONG_PUSH, "LONG_PUSH"},
@@ -32,10 +32,10 @@ int main()
     {
         SwitchButtonEvent sw_event = central_switch.process_sample_event();
         if (sw_event != SwitchButtonEvent::NOOP)
-            printf("SW event(%s)\n", sw_events[sw_event].c_str());
+            printf("SW event(%s)\n", sw_button_events[sw_event].c_str());
         SwitchButtonEvent clk_event = encoder_clk.process_sample_event();
         if (clk_event != SwitchButtonEvent::NOOP)
-            printf("CLK event(%s)\n", sw_events[clk_event].c_str());
+            printf("CLK event(%s)\n", sw_button_events[clk_event].c_str());
     }
 
     return 0;
