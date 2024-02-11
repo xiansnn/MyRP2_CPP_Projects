@@ -2,7 +2,6 @@
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
 #include <string>
-#include "probe.h"
 
 KY040::KY040(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
              switch_button_config_t clk_conf, ControlledValue *ctrl_value)

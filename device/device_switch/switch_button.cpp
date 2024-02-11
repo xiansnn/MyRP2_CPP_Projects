@@ -94,7 +94,6 @@ SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 }
 
 SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_mask)
-// TODO bounces are not detected on rising edges!!
 {
     bool switch_active_state = is_switch_pushed(current_event_mask);
     uint32_t current_time_us = time_us_32();
