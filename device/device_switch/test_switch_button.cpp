@@ -6,11 +6,11 @@
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 
-switch_button_config_t central_switch_conf{
+config_switch_button_t central_switch_conf{
     .debounce_delay_us = 1000,
     .long_release_delay_us = 2000000,
     .long_push_delay_us = 1000000};
-switch_button_config_t encoder_clk_conf{
+config_switch_button_t encoder_clk_conf{
     .debounce_delay_us = 1000,
 };
 

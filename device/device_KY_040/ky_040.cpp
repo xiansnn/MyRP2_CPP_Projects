@@ -4,7 +4,7 @@
 #include <string>
 
 KY040::KY040(uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
-             switch_button_config_t clk_conf, ControlledValue *ctrl_value)
+             config_switch_button_t clk_conf, ControlledValue *ctrl_value)
     : SwitchButtonWithIRQ(encoder_clk_gpio, call_back, clk_conf)
 {
     this->dt_gpio = encoder_dt_gpio;

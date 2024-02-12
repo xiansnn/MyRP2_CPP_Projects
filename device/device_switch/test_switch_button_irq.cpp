@@ -15,12 +15,12 @@ Probe pr_D5 = Probe(5); // bounces discarded
 // channel 6 : encoder DT pin
 // channel 7 : encoder clk pin
 
-switch_button_config_t central_switch_conf{
+config_switch_button_t central_switch_conf{
     .debounce_delay_us = 5000,
     .long_release_delay_us = 2000000,
     .long_push_delay_us = 1000000};
 
-switch_button_config_t encoder_clk_conf{
+config_switch_button_t encoder_clk_conf{
     .debounce_delay_us = 1000,
 };
 

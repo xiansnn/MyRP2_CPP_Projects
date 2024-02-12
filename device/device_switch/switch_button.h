@@ -33,7 +33,7 @@ typedef struct switch_button_config
     uint long_release_delay_us = LONG_RELEASE_DELAY_us;
     uint long_push_delay_us = LONG_PUSH_DELAY_us;
     bool active_lo = true;
-} switch_button_config_t;
+} config_switch_button_t;
 
 class SwitchButton
 {
@@ -51,7 +51,7 @@ protected:
     uint long_release_delay_us;
 
 public:
-    SwitchButton(uint gpio, switch_button_config_t conf = {});
+    SwitchButton(uint gpio, config_switch_button_t conf = {});
     ~SwitchButton();
     bool is_button_active();
     SwitchButtonEvent process_sample_event();
@@ -64,7 +64,7 @@ protected:
     uint32_t irq_event_mask_config;
 
 public:
-    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, switch_button_config_t conf = {},
+    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, config_switch_button_t conf = {},
                         uint32_t event_mask_config = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
     ~SwitchButtonWithIRQ();
     SwitchButtonEvent process_IRQ_event(uint32_t current_event_mask);
