@@ -25,6 +25,7 @@ include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
                     ${PROJECT_SOURCE_DIR}/sw/framebuffer
                     ${PROJECT_SOURCE_DIR}/device/device_ssd1306
                     ${PROJECT_SOURCE_DIR}/device/device_switch
+                    ${PROJECT_SOURCE_DIR}/device/device_KY_040
                     ${PROJECT_SOURCE_DIR}/hw/hw_I2C
                     ${PROJECT_SOURCE_DIR}/hw/hw_PWM)
 
