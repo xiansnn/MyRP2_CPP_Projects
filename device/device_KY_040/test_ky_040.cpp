@@ -10,9 +10,6 @@
 #define ENCODER_CLK_GPIO 26
 #define ENCODER_DT_GPIO 21
 
-Probe pr_D5 = Probe(5);
-
-
 switch_button_config_t central_switch_conf{
     .debounce_delay_us = 5000,
     .long_release_delay_us = 3000000,
@@ -75,10 +72,8 @@ int main()
 
         if (current_cntrl_value->has_changed)
         {
-            pr_D5.hi();
             printf("LOOP[%d]: %2d %*c\n", current_index, current_cntrl_value->get_value(), display_value(current_cntrl_value), '|');
             current_cntrl_value->clear_change_flag();
-            pr_D5.lo();
         }
         SwitchButtonEvent sw_event = central_switch.process_sample_event();
         switch (sw_event)
