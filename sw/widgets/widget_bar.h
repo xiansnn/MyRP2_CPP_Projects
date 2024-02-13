@@ -2,43 +2,37 @@
 #define WIDGETS_BAR_H
 
 #include "framebuffer.h"
+#include "controlled_value.h"
 
 typedef struct config_bar_widget
 {
-    int level_max{10};
-    int level_min{0};
     size_t width{128};
     size_t height{8};
-    bool draw_border{true};
-    bool draw_value {false};
+    bool with_border{true};
+    bool with_label {false};
     const unsigned char *font{nullptr};
 } config_bar_widget_t;
 
 class Bar : public Framebuffer
 {
 private:
-    size_t value_max_width;
+    ControlledValue* cntrl_value;
+    config_bar_widget_t config{};
+    size_t label_value_max_width;
     uint8_t px_max;
     uint8_t px_min;
+    // uint8_t px;
     float level_coef;
     int level_offset;
-    config_bar_widget_t config{};
 
-    uint8_t convert_level_to_px(int level);
+    uint8_t convert_level_value_to_px(int level);
 
 public:
-    Bar(config_bar_widget_t bar_config);
+    Bar(ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
     ~Bar();
-
-    int level{0};
-    uint8_t px;
-
-    void init(config_bar_widget_t conf);
-
-    // void reset_px();
-    // void increment_level();
-    // void decrement_level();
     void draw();
+    void draw_border();
+    void draw_level_value(int value);
 };
 
 #endif // WIDGETS_BAR_H

@@ -1,27 +1,28 @@
-#include <hw_i2c.h>
-// #include <string>
-
-#include "probe.h"
+#include "ky_040.h"
 #include "ssd1306.h"
-#include "../device_KY_040/ky_040.h"
 #include "widget_bar.h"
 
-#define SW_K0 6
-#define ENCODER_CLK 26
-#define ENCODER_DT 21
+#include "probe.h"
 
-Probe pr_D4 = Probe(4);
-Probe pr_D5 = Probe(5);
-Probe pr_D6 = Probe(6);
-Probe pr_D7 = Probe(7);
+
+#include <string>
+#include <vector>
+
+#define CENTRAL_SWITCH_GPIO 6
+#define ENCODER_CLK_GPIO 26
+#define ENCODER_DT_GPIO 21
+#define SSD1306_I2C_SDA_GPIO 8
+#define SSD1306_I2C_SCL_GPIO 9
+
+Probe pr_D1= Probe(1);
 
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
-    .sda_pin = 8,
-    .scl_pin = 9,
+    .sda_pin = SSD1306_I2C_SDA_GPIO,
+    .scl_pin = SSD1306_I2C_SCL_GPIO,
     .baud_rate = I2C_FAST_MODE};
 
-init_config_SSD1306_t cfg_ssd1306{
+config_SSD1306_t cfg_ssd1306{
     .i2c_address = 0x3C,
     .vertical_offset = 0,
     .scan_SEG_inverse_direction = true,
@@ -30,242 +31,112 @@ init_config_SSD1306_t cfg_ssd1306{
     .frequency_divider = 1,
     .frequency_factor = 0};
 
-switch_button_config_t sw_conf{
-    .debounce_delay_us = 1000,
-    .long_release_delay_us = 1000000};
+config_switch_button_t cfg_central_switch{
+    .debounce_delay_us = 5000,
+    .long_release_delay_us = 3000000,
+    .long_push_delay_us = 1000000,
+    .active_lo = true};
 
-switch_button_config_t encoder_clk_conf{
-    .debounce_delay_us = 100,
-};
+config_switch_button_t cfg_encoder_clk{
+    .debounce_delay_us = 5000};
 
-bar_widget_config_t bar_conf{
-    .level_max = -5,
-    .level_min = -15,
+config_bar_widget_t cfg_bar{
     .width = 128,
     .height = 8,
-    .draw_border = true,
-    .draw_value = true,
+    .with_border = true,
+    .with_label = true,
     .font = font_5x8};
 
-bool next_bar{false};
+void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
-void call_back(uint gpio, uint32_t event_mask);
-SwitchButtonWithIRQ sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &call_back, sw_conf);
-KY040_IRQ encoder_clk = KY040_IRQ(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, &call_back, encoder_clk_conf);
+KY040 encoder = KY040(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
+                      cfg_encoder_clk);
 
-Bar bar = Bar(bar_conf);
-
-void call_back(uint gpio, uint32_t event_mask)
+void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
-    SwitchButtonEvent sw_event = sw.get_event();
-    switch (sw_event)
+    switch (gpio)
     {
-    case SwitchButtonEvent::PUSH:
-        break;
-    case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
-        bar.reset_px();
-        break;
-    case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-        next_bar = true;
+    case ENCODER_CLK_GPIO:
+        encoder.interrupt_service_routine(event_mask);
         break;
 
     default:
-        break;
-    }
-    EncoderEvent encoder_event = encoder_clk.get_encoder_event();
-    switch (encoder_event)
-    {
-    case EncoderEvent::INCREMENT:
-        bar.increment_level();
-        break;
-    case EncoderEvent::DECREMENT:
-        bar.decrement_level();
-        break;
-    default:
+        printf("unknown IRQ\n");
         break;
     }
 };
 
-int main(void)
+int display_value(ControlledValue *val)
+{
+#define MAX_WIDTH 21.
+    float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
+    float b = 1 - a * val->get_min_value();
+    return a * val->get_value() + b;
+};
 
+static int current_index = 0;
+
+ControlledValue *next_cntrl_value_index(std::vector<ControlledValue *> values)
+{
+    current_index++;
+    current_index = current_index % values.size();
+    return values[current_index];
+}
+
+int main()
 {
     stdio_init_all();
     hw_I2C_master master = hw_I2C_master(cfg_i2c);
     SSD1306 display = SSD1306(&master, cfg_ssd1306);
-
     display.clear_pixel_buffer_and_show_full_screen();
+
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, cfg_central_switch);
+
+    ControlledValue val0 = ControlledValue(0,2);
+    ControlledValue val1 = ControlledValue(-10, +10);
+    ControlledValue val2 = ControlledValue(5, 25);
+    ControlledValue val3 = ControlledValue(-25, -5);
+
+    Bar bar1 = Bar(&val1, cfg_bar);
+    Bar bar2 = Bar(&val2, cfg_bar);
+    Bar bar3 = Bar(&val3, cfg_bar);
+
+    std::vector<ControlledValue *> cntrl_values = {&val1, &val2, &val3};
+
+    ControlledValue *current_cntrl_value = encoder.set_cntrl_value(cntrl_values[0]);
 
     while (true)
     {
-        bar_conf = {
-            .level_max = -5,
-            .level_min = -15,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-        bar.init(bar_conf);
-
-        while (!next_bar)
+        pr_D1.pulse_us(1);
+        if (current_cntrl_value->has_changed)
         {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 0);
-            pr_D5.lo();
-            sleep_ms(15);
+            // printf("LOOP[%d]: %2d %*c\n", current_index, current_cntrl_value->get_value(), display_value(current_cntrl_value), '|');
+            current_cntrl_value->clear_change_flag();
+            bar1.draw();
+            display.show(&bar1, 0, 16);
+            bar2.draw();
+            display.show(&bar2, 0, 32);
+            bar3.draw();
+            display.show(&bar3, 0, 48);
         }
-        next_bar = false;
-        bar_conf = {
-            .level_max = 10,
-            .level_min = 0,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
+        SwitchButtonEvent sw_event = central_switch.process_sample_event();
+        switch (sw_event)
         {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 8);
-            pr_D5.lo();
-            sleep_ms(15);
+        case SwitchButtonEvent::PUSH:
+            break;
+        case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
+            current_cntrl_value = encoder.set_cntrl_value(next_cntrl_value_index(cntrl_values));
+            break;
+        case SwitchButtonEvent::LONG_PUSH:
+            break;
+        case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
+            current_cntrl_value->reset_value();
+            break;
+        default:
+            break;
         }
-        next_bar = false;
-        bar_conf = {
-            .level_max = 15,
-            .level_min = 10,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 16);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-        bar_conf = {
-            .level_max = 20,
-            .level_min = 0,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 24);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-        bar_conf = {
-            .level_max = +15,
-            .level_min = -15,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 32);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-        bar_conf = {
-            .level_max = +4,
-            .level_min = -20,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 40);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-        bar_conf = {
-            .level_max = +15,
-            .level_min = -15,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 48);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-    bar_conf = {
-            .level_max = +20,
-            .level_min = -5,
-            .width = 128,
-            .height = 8,
-            .draw_border = true,
-            .draw_value = true,
-            .font = font_5x8};
-
-        bar.init(bar_conf);
-        while (!next_bar)
-        {
-            pr_D4.hi();
-            bar.draw();
-            pr_D4.lo();
-            pr_D5.hi();
-            display.show(&bar, 0, 56);
-            pr_D5.lo();
-            sleep_ms(15);
-        }
-        next_bar = false;
-
+        sleep_ms(20);
     }
+
     return 0;
 }
