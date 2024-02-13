@@ -8,10 +8,11 @@ private:
     int increment{1};
     int min_value;
     int max_value;
+    bool wrap;
 
 
 public:
-    ControlledValue(int min_value, int max_value, int increment = 1);
+    ControlledValue(int min_value, int max_value, int increment = 1, bool wrap = false);
     ~ControlledValue();
 
     bool has_changed{false};

@@ -2,11 +2,12 @@
 
 #include <bits/stl_algobase.h>
 
-ControlledValue::ControlledValue(int min_value, int max_value, int increment)
+ControlledValue::ControlledValue(int min_value, int max_value, int increment, bool wrap)
 {
     this->max_value = max_value;
     this->min_value = min_value;
     this->increment = increment;
+    this->wrap = wrap;
     this->value = std::min(this->max_value, std::max(this->min_value, 0));
 }
 
@@ -37,13 +38,19 @@ void ControlledValue::set_value(int new_value)
 void ControlledValue::increment_value()
 {
     value += increment;
+    if ((wrap) and (value > this->max_value))
+        value = this->min_value;
     value = std::min(this->max_value, std::max(this->min_value, this->value));
+
     has_changed = true;
 }
 
 void ControlledValue::decrement_value()
 {
     value -= increment;
+    if ((wrap) and (value < this->min_value))
+        value = this->max_value;
+
     value = std::min(this->max_value, std::max(this->min_value, this->value));
     has_changed = true;
 }
