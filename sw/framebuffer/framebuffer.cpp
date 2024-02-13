@@ -5,7 +5,7 @@
 
 #define BYTE_SIZE 8
 
-Framebuffer::Framebuffer(size_t width, size_t height, Framebuffer_format format, text_config_t txt_cnf)
+Framebuffer::Framebuffer(size_t width, size_t height, Framebuffer_format format, config_framebuffer_text_t txt_cnf)
 {
     assert(format == Framebuffer_format::MONO_VLSB); // works only for MONO_VLSB devices
     this->format = format;
@@ -49,7 +49,7 @@ void Framebuffer::clear_text_buffer()
     current_char_line = 0;
 }
 
-void Framebuffer::set_text_config(text_config_t device_config)
+void Framebuffer::set_text_config(config_framebuffer_text_t device_config)
 {
     this->text_config = device_config;
     set_font(device_config.font);

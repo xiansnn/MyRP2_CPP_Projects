@@ -16,22 +16,20 @@ config_switch_button_t central_switch_conf{
     .long_push_delay_us = 1000000,
     .active_lo = true};
 
-config_switch_button_t encoder_clk_conf{
+config_switch_button_t cfg_encoder_clk{
     .debounce_delay_us = 5000,
 };
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 KY040 encoder = KY040(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
-                      encoder_clk_conf);
+                      cfg_encoder_clk);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
     switch (gpio)
     {
     case ENCODER_CLK_GPIO:
-        gpio_set_irq_enabled_with_callback(ENCODER_CLK_GPIO, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, false, shared_irq_call_back);
         encoder.interrupt_service_routine(event_mask);
-        gpio_set_irq_enabled_with_callback(ENCODER_CLK_GPIO, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, shared_irq_call_back);
         break;
 
     default:
@@ -42,7 +40,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
 
 int display_value(ControlledValue *val)
 {
-#define MAX_WIDTH 80.
+#define MAX_WIDTH 21.
     float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
     float b = 1 - a * val->get_min_value();
     return a * val->get_value() + b;
@@ -59,9 +57,9 @@ int main()
 {
     stdio_init_all();
     SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, central_switch_conf);
-    ControlledValue val1 = ControlledValue(-20, +20);
-    ControlledValue val2 = ControlledValue(5, 20);
-    ControlledValue val3 = ControlledValue(-20, -5);
+    ControlledValue val1 = ControlledValue(-10, +10);
+    ControlledValue val2 = ControlledValue(5, 25);
+    ControlledValue val3 = ControlledValue(-25, -5);
 
     std::vector<ControlledValue *> cntrl_values = {&val1, &val2, &val3};
 

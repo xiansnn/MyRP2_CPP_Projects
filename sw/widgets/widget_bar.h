@@ -3,7 +3,7 @@
 
 #include "framebuffer.h"
 
-typedef struct bar_widget_config
+typedef struct config_bar_widget
 {
     int level_max{10};
     int level_min{0};
@@ -12,7 +12,7 @@ typedef struct bar_widget_config
     bool draw_border{true};
     bool draw_value {false};
     const unsigned char *font{nullptr};
-} bar_widget_config_t;
+} config_bar_widget_t;
 
 class Bar : public Framebuffer
 {
@@ -22,22 +22,22 @@ private:
     uint8_t px_min;
     float level_coef;
     int level_offset;
-    bar_widget_config_t config{};
+    config_bar_widget_t config{};
 
     uint8_t convert_level_to_px(int level);
 
 public:
-    Bar(bar_widget_config_t bar_config);
+    Bar(config_bar_widget_t bar_config);
     ~Bar();
 
     int level{0};
     uint8_t px;
 
-    void init(bar_widget_config_t conf);
+    void init(config_bar_widget_t conf);
 
-    void reset_px();
-    void increment_level();
-    void decrement_level();
+    // void reset_px();
+    // void increment_level();
+    // void decrement_level();
     void draw();
 };
 

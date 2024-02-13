@@ -23,7 +23,7 @@ config_master_i2c_t cfg_i2c{
     .scl_pin = 9,
     .baud_rate = I2C_FAST_MODE};
 
-init_config_SSD1306_t cfg_ssd1306{
+config_SSD1306_t cfg_ssd1306{
     .i2c_address = 0x3C,
     .vertical_offset = 0,
     .scan_SEG_inverse_direction = true,

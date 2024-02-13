@@ -6,11 +6,11 @@
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 
-config_switch_button_t central_switch_conf{
+config_switch_button_t cfg_central_switch{
     .debounce_delay_us = 1000,
     .long_release_delay_us = 2000000,
     .long_push_delay_us = 1000000};
-config_switch_button_t encoder_clk_conf{
+config_switch_button_t cfg_encoder_clk{
     .debounce_delay_us = 1000,
 };
 
@@ -25,8 +25,8 @@ std::map<SwitchButtonEvent, std::string> sw_button_events{
 int main()
 {
     stdio_init_all();
-    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, central_switch_conf);
-    SwitchButton encoder_clk = SwitchButton(ENCODER_CLK_GPIO, encoder_clk_conf);
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, cfg_central_switch);
+    SwitchButton encoder_clk = SwitchButton(ENCODER_CLK_GPIO, cfg_encoder_clk);
 
     while (true)
     {

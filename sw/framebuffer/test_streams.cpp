@@ -21,7 +21,7 @@ config_master_i2c_t cfg_i2c{
     .scl_pin = 9,
     .baud_rate = I2C_FAST_MODE};
 
-init_config_SSD1306_t cfg_ssd1306{
+config_SSD1306_t cfg_ssd1306{
     .i2c_address = 0x3C,
     .vertical_offset = 0,
     .scan_SEG_inverse_direction = true,
@@ -38,7 +38,7 @@ void test_ostringstream_format(SSD1306 *display)
 
     const unsigned char *current_font{font_5x8};
 
-    text_config_t txt_conf = {
+    config_framebuffer_text_t txt_conf = {
         .font = current_font,
         .wrap = false};
     display->set_text_config(txt_conf);
@@ -87,10 +87,10 @@ void test_sprintf_format(SSD1306 *display)
 {
     display->clear_pixel_buffer_and_show_full_screen();
 
-    text_config_t txt_conf = {
+    config_framebuffer_text_t cfg_fb_txt = {
         .font = font_8x8,
         .wrap = false};
-    display->set_text_config(txt_conf);
+    display->set_text_config(cfg_fb_txt);
 
     const char *s = "Hello";
 
@@ -230,7 +230,7 @@ void test_text_and_graph(SSD1306 *display)
 {
 #define DEGREE "\xF8"
     display->clear_pixel_buffer_and_show_full_screen();
-    text_config_t title_config = {
+    config_framebuffer_text_t title_config = {
         .font = font_8x8};
     uint8_t w = title_config.font[FONT_WIDTH];
     uint8_t h = title_config.font[FONT_HEIGHT];
@@ -334,7 +334,7 @@ void test_font_size(SSD1306 *display)
 
 void test_full_screen_text(SSD1306 *display)
 {
-    text_config_t txt_conf = {
+    config_framebuffer_text_t txt_conf = {
         .font = font_8x8,
         .wrap = true,
     };
@@ -359,7 +359,7 @@ void test_full_screen_text(SSD1306 *display)
 
 void test_auto_next_char(SSD1306 *display)
 {
-    text_config_t txt_conf = {
+    config_framebuffer_text_t txt_conf = {
         .font = font_8x8,
         .wrap = true,
         .auto_next_char = false};

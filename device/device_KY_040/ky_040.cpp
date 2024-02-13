@@ -19,9 +19,10 @@ KY040::~KY040()
 {
 }
 
-void KY040::interrupt_service_routine(uint32_t irq_event_mask)
+void KY040::interrupt_service_routine(uint32_t current_irq_event_mask)
 {
-    SwitchButtonEvent clk_event = process_IRQ_event(irq_event_mask);
+    irq_enabled(false);
+    SwitchButtonEvent clk_event = process_IRQ_event(current_irq_event_mask);
     if (clk_event == SwitchButtonEvent::PUSH)
     {
         bool clockwise_rotation = gpio_get(dt_gpio);
@@ -30,6 +31,7 @@ void KY040::interrupt_service_routine(uint32_t irq_event_mask)
         else
             this->cntrl_value->decrement_value();
     }
+    irq_enabled(true);
 }
 
 ControlledValue *KY040::set_cntrl_value(ControlledValue *val)

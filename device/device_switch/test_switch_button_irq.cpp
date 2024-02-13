@@ -15,12 +15,12 @@ Probe pr_D5 = Probe(5); // bounces discarded
 // channel 6 : encoder DT pin
 // channel 7 : encoder clk pin
 
-config_switch_button_t central_switch_conf{
+config_switch_button_t cfg_central_switch{
     .debounce_delay_us = 5000,
     .long_release_delay_us = 2000000,
     .long_push_delay_us = 1000000};
 
-config_switch_button_t encoder_clk_conf{
+config_switch_button_t cfg_encoder_clk{
     .debounce_delay_us = 1000,
 };
 
@@ -34,9 +34,9 @@ std::map<SwitchButtonEvent, std::string> sw_button_events{
 
 void sw_call_back(uint gpio, uint32_t event_mask);
 
-SwitchButtonWithIRQ encoder_central_sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &sw_call_back, central_switch_conf);
+SwitchButtonWithIRQ encoder_central_sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &sw_call_back, cfg_central_switch);
 
-SwitchButtonWithIRQ encoder_clk = SwitchButtonWithIRQ(ENCODER_CLK_GPIO, &sw_call_back, encoder_clk_conf);
+SwitchButtonWithIRQ encoder_clk = SwitchButtonWithIRQ(ENCODER_CLK_GPIO, &sw_call_back, cfg_encoder_clk);
 
 void sw_call_back(uint gpio, uint32_t event_mask)
 {

@@ -19,7 +19,7 @@ void SSD1306::send_buf(uint8_t buffer[], size_t buffer_size)
     this->i2c_master->burst_byte_write(this->device_config.i2c_address, I2C_DATA_FLAG, buffer, buffer_size);
 }
 
-SSD1306::SSD1306(hw_I2C_master *master, init_config_SSD1306_t init_config)
+SSD1306::SSD1306(hw_I2C_master *master, config_SSD1306_t init_config)
     : Framebuffer(SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
 {
     this->i2c_master = master;

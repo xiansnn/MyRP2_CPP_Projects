@@ -21,7 +21,7 @@
 #define VERTICAL_ADDRESSING_MODE 1
 #define PAGE_ADDRESSING_MODE 2
 
-typedef struct init_config_SSD1306
+typedef struct config_SSD1306
 
 {
     uint8_t i2c_address = 0x3C;
@@ -35,7 +35,7 @@ typedef struct init_config_SSD1306
     uint8_t contrast = 127;
     uint8_t frequency_divider = 1;
     uint8_t frequency_factor = 0;
-} init_config_SSD1306_t;
+} config_SSD1306_t;
 
 typedef struct config_scroll_ssd1306
 {
@@ -62,7 +62,7 @@ class SSD1306 : public Framebuffer
 {
 private:
     hw_I2C_master *i2c_master;
-    init_config_SSD1306_t device_config;
+    config_SSD1306_t device_config;
 
     void init();
     void init_MUX_ratio(uint8_t value);
@@ -78,7 +78,7 @@ private:
     void send_buf(uint8_t buf[], size_t buflen);
 
 public:
-    SSD1306(hw_I2C_master *master, init_config_SSD1306_t device_config);
+    SSD1306(hw_I2C_master *master, config_SSD1306_t device_config);
     static render_area_t compute_render_area(uint8_t start_col, uint8_t end_col, uint8_t start_line, uint8_t end_line);
     void show(); // when we need to show the full device area
     void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y); // when we need to show a framebuffer in a given render area
