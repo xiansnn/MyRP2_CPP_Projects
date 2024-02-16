@@ -22,25 +22,25 @@ int ControlledValue::get_value()
 
 int ControlledValue::get_min_value()
 {
-    return this->min_value;
+    return min_value;
 }
 
 int ControlledValue::get_max_value()
 {
-    return this->max_value;
+    return max_value;
 }
 
 void ControlledValue::set_value(int new_value)
 {
-    this->value = std::min(this->max_value, std::max(this->min_value, new_value));
+    this->value = std::min(max_value, std::max(min_value, new_value));
 }
 
 void ControlledValue::increment_value()
 {
     value += increment;
-    if ((wrap) and (value > this->max_value))
-        value = this->min_value;
-    value = std::min(this->max_value, std::max(this->min_value, this->value));
+    if ((wrap) and (value > max_value))
+        value = min_value;
+    value = std::min(max_value, std::max(min_value, value));
 
     has_changed = true;
 }
@@ -48,16 +48,16 @@ void ControlledValue::increment_value()
 void ControlledValue::decrement_value()
 {
     value -= increment;
-    if ((wrap) and (value < this->min_value))
-        value = this->max_value;
+    if ((wrap) and (value < min_value))
+        value = max_value;
 
-    value = std::min(this->max_value, std::max(this->min_value, this->value));
+    value = std::min(max_value, std::max(min_value, value));
     has_changed = true;
 }
 
 void ControlledValue::reset_value()
 {
-    this->value = std::min(this->max_value, std::max(this->min_value, 0));
+    this->value = std::min(max_value, std::max(min_value, 0));
     has_changed = true;
 }
 

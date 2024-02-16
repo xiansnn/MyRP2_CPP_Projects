@@ -14,7 +14,7 @@
 #define SSD1306_I2C_SDA_GPIO 8
 #define SSD1306_I2C_SCL_GPIO 9
 
-Probe pr_D1= Probe(1);
+Probe pr_D1 = Probe(1);
 
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
@@ -66,13 +66,13 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     }
 };
 
-int display_value(ControlledValue *val)
-{
-#define MAX_WIDTH 21.
-    float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
-    float b = 1 - a * val->get_min_value();
-    return a * val->get_value() + b;
-};
+// int display_value(ControlledValue *val)
+// {
+// #define MAX_WIDTH 21.
+//     float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
+//     float b = 1 - a * val->get_min_value();
+//     return a * val->get_value() + b;
+// };
 
 static int current_index = 0;
 
@@ -92,11 +92,17 @@ int main()
 
     SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_GPIO, cfg_central_switch);
 
-    ControlledValue val0 = ControlledValue(0,2);
+    ControlledValue val0 = ControlledValue(876, 1079, 1, true);
     ControlledValue val1 = ControlledValue(-10, +10);
     ControlledValue val2 = ControlledValue(5, 25);
     ControlledValue val3 = ControlledValue(-25, -5);
 
+    val0.has_changed = true;
+    val1.has_changed = true;
+    val2.has_changed = true;
+    val3.has_changed = true;
+
+    Framebuffer header = Framebuffer(80, 8);
     Bar bar1 = Bar(&val1, cfg_bar);
     Bar bar2 = Bar(&val2, cfg_bar);
     Bar bar3 = Bar(&val3, cfg_bar);
@@ -110,8 +116,11 @@ int main()
         pr_D1.pulse_us(1);
         if (current_cntrl_value->has_changed)
         {
-            // printf("LOOP[%d]: %2d %*c\n", current_index, current_cntrl_value->get_value(), display_value(current_cntrl_value), '|');
             current_cntrl_value->clear_change_flag();
+            header.clear_text_buffer();
+            sprintf(header.text_buffer, "%5.1f MHz", (float)val0.get_value() / 10);
+            header.print_text();
+            display.show(&header, 40, 0);
             bar1.draw();
             display.show(&bar1, 0, 16);
             bar2.draw();

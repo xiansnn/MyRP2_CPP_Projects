@@ -1,5 +1,4 @@
 add_library( controlled_value controlled_value.cpp)
-# target_link_libraries()
 
 
 add_executable(test_controlled_value test_controlled_value.cpp)
