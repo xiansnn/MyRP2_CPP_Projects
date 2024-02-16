@@ -12,7 +12,7 @@ typedef struct focus_bind
 {
     Framebuffer* framebuffer;
     ControlledValue* controlled_value;
-    KY040* incremental_encoder;
+    KY040Encoder* incremental_encoder;
 }focus_bind_t;
 
 

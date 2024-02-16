@@ -6,7 +6,7 @@ UI_Controller::UI_Controller()
 
 UI_Controller::~UI_Controller()
 {
-    delete this->controlled_object;
+
 }
 
 void UI_Controller::set_controlled_object(UI_ControlledObject *cntrl_obj)

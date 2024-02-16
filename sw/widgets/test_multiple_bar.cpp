@@ -49,7 +49,7 @@ config_bar_widget_t cfg_bar{
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
-KY040 encoder = KY040(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
+KY040Encoder encoder = KY040Encoder(ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
                       cfg_encoder_clk);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
