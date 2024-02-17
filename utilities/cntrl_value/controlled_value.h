@@ -1,30 +1,36 @@
 #if !defined(CNTRL_VALUE_H)
 #define CNTRL_VALUE_H
 
-class ControlledValue
+#include "ui_mvc.h"
+
+class ControlledValue : public UI_ControlledObject
 {
 private:
     int value;
-    int increment{1};
+    int increment_val{1};
     int min_value;
     int max_value;
     bool wrap;
 
-
 public:
-    ControlledValue(int min_value, int max_value, int increment = 1, bool wrap = false);
+    ControlledValue(uint8_t id, int min_value, int max_value, int increment = 1, bool wrap = false) ;
     ~ControlledValue();
 
-    bool has_changed{false};
+    // bool has_changed{false};
 
     int get_value();
     int get_min_value();
     int get_max_value();
     void set_value(int new_value);
-    void reset_value();
-    void increment_value();
-    void decrement_value();
-    void clear_change_flag();
+    void reset();
+    // void clear_change_flag();
+
+    void increment();
+    void decrement();
+    void on_push();
+    void on_long_push();
+    void on_short_release();
+    void on_long_release();
 };
 
 #endif // CNTRL_VALUE_H

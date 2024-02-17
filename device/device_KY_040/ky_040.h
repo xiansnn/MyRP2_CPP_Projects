@@ -6,20 +6,20 @@
 #include "controlled_value.h"
 #include "ui_mvc.h"
 
-class KY040Encoder : public SwitchButtonWithIRQ , public UI_Controller
+class KY040Encoder : public SwitchButtonWithIRQ
 {
 private:
     uint dt_gpio;
-    ControlledValue* cntrl_value;
+    // ControlledValue* cntrl_value;
 
 public:
-    KY040Encoder(uint encoder_clk_gpio, uint encoder_dt_gpio,
+    KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio,
               gpio_irq_callback_t call_back, config_switch_button_t clk_conf = {},ControlledValue* ctrl_value = nullptr
               );
     ~KY040Encoder();
     void interrupt_service_routine(uint32_t irq_event_mask);
-    ControlledValue* set_cntrl_value(ControlledValue* val);
-    ControlledValue* get_cntrl_value();
+    // ControlledValue* set_cntrl_value(ControlledValue* val);
+    // ControlledValue* get_cntrl_value();
 };
 
 #endif // KY_040_H

@@ -109,7 +109,7 @@ int main()
 
     std::vector<ControlledValue *> cntrl_values = {&val1, &val2, &val3};
 
-    ControlledValue *current_cntrl_value = encoder.set_cntrl_value(cntrl_values[0]);
+    ControlledValue *current_cntrl_value = encoder.set_controlled_object(cntrl_values[0]);
 
     while (true)
     {
@@ -134,7 +134,7 @@ int main()
         case SwitchButtonEvent::PUSH:
             break;
         case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-            current_cntrl_value = encoder.set_cntrl_value(next_cntrl_value_index(cntrl_values));
+            current_cntrl_value = encoder.set_controlled_object(next_cntrl_value_index(cntrl_values));
             break;
         case SwitchButtonEvent::LONG_PUSH:
             break;

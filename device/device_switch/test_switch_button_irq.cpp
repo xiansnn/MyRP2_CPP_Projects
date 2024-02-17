@@ -5,6 +5,8 @@
 
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
+#define CENTRAL_SWITCH_ID 1
+#define ENCODER_ID 0
 
 Probe pr_D1 = Probe(1); // copy of : encoder_clk.is_button_active()
 Probe pr_D2 = Probe(2); // copy of : encoder_central_sw.is_button_active()
@@ -34,9 +36,9 @@ std::map<SwitchButtonEvent, std::string> sw_button_events{
 
 void sw_call_back(uint gpio, uint32_t event_mask);
 
-SwitchButtonWithIRQ encoder_central_sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_GPIO, &sw_call_back, cfg_central_switch);
+SwitchButtonWithIRQ encoder_central_sw = SwitchButtonWithIRQ(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, &sw_call_back, cfg_central_switch);
 
-SwitchButtonWithIRQ encoder_clk = SwitchButtonWithIRQ(ENCODER_CLK_GPIO, &sw_call_back, cfg_encoder_clk);
+SwitchButtonWithIRQ encoder_clk = SwitchButtonWithIRQ(ENCODER_ID, ENCODER_CLK_GPIO, &sw_call_back, cfg_encoder_clk);
 
 void sw_call_back(uint gpio, uint32_t event_mask)
 {

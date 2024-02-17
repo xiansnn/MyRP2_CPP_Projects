@@ -9,12 +9,12 @@ int main(int argc, char const *argv[])
 
     for (size_t i = 0; i < 8; i++)
     {
-        val0.increment_value();
+        val0.increment();
         printf("val = %d\n",val0.get_value());
     }
     for (size_t i = 0; i < 12; i++)
     {
-        val0.decrement_value();
+        val0.decrement();
         printf("val = %d\n",val0.get_value());
     }
     

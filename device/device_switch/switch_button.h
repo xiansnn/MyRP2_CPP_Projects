@@ -4,6 +4,7 @@
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include <stdio.h>
+#include "ui_mvc.h"
 
 #define GPIO_HI true
 #define GPIO_LO false
@@ -35,7 +36,7 @@ typedef struct switch_button_config
     bool active_lo = true;
 } config_switch_button_t;
 
-class SwitchButton
+class SwitchButton : public UI_Controller
 {
 protected:
     uint gpio;
@@ -51,7 +52,7 @@ protected:
     uint long_release_delay_us;
 
 public:
-    SwitchButton(uint gpio, config_switch_button_t conf = {});
+    SwitchButton(uint8_t id, uint gpio, config_switch_button_t conf = {});
     ~SwitchButton();
     bool is_button_active();
     SwitchButtonEvent process_sample_event();
@@ -64,7 +65,7 @@ protected:
     uint32_t irq_event_mask_config;
 
 public:
-    SwitchButtonWithIRQ(uint gpio, gpio_irq_callback_t call_back, config_switch_button_t conf = {},
+    SwitchButtonWithIRQ(uint8_t id,uint gpio, gpio_irq_callback_t call_back, config_switch_button_t conf = {},
                         uint32_t event_mask_config = GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
     ~SwitchButtonWithIRQ();
     SwitchButtonEvent process_IRQ_event(uint32_t current_event_mask);

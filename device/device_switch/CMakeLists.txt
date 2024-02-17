@@ -1,5 +1,5 @@
 add_library(switch_button switch_button.cpp)
-target_link_libraries(switch_button pico_stdlib )
+target_link_libraries(switch_button pico_stdlib ui_mvc)
 
 
 add_executable(test_switch_button test_switch_button.cpp)

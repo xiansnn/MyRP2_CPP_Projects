@@ -1,5 +1,5 @@
 add_library(ky040 ky_040.cpp)
-target_link_libraries(ky040 pico_stdlib controlled_value)
+target_link_libraries(ky040 pico_stdlib controlled_value ui_mvc)
 
 
 add_executable(test_ky040 test_ky_040.cpp)
