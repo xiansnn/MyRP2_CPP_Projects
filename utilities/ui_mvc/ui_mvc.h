@@ -19,7 +19,7 @@ public:
     UI_Controller(uint8_t id);
     ~UI_Controller();
 
-    UI_ControlledObject *set_controlled_object(UI_ControlledObject *cntrl_obj);
+    void set_controlled_object(UI_ControlledObject *cntrl_obj);
 };
 
 class UI_ControlledObject

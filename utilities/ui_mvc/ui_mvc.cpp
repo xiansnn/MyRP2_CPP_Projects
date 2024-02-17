@@ -9,10 +9,9 @@ UI_Controller::~UI_Controller()
 {
 }
 
-UI_ControlledObject *UI_Controller::set_controlled_object(UI_ControlledObject *cntrl_obj)
+void UI_Controller::set_controlled_object(UI_ControlledObject *cntrl_obj)
 {
     this->controlled_object = cntrl_obj;
-    return this->controlled_object;
 }
 
 UI_ControlledObject::UI_ControlledObject(uint8_t id)
