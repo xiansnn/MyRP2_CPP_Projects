@@ -6,7 +6,6 @@
 
 #include "controlled_value.h"
 
-
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 #define ENCODER_DT_GPIO 21
@@ -27,8 +26,10 @@ config_switch_button_t cfg_encoder_clk{
 };
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
+
 KY040Encoder encoder = KY040Encoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
-                      cfg_encoder_clk);
+                                    cfg_encoder_clk);
+SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
@@ -41,8 +42,18 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     default:
         printf("unknown IRQ\n");
         break;
-    }
-};
+    };
+}
+
+static std::vector<ControlledValue *> controlled_objects;
+static int current_index = 0;
+
+ControlledValue *next_controlled_object(std::vector<ControlledValue *> cntrl_obj)
+{
+    current_index++;
+    current_index %= cntrl_obj.size();
+    return cntrl_obj[current_index];
+}
 
 int display_value(ControlledValue *val)
 {
@@ -51,36 +62,33 @@ int display_value(ControlledValue *val)
     float b = 1 - a * val->get_min_value();
     return a * val->get_value() + b;
 };
-static int current_index = 0;
-ControlledValue *next_cntrl_value_index(std::vector<ControlledValue *> values)
-{
-    current_index++;
-    current_index = current_index % values.size();
-    return values[current_index];
-}
 
 int main()
 {
     stdio_init_all();
-    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
+
     ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
-    ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID,5, 25);
-    ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID,-25, -5);
+    val1.add_controller(&encoder);
+    controlled_objects.push_back(&val1);
 
-    std::vector<ControlledValue *> cntrl_values = {&val1, &val2, &val3};
+    ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
+    val2.add_controller(&encoder);
+    controlled_objects.push_back(&val2);
 
-    // ControlledValue *current_cntrl_value = set_controlled_object(cntrl_values[0]);
-    ControlledValue* current_cntrl_value = cntrl_values[0];
-    encoder.set_controlled_object(current_cntrl_value);
+    ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
+    val3.add_controller(&encoder);
+    controlled_objects.push_back(&val3);
 
+    ControlledValue *current_cntrl_value = controlled_objects.front();
+    encoder.set_active_controlled_object(current_cntrl_value);
 
     while (true)
     {
 
-        if ( val1.has_changed)
+        if (current_cntrl_value->has_changed)
         {
             printf("LOOP[%d]: %2d %*c\n", current_index, current_cntrl_value->get_value(), display_value(current_cntrl_value), '|');
-            val1.clear_change_flag();
+            current_cntrl_value->clear_change_flag();
         }
         SwitchButtonEvent sw_event = central_switch.process_sample_event();
         switch (sw_event)
@@ -93,8 +101,8 @@ int main()
             printf(".......short.rel\n");
             break;
         case SwitchButtonEvent::LONG_PUSH:
-            current_cntrl_value = next_cntrl_value_index(cntrl_values);
-            encoder.set_controlled_object(current_cntrl_value);
+            current_cntrl_value = next_controlled_object(controlled_objects);
+            encoder.set_active_controlled_object(current_cntrl_value);
             printf(".......long.push\n");
             break;
         case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
