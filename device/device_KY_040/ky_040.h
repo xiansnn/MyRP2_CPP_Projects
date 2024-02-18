@@ -10,16 +10,13 @@ class KY040Encoder : public SwitchButtonWithIRQ
 {
 private:
     uint dt_gpio;
-    // ControlledValue* cntrl_value;
 
 public:
     KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio,
-              gpio_irq_callback_t call_back, config_switch_button_t clk_conf = {},ControlledValue* ctrl_value = nullptr
-              );
+              gpio_irq_callback_t call_back, config_switch_button_t clk_conf = {});
     ~KY040Encoder();
     void interrupt_service_routine(uint32_t irq_event_mask);
-    // ControlledValue* set_cntrl_value(ControlledValue* val);
-    // ControlledValue* get_cntrl_value();
+
 };
 
 #endif // KY_040_H

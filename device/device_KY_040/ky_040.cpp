@@ -4,14 +4,11 @@
 #include <string>
 
 KY040Encoder::KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
-             config_switch_button_t clk_conf, ControlledValue *ctrl_value)
+             config_switch_button_t clk_conf)
     : SwitchButtonWithIRQ(id, encoder_clk_gpio, call_back, clk_conf)
 {
     this->dt_gpio = encoder_dt_gpio;
     this->active_lo = true;
-    // this->cntrl_value = ctrl_value;
-    this->controlled_object = ctrl_value;
-
 
     gpio_init(this->dt_gpio);
     gpio_pull_up(this->dt_gpio);
@@ -29,21 +26,10 @@ void KY040Encoder::interrupt_service_routine(uint32_t current_irq_event_mask)
     {
         bool clockwise_rotation = gpio_get(dt_gpio);
         if (clockwise_rotation)
-            this->controlled_object->increment();
+            this->active_controlled_object->increment();
         else
-            this->controlled_object->decrement();
+            this->active_controlled_object->decrement();
     }
     irq_enabled(true);
 }
 
-// ControlledValue *KY040Encoder::set_cntrl_value(ControlledValue *val)
-// {
-//     this->controlled_object = val;
-//     this->set_controlled_object(val);
-//     return &controlled_object;
-// }
-
-// ControlledValue *KY040Encoder::get_cntrl_value()
-// {
-//     return &controlled_object;
-// }

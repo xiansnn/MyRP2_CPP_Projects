@@ -77,7 +77,3 @@ void ControlledValue::reset()
     has_changed = true;
 }
 
-// void ControlledValue::clear_change_flag()
-// {
-//     has_changed = false;
-// }
