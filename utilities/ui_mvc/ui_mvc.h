@@ -13,13 +13,12 @@ private:
     /* data */
 public:
     uint8_t id;
-
-    UI_ControlledObject *controlled_object;
+    UI_ControlledObject *active_controlled_object;
 
     UI_Controller(uint8_t id);
     ~UI_Controller();
 
-    void set_controlled_object(UI_ControlledObject *cntrl_obj);
+    UI_ControlledObject *set_active_controlled_object(UI_ControlledObject *cntrl_obj);
 };
 
 class UI_ControlledObject
