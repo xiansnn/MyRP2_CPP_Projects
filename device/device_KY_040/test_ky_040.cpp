@@ -73,13 +73,11 @@ int main()
 
     ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
     controlled_objects.push_back(&val1);
-
     ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
     controlled_objects.push_back(&val2);
-
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
     controlled_objects.push_back(&val3);
-
+    
     ControlledValue *current_cntrl_value = controlled_objects.front();
     encoder.set_active_controlled_object(current_cntrl_value);
 
