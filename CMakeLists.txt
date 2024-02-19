@@ -25,6 +25,7 @@ include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
                     ${PROJECT_SOURCE_DIR}/utilities/focus_mngr
                     ${PROJECT_SOURCE_DIR}/utilities/ui_mvc
                     ${PROJECT_SOURCE_DIR}/sw/framebuffer
+                    ${PROJECT_SOURCE_DIR}/sw/widget
                     ${PROJECT_SOURCE_DIR}/device/device_ssd1306
                     ${PROJECT_SOURCE_DIR}/device/device_switch
                     ${PROJECT_SOURCE_DIR}/device/device_KY_040
