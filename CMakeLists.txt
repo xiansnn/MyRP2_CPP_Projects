@@ -22,8 +22,8 @@ add_compile_options(-Wall
 
 include_directories(${PROJECT_SOURCE_DIR}/utilities/dbg_probe
                     ${PROJECT_SOURCE_DIR}/utilities/cntrl_value
-                    ${PROJECT_SOURCE_DIR}/utilities/focus_mngr
                     ${PROJECT_SOURCE_DIR}/utilities/ui_mvc
+                    ${PROJECT_SOURCE_DIR}/utilities/focus_mngr
                     ${PROJECT_SOURCE_DIR}/sw/framebuffer
                     ${PROJECT_SOURCE_DIR}/sw/widgets
                     ${PROJECT_SOURCE_DIR}/device/device_ssd1306

@@ -6,8 +6,14 @@
 
 class UI_ControlledObject
 {
-private:
+protected:
+    int value;
+    int increment_val{1};
+    int min_value;
+    int max_value;
+
 public:
+    UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment = 1);
     UI_ControlledObject(uint8_t id);
     ~UI_ControlledObject();
 
@@ -21,7 +27,11 @@ public:
     virtual void on_long_release() = 0;
     virtual void increment() = 0;
     virtual void decrement() = 0;
-    virtual void reset() = 0;
+    virtual void reset();
+    virtual int get_value() ;
+    virtual int get_min_value() ;
+    virtual int get_max_value() ;
+    virtual void set_value(int new_value);
 };
 
 class UI_Controller
