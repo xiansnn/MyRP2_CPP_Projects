@@ -18,7 +18,7 @@ public:
     DisplayEncoderOnTerminal(uint8_t id);
     ~DisplayEncoderOnTerminal();
     void display();
-    void set_active_controlled_value(UI_ControlledObject *val);
+    UI_ControlledObject* set_active_displayed_object(UI_ControlledObject *val);
 };
 
 

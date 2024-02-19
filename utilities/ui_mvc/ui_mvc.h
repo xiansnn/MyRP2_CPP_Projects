@@ -28,9 +28,9 @@ public:
     virtual void increment() = 0;
     virtual void decrement() = 0;
     virtual void reset();
-    virtual int get_value() ;
-    virtual int get_min_value() ;
-    virtual int get_max_value() ;
+    virtual int get_value();
+    virtual int get_min_value();
+    virtual int get_max_value();
     virtual void set_value(int new_value);
 };
 
@@ -57,7 +57,7 @@ public:
     uint8_t id;
     UI_ControlledObject *active_displayed_object;
 
-    UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
+    virtual UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
 };
 
 #endif // UI_MVC_H

@@ -15,10 +15,10 @@ void DisplayEncoderOnTerminal::display()
     printf("focus[%d]: %2d %*c\n", active_displayed_object->id, active_displayed_object->get_value(), display_value, '|');
 }
 
-void DisplayEncoderOnTerminal::set_active_controlled_value(UI_ControlledObject *val)
+UI_ControlledObject* DisplayEncoderOnTerminal::set_active_displayed_object(UI_ControlledObject *val)
 {
-    active_displayed_object = val;
-    // active_controlled_value = val;
+    this->active_displayed_object = val;
     slope = (max_line_width - 1.) / (active_displayed_object->get_max_value() - active_displayed_object->get_min_value());
     offset = 1 - slope * active_displayed_object->get_min_value();
+    return this->active_displayed_object;
 }
