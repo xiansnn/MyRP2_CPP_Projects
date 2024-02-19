@@ -1,5 +1,5 @@
 add_library( focus_manager focus_manager.cpp)
-target_link_libraries(focus_manager controlled_value framebuffer)
+target_link_libraries(focus_manager ui_mvc)
 
 
 # add_executable(test_controlled_value test_controlled_value.cpp)

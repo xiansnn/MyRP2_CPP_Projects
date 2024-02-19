@@ -5,15 +5,17 @@
 #include <vector>
 
 #include "controlled_value.h"
+#include "print_console_line.h"
 
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 #define ENCODER_DT_GPIO 21
-#define ENCODER_ID 0
-#define CENTRAL_SWITCH_ID 1
-#define CONTROLLED_VAL1_ID 11
-#define CONTROLLED_VAL2_ID 12
-#define CONTROLLED_VAL3_ID 13
+#define ENCODER_ID 11
+#define CENTRAL_SWITCH_ID 12
+#define CONTROLLED_VAL1_ID 21
+#define CONTROLLED_VAL2_ID 22
+#define CONTROLLED_VAL3_ID 23
+#define CONSOLE_WIDGET_ID 31
 
 config_switch_button_t central_switch_conf{
     .debounce_delay_us = 5000,
@@ -26,10 +28,8 @@ config_switch_button_t cfg_encoder_clk{
 };
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
-
-KY040Encoder encoder = KY040Encoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back,
-                                    cfg_encoder_clk);
-SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
+KY040Encoder encoder = KY040Encoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
+                                        shared_irq_call_back, cfg_encoder_clk);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
@@ -45,8 +45,12 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     };
 }
 
+// focus manager
+
 static std::vector<ControlledValue *> controlled_objects;
 static int current_index = 0;
+
+ControlledValue *current_cntrl_value;
 
 ControlledValue *next_controlled_object(std::vector<ControlledValue *> cntrl_obj)
 {
@@ -55,39 +59,40 @@ ControlledValue *next_controlled_object(std::vector<ControlledValue *> cntrl_obj
     return cntrl_obj[current_index];
 }
 
-int display_value(ControlledValue *val)
-{
-#define MAX_WIDTH 21.
-    float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
-    float b = 1 - a * val->get_min_value();
-    return a * val->get_value() + b;
-};
+// focus manager
+
+
 
 int main()
 {
     stdio_init_all();
 
+    
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO,
+                                               central_switch_conf);
+
     ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
-    val1.add_controller(&encoder);
     controlled_objects.push_back(&val1);
 
     ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
-    val2.add_controller(&encoder);
     controlled_objects.push_back(&val2);
 
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
-    val3.add_controller(&encoder);
     controlled_objects.push_back(&val3);
 
     ControlledValue *current_cntrl_value = controlled_objects.front();
     encoder.set_active_controlled_object(current_cntrl_value);
+
+    DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(30);
+    console.set_active_controlled_value(current_cntrl_value);
+    
 
     while (true)
     {
 
         if (current_cntrl_value->has_changed)
         {
-            printf("LOOP[%d]: %2d %*c\n", current_index, current_cntrl_value->get_value(), display_value(current_cntrl_value), '|');
+            console.display();
             current_cntrl_value->clear_change_flag();
         }
         SwitchButtonEvent sw_event = central_switch.process_sample_event();
@@ -103,6 +108,7 @@ int main()
         case SwitchButtonEvent::LONG_PUSH:
             current_cntrl_value = next_controlled_object(controlled_objects);
             encoder.set_active_controlled_object(current_cntrl_value);
+            console.set_active_controlled_value(current_cntrl_value);
             printf(".......long.push\n");
             break;
         case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:

@@ -16,14 +16,11 @@ public:
     ControlledValue(uint8_t id, int min_value, int max_value, int increment = 1, bool wrap = false) ;
     ~ControlledValue();
 
-    // bool has_changed{false};
-
     int get_value();
     int get_min_value();
     int get_max_value();
     void set_value(int new_value);
     void reset();
-    // void clear_change_flag();
 
     void increment();
     void decrement();

@@ -66,14 +66,6 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     }
 };
 
-// int display_value(ControlledValue *val)
-// {
-// #define MAX_WIDTH 21.
-//     float a = (MAX_WIDTH - 1.) / (val->get_max_value() - val->get_min_value());
-//     float b = 1 - a * val->get_min_value();
-//     return a * val->get_value() + b;
-// };
-
 static int current_index = 0;
 
 ControlledValue *next_cntrl_value_index(std::vector<ControlledValue *> values)
