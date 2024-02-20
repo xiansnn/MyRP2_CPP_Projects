@@ -26,12 +26,12 @@ config_switch_button_t cfg_encoder_clk{
     .debounce_delay_us = 1000,
 };
 
-std::map<SwitchButtonEvent, std::string> sw_button_events{
-    {SwitchButtonEvent::NOOP, "NOOP"},
-    {SwitchButtonEvent::PUSH, "PUSH"},
-    {SwitchButtonEvent::LONG_PUSH, "LONG_PUSH"},
-    {SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME, "RELEASED_AFTER_SHORT_TIME"},
-    {SwitchButtonEvent::RELEASED_AFTER_LONG_TIME, "RELEASED_AFTER_LONG_TIME"},
+std::map<ControlEvent, std::string> sw_button_events{
+    {ControlEvent::NOOP, "NOOP"},
+    {ControlEvent::PUSH, "PUSH"},
+    {ControlEvent::LONG_PUSH, "LONG_PUSH"},
+    {ControlEvent::RELEASED_AFTER_SHORT_TIME, "RELEASED_AFTER_SHORT_TIME"},
+    {ControlEvent::RELEASED_AFTER_LONG_TIME, "RELEASED_AFTER_LONG_TIME"},
 };
 
 void sw_call_back(uint gpio, uint32_t event_mask);
@@ -45,8 +45,8 @@ void sw_call_back(uint gpio, uint32_t event_mask)
     pr_D3.hi();
     if (gpio == CENTRAL_SWITCH_GPIO)
     {
-        SwitchButtonEvent sw_event = encoder_central_sw.process_IRQ_event(event_mask);
-        if (sw_event != SwitchButtonEvent::NOOP)
+        ControlEvent sw_event = encoder_central_sw.process_IRQ_event(event_mask);
+        if (sw_event != ControlEvent::NOOP)
         {
             printf("Encoder central SW event(%s) mask(%d)\n", sw_button_events[sw_event].c_str(), event_mask);
         }
@@ -58,8 +58,8 @@ void sw_call_back(uint gpio, uint32_t event_mask)
     if (gpio == ENCODER_CLK_GPIO)
     {
         encoder_clk.irq_enabled(false);
-        SwitchButtonEvent clk_event = encoder_clk.process_IRQ_event(event_mask);
-        if (clk_event != SwitchButtonEvent::NOOP)
+        ControlEvent clk_event = encoder_clk.process_IRQ_event(event_mask);
+        if (clk_event != ControlEvent::NOOP)
         {
             pr_D4.pulse_us(1); // actual IRQ received
             printf("Encoder clk event(%s) mask(%d)\n", sw_button_events[clk_event].c_str(), event_mask);

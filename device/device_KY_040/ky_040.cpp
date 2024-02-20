@@ -4,7 +4,7 @@
 #include <string>
 
 KY040Encoder::KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
-             config_switch_button_t clk_conf)
+                           config_switch_button_t clk_conf)
     : SwitchButtonWithIRQ(id, encoder_clk_gpio, call_back, clk_conf)
 {
     this->dt_gpio = encoder_dt_gpio;
@@ -21,15 +21,16 @@ KY040Encoder::~KY040Encoder()
 void KY040Encoder::interrupt_service_routine(uint32_t current_irq_event_mask)
 {
     irq_enabled(false);
-    SwitchButtonEvent clk_event = process_IRQ_event(current_irq_event_mask);
-    if (clk_event == SwitchButtonEvent::PUSH)
+    ControlEvent clk_event = process_IRQ_event(current_irq_event_mask);
+    if (clk_event == ControlEvent::PUSH)
     {
         bool clockwise_rotation = gpio_get(dt_gpio);
         if (clockwise_rotation)
-            this->active_controlled_object->increment();
+            this->active_controlled_object->process_control_event(ControlEvent::INCREMENT);
+        // this->active_controlled_object->increment();
         else
-            this->active_controlled_object->decrement();
+            this->active_controlled_object->process_control_event(ControlEvent::DECREMENT);
+        // this->active_controlled_object->decrement();
     }
     irq_enabled(true);
 }
-

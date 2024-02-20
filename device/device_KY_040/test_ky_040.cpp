@@ -55,19 +55,25 @@ int main()
     SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO,
                                                central_switch_conf);
 
+    DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
+
     ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
     focus_manager.add_controlled_object(&val1);
+    val1.set_current_controller(&encoder);
+    val1.set_current_widget(&console);
     ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
     focus_manager.add_controlled_object(&val2);
+    val2.set_current_controller(&encoder);
+    val2.set_current_widget(&console);
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
     focus_manager.add_controlled_object(&val3);
+    val3.set_current_controller(&encoder);
+    val3.set_current_widget(&console);
 
     UI_ControlledObject *current_cntrl_obj = &focus_manager;
     encoder.set_active_controlled_object(current_cntrl_obj);
-
-    DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
     console.set_active_displayed_object(current_cntrl_obj);
-
+    
     while (true)
     {
         if (current_cntrl_obj->has_changed)
@@ -75,12 +81,13 @@ int main()
             console.display();
             current_cntrl_obj->clear_change_flag();
         }
-        SwitchButtonEvent sw_event = central_switch.process_sample_event();
+        ControlEvent sw_event = central_switch.process_sample_event();
+        // focus_manager.process_control_event(sw_event);
         switch (sw_event)
         {
-        case SwitchButtonEvent::PUSH:
+        case ControlEvent::PUSH:
             break;
-        case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
+        case ControlEvent::RELEASED_AFTER_SHORT_TIME:
             printf("ID:%d\n", current_cntrl_obj->id);
             if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
             {
@@ -96,10 +103,10 @@ int main()
             console.display();
 
             break;
-        case SwitchButtonEvent::LONG_PUSH:
+        case ControlEvent::LONG_PUSH:
             current_cntrl_obj->reset();
             break;
-        case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
+        case ControlEvent::RELEASED_AFTER_LONG_TIME:
             break;
         default:
             break;

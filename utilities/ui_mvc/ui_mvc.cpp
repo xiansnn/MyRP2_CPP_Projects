@@ -39,6 +39,16 @@ void UI_ControlledObject::clear_change_flag()
     has_changed = false;
 }
 
+void UI_ControlledObject::set_current_controller(UI_Controller* controller)
+{
+    this->current_controller = controller;
+}
+
+void UI_ControlledObject::set_current_widget(UI_Widget* widget)
+{
+    this->current_widget = widget;
+}
+
 UI_Widget::UI_Widget(uint8_t id)
 {
     this->id = id;

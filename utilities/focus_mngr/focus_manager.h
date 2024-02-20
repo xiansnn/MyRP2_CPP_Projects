@@ -22,6 +22,7 @@ public:
     void on_long_release();
     void increment();
     void decrement();
+    void process_control_event(ControlEvent event);
 };
 
 #endif // FOCUS_MANAGER_H
