@@ -9,13 +9,6 @@ FocusManager::~FocusManager()
 {
 }
 
-// UI_ControlledObject *FocusManager::next_focus()
-// {
-//     current_index++;
-//     current_index %= max_value;
-//     return controlled_objects[current_index];
-// }
-
 void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
 {
     this->controlled_objects.push_back(cntrl_obj);
@@ -60,28 +53,3 @@ void FocusManager::decrement()
     value = std::min(max_value, std::max(min_value, value));
     has_changed = true;
 }
-
-// void FocusManager::reset()
-// {
-//     current_index = 0;
-// }
-
-// int FocusManager::get_value()
-// {
-//     return current_index;
-// }
-
-// int FocusManager::get_min_value()
-// {
-//     return 0;
-// }
-
-// int FocusManager::get_max_value()
-// {
-//     return this->controlled_objects.size();
-// }
-
-// void FocusManager::set_value(uint8_t new_value)
-// {
-//     current_index = new_value;
-// }

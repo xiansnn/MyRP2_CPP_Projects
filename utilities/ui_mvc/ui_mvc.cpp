@@ -18,6 +18,7 @@ UI_ControlledObject *UI_Controller::set_active_controlled_object(UI_ControlledOb
 
 UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment)
 {
+    this->value = 0;
     this->id = id;
     this->min_value = min_value;
     this->max_value = max_value;

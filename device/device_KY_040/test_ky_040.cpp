@@ -51,7 +51,6 @@ FocusManager focus_manager = FocusManager(FOCUS_MANAGER_ID);
 int main()
 {
     stdio_init_all();
-    focus_manager.add_controlled_object(&focus_manager);
 
     SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO,
                                                central_switch_conf);
@@ -63,17 +62,14 @@ int main()
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
     focus_manager.add_controlled_object(&val3);
 
-    UI_ControlledObject *current_cntrl_obj = focus_manager.get_active_controlled_object();
+    UI_ControlledObject *current_cntrl_obj = &focus_manager;
     encoder.set_active_controlled_object(current_cntrl_obj);
 
-    UI_ControlledObject *active_val = current_cntrl_obj;
-
     DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
-    console.set_active_controlled_value(active_val);
+    console.set_active_displayed_object(current_cntrl_obj);
 
     while (true)
     {
-
         if (current_cntrl_obj->has_changed)
         {
             console.display();
@@ -83,24 +79,27 @@ int main()
         switch (sw_event)
         {
         case SwitchButtonEvent::PUSH:
-            // printf("............push\n");
             break;
         case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
-            current_cntrl_obj->reset();
-            // printf(".......short.rel\n");
-            break;
-        case SwitchButtonEvent::LONG_PUSH:
-            // focus_manager.increment();
-            current_cntrl_obj = focus_manager.get_active_controlled_object();
-            printf("ID:%d\n",current_cntrl_obj->id);
-            // next_controlled_object(controlled_objects);
+            printf("ID:%d\n", current_cntrl_obj->id);
+            if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
+            {
+                current_cntrl_obj = focus_manager.get_active_controlled_object();
+            }
+            else
+            {
+                current_cntrl_obj = &focus_manager;
+            }
+            printf("ID:%d\n", current_cntrl_obj->id);
             encoder.set_active_controlled_object(current_cntrl_obj);
             console.set_active_displayed_object(current_cntrl_obj);
             console.display();
-            // printf(".......long.push\n");
+
+            break;
+        case SwitchButtonEvent::LONG_PUSH:
+            current_cntrl_obj->reset();
             break;
         case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
-            // printf(".......long..rel\n");
             break;
         default:
             break;
