@@ -1,9 +1,16 @@
 #include "focus_manager.h"
 
+void FocusManager::set_active_controlled_object(uint8_t new_focus_index)
+{
+    focus_index = new_focus_index;
+    active_controlled_object = controlled_objects[focus_index];
+}
+
 FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
     min_value = 1;
-    focus_index = 0;
+    // focus_index = 0;
+    set_active_controlled_object(0);
     add_controlled_object(this);
     set_value(0);
 }
@@ -20,7 +27,8 @@ void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
 
 UI_ControlledObject *FocusManager::get_active_controlled_object()
 {
-    return controlled_objects[value];
+    active_controlled_object = controlled_objects[value];
+    return active_controlled_object;
 }
 
 void FocusManager::process_control_event(ControlEvent event)
@@ -50,7 +58,8 @@ void FocusManager::process_control_event(ControlEvent event)
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index = value;
+        // focus_index = value;
+        set_active_controlled_object(value);
         has_changed = true;
         break;
     case ControlEvent::DECREMENT:
@@ -58,7 +67,8 @@ void FocusManager::process_control_event(ControlEvent event)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index = value;
+        // focus_index = value;
+        set_active_controlled_object(value);
         has_changed = true;
         break;
 

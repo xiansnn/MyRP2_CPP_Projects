@@ -78,10 +78,9 @@ int main()
             current_cntrl_obj->clear_change_flag();
         }
         ControlEvent sw_event = central_switch.process_sample_event();
+        focus_manager.process_control_event(sw_event);
         switch (sw_event)
         {
-        case ControlEvent::PUSH:
-            break;
         case ControlEvent::RELEASED_AFTER_SHORT_TIME:
             printf("ID:%d\n", current_cntrl_obj->id);
             if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
@@ -101,8 +100,7 @@ int main()
         case ControlEvent::LONG_PUSH:
             current_cntrl_obj->reset();
             break;
-        case ControlEvent::RELEASED_AFTER_LONG_TIME:
-            break;
+
         default:
             break;
         }
