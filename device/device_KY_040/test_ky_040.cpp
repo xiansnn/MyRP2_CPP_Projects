@@ -84,17 +84,13 @@ int main()
     {
         if (current_cntrl_obj->has_changed)
         {
-            console.draw();
+            current_cntrl_obj->current_widget->draw();
             current_cntrl_obj->clear_change_flag();
         }
-        ControlEvent sw_event = central_switch.process_sample_event();
+        focus_manager.process_focus(&central_switch, current_cntrl_obj);
+        ControlEvent sw_event = central_switch.get_control_event();
         current_cntrl_obj = focus_manager.process_control_event(sw_event);
-        // if (sw_event == ControlEvent::RELEASED_AFTER_SHORT_TIME)
-        // {
-        //     encoder.set_active_controlled_object(current_cntrl_obj);
-        //     console.set_active_displayed_object(current_cntrl_obj);
-        //     console.draw();
-        // }
+
 
         sleep_ms(20);
     }

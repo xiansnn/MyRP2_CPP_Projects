@@ -26,13 +26,13 @@ protected:
     int increment_val{1};
     int min_value;
     int max_value;
-    UI_Controller *current_controller;
-    UI_Widget *current_widget;
 
 public:
     UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment = 1);
     UI_ControlledObject(uint8_t id);
     ~UI_ControlledObject();
+    UI_Controller *current_controller;
+    UI_Widget *current_widget;
 
     uint8_t id;
     bool has_changed{false};
@@ -68,6 +68,7 @@ public:
     ~UI_Controller();
 
     UI_ControlledObject *set_active_controlled_object(UI_ControlledObject *cntrl_obj);
+    virtual ControlEvent get_control_event() =0;
 };
 
 class UI_Widget

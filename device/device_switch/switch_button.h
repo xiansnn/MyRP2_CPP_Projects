@@ -55,7 +55,7 @@ public:
     SwitchButton(uint8_t id, uint gpio, config_switch_button_t conf = {});
     ~SwitchButton();
     bool is_button_active();
-    ControlEvent process_sample_event();
+    ControlEvent get_control_event();
 };
 
 class SwitchButtonWithIRQ : public SwitchButton

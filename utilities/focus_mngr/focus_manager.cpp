@@ -76,7 +76,7 @@ UI_ControlledObject *FocusManager::process_control_event(ControlEvent event)
         this->current_controller->set_active_controlled_object(current_focus);
         this->current_widget->set_active_displayed_object(current_focus);
         this->current_widget->draw();
-    
+
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         break;
@@ -101,4 +101,10 @@ UI_ControlledObject *FocusManager::process_control_event(ControlEvent event)
         break;
     }
     return current_focus;
+}
+
+void FocusManager::process_focus(UI_Controller *controller, UI_ControlledObject *controlled_object)
+{
+    ControlEvent sw_event = controller->get_control_event();//  .process_sample_event();
+    controlled_object = process_control_event(sw_event);
 }

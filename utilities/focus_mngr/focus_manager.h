@@ -27,6 +27,7 @@ public:
     void increment();
     void decrement();
     UI_ControlledObject *process_control_event(ControlEvent event);
+    void process_focus(UI_Controller* controller, UI_ControlledObject* controlled_object);
 };
 
 #endif // FOCUS_MANAGER_H
