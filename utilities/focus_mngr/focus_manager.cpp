@@ -2,6 +2,10 @@
 
 FocusManager::FocusManager(uint8_t id) : UI_ControlledObject(id)
 {
+    min_value = 1;
+    focus_index = 0;
+    add_controlled_object(this);
+    update_current_focus();
     set_value(0);
 }
 
@@ -15,11 +19,11 @@ void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
     this->max_value = controlled_objects.size() - 1;
 }
 
-// UI_ControlledObject *FocusManager::update_current_focus()
-// {
-//     current_focus = controlled_objects[focus_index];
-//     return current_focus;
-// }
+UI_ControlledObject *FocusManager::update_current_focus()
+{
+    current_focus = controlled_objects[focus_index];
+    return current_focus;
+}
 
 void FocusManager::reset_focus()
 {
@@ -113,7 +117,6 @@ void FocusManager::update_current_focus(UI_Controller *controller)
     current_focus = controlled_objects[focus_index];
 }
 
-UI_ControlledObject *FocusManager::get_current_focus()
-{
+UI_ControlledObject *FocusManager::get_current_focus(){
     return current_focus;
 }
