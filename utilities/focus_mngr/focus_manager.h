@@ -18,7 +18,9 @@ public:
     ~FocusManager();
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
-    UI_ControlledObject *update_current_focus();
+    // UI_ControlledObject *update_current_focus();
+    void update_current_focus(UI_Controller* controller);
+    UI_ControlledObject* get_current_focus();
     void reset_focus();
     void on_push();
     void on_long_push();
@@ -26,8 +28,7 @@ public:
     void on_long_release();
     void increment();
     void decrement();
-    UI_ControlledObject *process_control_event(ControlEvent event);
-    void process_focus(UI_Controller* controller, UI_ControlledObject* controlled_object);
+    // UI_ControlledObject *process_control_event(ControlEvent event);
 };
 
 #endif // FOCUS_MANAGER_H

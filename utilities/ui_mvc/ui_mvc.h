@@ -68,7 +68,7 @@ public:
     ~UI_Controller();
 
     UI_ControlledObject *set_active_controlled_object(UI_ControlledObject *cntrl_obj);
-    virtual ControlEvent get_control_event() =0;
+    virtual ControlEvent get_control_event() = 0;
 };
 
 class UI_Widget

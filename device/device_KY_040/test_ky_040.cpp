@@ -76,20 +76,20 @@ int main()
     focus_manager.set_controller(&encoder);
     focus_manager.set_widget(&console);
 
-    UI_ControlledObject *current_cntrl_obj = &focus_manager;
-    encoder.set_active_controlled_object(current_cntrl_obj);
-    console.set_active_displayed_object(current_cntrl_obj);
+    // UI_ControlledObject *current_cntrl_obj = &focus_manager;
+    encoder.set_active_controlled_object(focus_manager.get_current_focus());
+    console.set_active_displayed_object(focus_manager.get_current_focus());
 
     while (true)
     {
-        if (current_cntrl_obj->has_changed)
+        if (focus_manager.get_current_focus()->has_changed)
         {
-            current_cntrl_obj->current_widget->draw();
-            current_cntrl_obj->clear_change_flag();
+            focus_manager.get_current_focus()->current_widget->draw();
+            focus_manager.get_current_focus()->clear_change_flag();
         }
-        focus_manager.process_focus(&central_switch, current_cntrl_obj);
-        ControlEvent sw_event = central_switch.get_control_event();
-        current_cntrl_obj = focus_manager.process_control_event(sw_event);
+        focus_manager.update_current_focus(&central_switch);
+        // ControlEvent sw_event = central_switch.get_control_event();
+        // current_cntrl_obj = focus_manager.process_control_event(sw_event);
 
 
         sleep_ms(20);
