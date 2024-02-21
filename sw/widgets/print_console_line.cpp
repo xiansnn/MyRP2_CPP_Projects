@@ -9,7 +9,7 @@ DisplayEncoderOnTerminal::~DisplayEncoderOnTerminal()
 {
 }
 
-void DisplayEncoderOnTerminal::display()
+void DisplayEncoderOnTerminal::draw()
 {
     int display_value = slope * active_displayed_object->get_value() + offset;
     printf("focus[%d]: %2d %*c\n", active_displayed_object->id, active_displayed_object->get_value(), display_value, '|');

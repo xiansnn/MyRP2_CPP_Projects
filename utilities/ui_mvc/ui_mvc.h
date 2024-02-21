@@ -4,6 +4,8 @@
 // #include <map>
 #include "pico/stdlib.h"
 
+#define FOCUS_MANAGER_ID 0
+
 enum class ControlEvent
 {
     NOOP,
@@ -87,6 +89,7 @@ public:
     ~UI_Widget();
 
     virtual UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
+    virtual void draw()=0;
 };
 
 #endif // UI_MVC_H
