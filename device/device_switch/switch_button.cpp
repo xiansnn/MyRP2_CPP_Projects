@@ -25,7 +25,7 @@ SwitchButton::~SwitchButton()
 {
 }
 
-SwitchButtonEvent SwitchButton::process_sample_event()
+ControlEvent SwitchButton::process_sample_event()
 {
     uint32_t time_since_previous_change;
     uint32_t current_time_us = time_us_32();
@@ -34,18 +34,18 @@ SwitchButtonEvent SwitchButton::process_sample_event()
     {
         if (button_is_active == false)
         {
-            return SwitchButtonEvent::NOOP;
+            return ControlEvent::NOOP;
         }
         else
         {
             if (current_time_us - previous_change_time_us >= long_push_delay_us)
             {
                 button_is_active = false;
-                return SwitchButtonEvent::LONG_PUSH;
+                return ControlEvent::LONG_PUSH;
             }
             else
             {
-                return SwitchButtonEvent::NOOP;
+                return ControlEvent::NOOP;
             }
         }
     }
@@ -53,7 +53,7 @@ SwitchButtonEvent SwitchButton::process_sample_event()
     {
         time_since_previous_change = current_time_us - previous_change_time_us;
         if (time_since_previous_change < debounce_delay_us)
-            return SwitchButtonEvent::NOOP;
+            return ControlEvent::NOOP;
         else
         {
             previous_switch_active_state = switch_active_state;
@@ -61,12 +61,12 @@ SwitchButtonEvent SwitchButton::process_sample_event()
             if (switch_active_state)
             {
                 button_is_active = true;
-                return SwitchButtonEvent::PUSH;
+                return ControlEvent::PUSH;
             }
             else
             {
                 button_is_active = false;
-                return (time_since_previous_change < long_release_delay_us) ? SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME : SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
+                return (time_since_previous_change < long_release_delay_us) ? ControlEvent::RELEASED_AFTER_SHORT_TIME : ControlEvent::RELEASED_AFTER_LONG_TIME;
             }
         }
     }
@@ -94,7 +94,7 @@ SwitchButtonWithIRQ::~SwitchButtonWithIRQ()
 {
 }
 
-SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_mask)
+ControlEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_mask)
 {
     bool switch_active_state = is_switch_pushed(current_event_mask);
     uint32_t current_time_us = time_us_32();
@@ -102,22 +102,22 @@ SwitchButtonEvent SwitchButtonWithIRQ::process_IRQ_event(uint32_t current_event_
     previous_change_time_us = current_time_us;
     if (time_since_previous_change <= debounce_delay_us)
     {
-        return SwitchButtonEvent::NOOP;
+        return ControlEvent::NOOP;
     }
     else
     {
         if (switch_active_state == true)
         {
             button_is_active = true;
-            return SwitchButtonEvent::PUSH;
+            return ControlEvent::PUSH;
         }
         else
         {
             button_is_active = false;
             if (time_since_previous_change < long_release_delay_us)
-                return SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME;
+                return ControlEvent::RELEASED_AFTER_SHORT_TIME;
             else
-                return SwitchButtonEvent::RELEASED_AFTER_LONG_TIME;
+                return ControlEvent::RELEASED_AFTER_LONG_TIME;
         }
     }
 }

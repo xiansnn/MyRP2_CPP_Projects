@@ -77,12 +77,12 @@ int main()
             console.draw();
             current_cntrl_obj->clear_change_flag();
         }
-        SwitchButtonEvent sw_event = central_switch.process_sample_event();
+        ControlEvent sw_event = central_switch.process_sample_event();
         switch (sw_event)
         {
-        case SwitchButtonEvent::PUSH:
+        case ControlEvent::PUSH:
             break;
-        case SwitchButtonEvent::RELEASED_AFTER_SHORT_TIME:
+        case ControlEvent::RELEASED_AFTER_SHORT_TIME:
             printf("ID:%d\n", current_cntrl_obj->id);
             if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
             {
@@ -98,10 +98,10 @@ int main()
             console.draw();
 
             break;
-        case SwitchButtonEvent::LONG_PUSH:
+        case ControlEvent::LONG_PUSH:
             current_cntrl_obj->reset();
             break;
-        case SwitchButtonEvent::RELEASED_AFTER_LONG_TIME:
+        case ControlEvent::RELEASED_AFTER_LONG_TIME:
             break;
         default:
             break;

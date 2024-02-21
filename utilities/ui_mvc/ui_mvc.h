@@ -5,6 +5,16 @@
 
 #define FOCUS_MANAGER_ID 0
 
+enum class ControlEvent
+{
+    NOOP,
+    PUSH,
+    DOUBLE_PUSH,
+    LONG_PUSH,
+    RELEASED_AFTER_LONG_TIME,
+    RELEASED_AFTER_SHORT_TIME
+};
+
 class UI_ControlledObject
 {
 protected:
