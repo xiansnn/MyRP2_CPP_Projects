@@ -49,7 +49,7 @@ void ControlledValue::on_long_release()
 {
 }
 
-void ControlledValue::process_control_event(ControlEvent event)
+UI_ControlledObject *ControlledValue::process_control_event(ControlEvent event)
 {
     switch (event)
     {
@@ -64,18 +64,15 @@ void ControlledValue::process_control_event(ControlEvent event)
         value -= increment_val;
         if ((wrap) and (value < min_value))
             value = max_value;
-
         value = std::min(max_value, std::max(min_value, value));
         has_changed = true;
+        break;
+    case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         break;
 
     default:
         break;
     }
+    return this;
 }
 
-// void ControlledValue::reset()
-// {
-//     this->value = std::min(max_value, std::max(min_value, 0));
-//     has_changed = true;
-// }
