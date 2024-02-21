@@ -27,8 +27,10 @@ void KY040Encoder::interrupt_service_routine(uint32_t current_irq_event_mask)
         bool clockwise_rotation = gpio_get(dt_gpio);
         if (clockwise_rotation)
             this->active_controlled_object->process_control_event(ControlEvent::INCREMENT);
+        // this->active_controlled_object->increment();
         else
             this->active_controlled_object->process_control_event(ControlEvent::DECREMENT);
+        // this->active_controlled_object->decrement();
     }
     irq_enabled(true);
 }

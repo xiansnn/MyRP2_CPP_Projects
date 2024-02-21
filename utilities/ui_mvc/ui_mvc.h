@@ -1,6 +1,7 @@
 #if !defined(UI_MVC_H)
 #define UI_MVC_H
 
+// #include <map>
 #include "pico/stdlib.h"
 
 enum class ControlEvent
@@ -21,6 +22,7 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
+    
 protected:
     int value;
     int increment_val{1};
@@ -38,15 +40,16 @@ public:
     bool has_changed{false};
 
     void clear_change_flag();
-    void set_controller(UI_Controller *controller);
-    void set_widget(UI_Widget *widget);
+    void set_current_controller(UI_Controller* controller);
+    void set_current_widget(UI_Widget* widget);
     virtual void reset();
     virtual int get_value();
     virtual int get_min_value();
     virtual int get_max_value();
     virtual void set_value(int new_value);
 
-    virtual UI_ControlledObject *process_control_event(ControlEvent) = 0;
+
+    virtual void process_control_event(ControlEvent) =0;
     virtual void on_push() = 0;
     virtual void on_long_push() = 0;
     virtual void on_short_release() = 0;
@@ -77,13 +80,13 @@ private:
     uint8_t id;
 
 protected:
-public:
     UI_ControlledObject *active_displayed_object;
+
+public:
     UI_Widget(uint8_t id);
     ~UI_Widget();
 
     virtual UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
-    virtual void draw() = 0;
 };
 
 #endif // UI_MVC_H

@@ -1,12 +1,8 @@
 #include "focus_manager.h"
-#include <string>
 
-FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
+FocusManager::FocusManager(uint8_t id) : UI_ControlledObject(id)
 {
-    this->focus_index = 0;
-    this->min_value = 1;
-    this->add_controlled_object(this);
-    this->current_focus = this->controlled_objects[focus_index];
+    set_value(0);
 }
 
 FocusManager::~FocusManager()
@@ -49,10 +45,20 @@ void FocusManager::on_long_release()
 
 void FocusManager::increment()
 {
+    value++;
+    if (value > max_value)
+        value = min_value;
+    value = std::min(max_value, std::max(min_value, value));
+    has_changed = true;
 }
 
 void FocusManager::decrement()
 {
+    value--;
+    if (value < min_value)
+        value = max_value;
+    value = std::min(max_value, std::max(min_value, value));
+    has_changed = true;
 }
 
 // UI_ControlledObject *FocusManager::process_control_event(ControlEvent event)
@@ -135,7 +141,6 @@ void FocusManager::update_current_focus(UI_Controller *controller)
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index = value;
         has_changed = true;
         break;
     case ControlEvent::DECREMENT:
@@ -143,8 +148,8 @@ void FocusManager::update_current_focus(UI_Controller *controller)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index = value;
         has_changed = true;
+        /* code */
         break;
 
     default:

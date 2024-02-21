@@ -4,17 +4,14 @@
 #include <vector>
 #include "ui_mvc.h"
 
-#define FOCUS_MANAGER_ID 0
-
 class FocusManager : public UI_ControlledObject
 {
 private:
-    uint8_t focus_index;
+    uint8_t id;
     std::vector<UI_ControlledObject *> controlled_objects;
-    UI_ControlledObject *current_focus;
 
 public:
-    FocusManager();
+    FocusManager(uint8_t id);
     ~FocusManager();
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);

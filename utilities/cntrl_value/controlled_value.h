@@ -20,7 +20,7 @@ public:
     void on_long_push();
     void on_short_release();
     void on_long_release();
-    UI_ControlledObject * process_control_event(ControlEvent event);
+    void process_control_event(ControlEvent event);
 };
 
 #endif // CNTRL_VALUE_H

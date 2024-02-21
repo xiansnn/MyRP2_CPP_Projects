@@ -28,7 +28,6 @@ UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_valu
 UI_ControlledObject::UI_ControlledObject(uint8_t id)
 {
     this->id = id;
-    this->value = 0;
 }
 
 UI_ControlledObject::~UI_ControlledObject()
@@ -40,12 +39,12 @@ void UI_ControlledObject::clear_change_flag()
     has_changed = false;
 }
 
-void UI_ControlledObject::set_controller(UI_Controller* controller)
+void UI_ControlledObject::set_current_controller(UI_Controller* controller)
 {
     this->current_controller = controller;
 }
 
-void UI_ControlledObject::set_widget(UI_Widget* widget)
+void UI_ControlledObject::set_current_widget(UI_Widget* widget)
 {
     this->current_widget = widget;
 }
