@@ -7,11 +7,11 @@
 class FocusManager : public UI_ControlledObject
 {
 private:
-    uint8_t id;
+    uint8_t focus_index;
     std::vector<UI_ControlledObject *> controlled_objects;
 
 public:
-    FocusManager(uint8_t id);
+    FocusManager();
     ~FocusManager();
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);

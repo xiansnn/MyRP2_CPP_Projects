@@ -1,7 +1,10 @@
 #include "focus_manager.h"
 
-FocusManager::FocusManager(uint8_t id) : UI_ControlledObject(id)
+FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
+    min_value=1;
+    focus_index = 0;
+    add_controlled_object(this);
     set_value(0);
 }
 
@@ -42,6 +45,7 @@ void FocusManager::increment()
     if (value > max_value)
         value = min_value;
     value = std::min(max_value, std::max(min_value, value));
+    focus_index = value;
     has_changed = true;
 }
 
@@ -51,5 +55,6 @@ void FocusManager::decrement()
     if (value < min_value)
         value = max_value;
     value = std::min(max_value, std::max(min_value, value));
+    focus_index = value;
     has_changed = true;
 }

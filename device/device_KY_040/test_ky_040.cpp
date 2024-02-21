@@ -13,10 +13,11 @@
 #define ENCODER_DT_GPIO 21
 #define ENCODER_ID 11
 #define CENTRAL_SWITCH_ID 12
-#define FOCUS_MANAGER_ID 20
+
 #define CONTROLLED_VAL1_ID 21
 #define CONTROLLED_VAL2_ID 22
 #define CONTROLLED_VAL3_ID 23
+
 #define CONSOLE_WIDGET_ID 31
 
 config_switch_button_t central_switch_conf{
@@ -47,7 +48,9 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     };
 }
 
-FocusManager focus_manager = FocusManager(FOCUS_MANAGER_ID);
+FocusManager focus_manager = FocusManager();
+DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
+
 int main()
 {
     stdio_init_all();
@@ -65,14 +68,13 @@ int main()
     UI_ControlledObject *current_cntrl_obj = &focus_manager;
     encoder.set_active_controlled_object(current_cntrl_obj);
 
-    DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
     console.set_active_displayed_object(current_cntrl_obj);
 
     while (true)
     {
         if (current_cntrl_obj->has_changed)
         {
-            console.display();
+            console.draw();
             current_cntrl_obj->clear_change_flag();
         }
         SwitchButtonEvent sw_event = central_switch.process_sample_event();
@@ -93,7 +95,7 @@ int main()
             printf("ID:%d\n", current_cntrl_obj->id);
             encoder.set_active_controlled_object(current_cntrl_obj);
             console.set_active_displayed_object(current_cntrl_obj);
-            console.display();
+            console.draw();
 
             break;
         case SwitchButtonEvent::LONG_PUSH:
