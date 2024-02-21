@@ -21,14 +21,14 @@ KY040Encoder::~KY040Encoder()
 void KY040Encoder::interrupt_service_routine(uint32_t current_irq_event_mask)
 {
     irq_enabled(false);
-    SwitchButtonEvent clk_event = process_IRQ_event(current_irq_event_mask);
-    if (clk_event == SwitchButtonEvent::PUSH)
+    ControlEvent clk_event = process_IRQ_event(current_irq_event_mask);
+    if (clk_event == ControlEvent::PUSH)
     {
         bool clockwise_rotation = gpio_get(dt_gpio);
         if (clockwise_rotation)
-            this->active_controlled_object->increment();
+            this->active_controlled_object->process_control_event(ControlEvent::INCREMENT);
         else
-            this->active_controlled_object->decrement();
+            this->active_controlled_object->process_control_event(ControlEvent::DECREMENT);
     }
     irq_enabled(true);
 }

@@ -12,7 +12,9 @@ enum class ControlEvent
     DOUBLE_PUSH,
     LONG_PUSH,
     RELEASED_AFTER_LONG_TIME,
-    RELEASED_AFTER_SHORT_TIME
+    RELEASED_AFTER_SHORT_TIME,
+    INCREMENT,
+    DECREMENT
 };
 
 class UI_ControlledObject
@@ -37,13 +39,9 @@ public:
     virtual int get_min_value();
     virtual int get_max_value();
     virtual void set_value(int new_value);
-    
-    virtual void on_push() = 0;
-    virtual void on_long_push() = 0;
-    virtual void on_short_release() = 0;
-    virtual void on_long_release() = 0;
-    virtual void increment() = 0;
-    virtual void decrement() = 0;
+
+    virtual void process_control_event(ControlEvent) = 0;
+
 };
 
 class UI_Controller

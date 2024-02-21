@@ -16,12 +16,9 @@ public:
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
     UI_ControlledObject *get_active_controlled_object();
-    void on_push();
-    void on_long_push();
-    void on_short_release();
-    void on_long_release();
-    void increment();
-    void decrement();
+
+    void process_control_event(ControlEvent event);
+
 };
 
 #endif // FOCUS_MANAGER_H
