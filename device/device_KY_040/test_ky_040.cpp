@@ -77,8 +77,7 @@ int main()
             console.draw();
             focus_manager.active_controlled_object->clear_value_change_flag();
         }
-        ControlEvent sw_event = central_switch.process_sample_event();
-        focus_manager.process_control_event(sw_event);
+        focus_manager.process_control_event(&central_switch);
         if (focus_manager.active_controlled_object_has_changed)
         {
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);

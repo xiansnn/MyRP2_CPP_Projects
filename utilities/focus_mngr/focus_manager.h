@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "ui_mvc.h"
+#include "switch_button.h"
 
 class FocusManager : public UI_ControlledObject
 {
@@ -19,8 +20,8 @@ public:
 
     bool active_controlled_object_has_changed;
     void clear_active_controlled_object_change_flag();
-    // UI_ControlledObject *update_active_controlled_object();
 
+    void process_control_event(SwitchButton* controller);
     void process_control_event(ControlEvent event);
 
 };

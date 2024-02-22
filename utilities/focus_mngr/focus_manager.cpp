@@ -4,7 +4,7 @@
 FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
     min_value = 0;
-    set_value(0);
+    set_value_clipped(0);
     active_controlled_object = this;
 }
 
@@ -18,16 +18,15 @@ void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
     this->max_value = controlled_objects.size() - 1;
 }
 
-// UI_ControlledObject *FocusManager::update_active_controlled_object()
-// {
-//     active_controlled_object = controlled_objects[value];
-//     active_controlled_object_has_changed = true;
-//     return active_controlled_object;
-// }
-
 void FocusManager::clear_active_controlled_object_change_flag()
 {
     active_controlled_object_has_changed = false;
+}
+
+void FocusManager::process_control_event(SwitchButton* controller)
+{
+    ControlEvent sw_event = controller->process_sample_event();
+    process_control_event(sw_event);
 }
 
 void FocusManager::process_control_event(ControlEvent event)
@@ -45,7 +44,7 @@ void FocusManager::process_control_event(ControlEvent event)
         break;
     case ControlEvent::LONG_PUSH:
         printf("long push\n");
-        active_controlled_object->reset();
+        active_controlled_object->reset_value_clipped();
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         break;

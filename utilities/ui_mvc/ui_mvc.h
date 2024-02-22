@@ -34,11 +34,11 @@ public:
     bool value_has_changed{false};
 
     void clear_value_change_flag();
-    virtual void reset();
+    virtual void reset_value_clipped();
     virtual int get_value();
     virtual int get_min_value();
     virtual int get_max_value();
-    virtual void set_value(int new_value);
+    virtual void set_value_clipped(int new_value);
 
     virtual void process_control_event(ControlEvent) = 0;
 

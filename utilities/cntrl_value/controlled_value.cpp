@@ -4,7 +4,6 @@
 
 ControlledValue::ControlledValue(uint8_t id, int min_value, int max_value, int increment, bool wrap) : UI_ControlledObject(id, min_value, max_value)
 {
-
     this->wrap = wrap;
     this->value = std::min(this->max_value, std::max(this->min_value, 0));
 }
@@ -12,26 +11,6 @@ ControlledValue::ControlledValue(uint8_t id, int min_value, int max_value, int i
 ControlledValue::~ControlledValue()
 {
 }
-
-// int ControlledValue::get_value()
-// {
-//     return value;
-// }
-
-// int ControlledValue::get_min_value()
-// {
-//     return min_value;
-// }
-
-// int ControlledValue::get_max_value()
-// {
-//     return max_value;
-// }
-
-// void ControlledValue::set_value(int new_value)
-// {
-//     this->value = std::min(max_value, std::max(min_value, new_value));
-// }
 
 void ControlledValue::process_control_event(ControlEvent event)
 {
@@ -66,7 +45,6 @@ void ControlledValue::process_control_event(ControlEvent event)
         value -= increment;
         if ((wrap) and (value < min_value))
             value = max_value;
-
         value = std::min(max_value, std::max(min_value, value));
         value_has_changed = true;
         break;
