@@ -21,7 +21,7 @@ class UI_ControlledObject
 {
 protected:
     int value;
-    int increment_val{1};
+    int increment{1};
     int min_value;
     int max_value;
 

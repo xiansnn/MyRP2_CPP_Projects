@@ -22,7 +22,7 @@ UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_valu
     this->id = id;
     this->min_value = min_value;
     this->max_value = max_value;
-    this->increment_val = increment;
+    this->increment = increment;
 }
 
 UI_ControlledObject::UI_ControlledObject(uint8_t id)
