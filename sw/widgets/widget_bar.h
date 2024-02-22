@@ -3,6 +3,7 @@
 
 #include "framebuffer.h"
 #include "controlled_value.h"
+#include "ui_mvc.h"
 
 typedef struct config_bar_widget
 {
@@ -13,7 +14,7 @@ typedef struct config_bar_widget
     const unsigned char *font{nullptr};
 } config_bar_widget_t;
 
-class Bar : public Framebuffer
+class Bar : public Framebuffer, public UI_Widget
 {
 private:
     ControlledValue* cntrl_value;
@@ -28,7 +29,7 @@ private:
     uint8_t convert_level_value_to_px(int level);
 
 public:
-    Bar(ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
+    Bar(uint8_t id, ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
     ~Bar();
     void draw();
     void draw_border();

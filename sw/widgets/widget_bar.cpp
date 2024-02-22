@@ -9,7 +9,8 @@ uint8_t Bar::convert_level_value_to_px(int level)
     return position;
 }
 
-Bar::Bar(ControlledValue *cntrl_value, config_bar_widget_t config) : Framebuffer(config.width, config.height)
+Bar::Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : 
+Framebuffer(config.width, config.height), UI_Widget(id)
 {
     this->config = config;
     this->cntrl_value = cntrl_value;

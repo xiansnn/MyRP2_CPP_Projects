@@ -1,12 +1,12 @@
 add_library(widget_bar widget_bar.cpp)
-target_link_libraries(widget_bar pico_stdlib framebuffer)
+target_link_libraries(widget_bar pico_stdlib framebuffer ui_mvc)
 
 add_library(print_console print_console_line.cpp)
 target_link_libraries(print_console pico_stdlib ui_mvc)
 
-# add_executable(test_single_bar test_single_bar.cpp)
-# target_link_libraries(test_single_bar widget_bar pico_stdlib ssd1306 ky040 switch_button)
-# pico_add_extra_outputs(test_single_bar)
+add_executable(test_single_bar test_single_bar.cpp)
+target_link_libraries(test_single_bar widget_bar pico_stdlib ssd1306 ky040 switch_button)
+pico_add_extra_outputs(test_single_bar)
 
 # add_executable(test_multiple_bar test_multiple_bar.cpp)
 # target_link_libraries(test_multiple_bar widget_bar pico_stdlib ssd1306 ky040 switch_button focus_manager)
