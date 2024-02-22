@@ -22,7 +22,7 @@
 
 config_switch_button_t central_switch_conf{
     .debounce_delay_us = 5000,
-    .long_release_delay_us = 3000000,
+    .long_release_delay_us = 1000000,
     .long_push_delay_us = 1000000,
     .active_lo = true};
 
@@ -72,7 +72,7 @@ int main()
 
     while (true)
     {
-         if (focus_manager.active_controlled_object->has_changed)
+        if (focus_manager.active_controlled_object->has_changed)
         {
             console.draw();
             focus_manager.active_controlled_object->clear_change_flag();
@@ -82,7 +82,7 @@ int main()
         switch (sw_event)
         {
         case ControlEvent::RELEASED_AFTER_SHORT_TIME:
-          encoder.set_active_controlled_object(focus_manager.active_controlled_object);
+            encoder.set_active_controlled_object(focus_manager.active_controlled_object);
             console.set_active_displayed_object(focus_manager.active_controlled_object);
             console.draw();
 

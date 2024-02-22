@@ -13,6 +13,7 @@ public:
     FocusManager();
     ~FocusManager();
     UI_ControlledObject* active_controlled_object;
+    UI_ControlledObject* controlled_object_under_focus;
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
     UI_ControlledObject *update_active_controlled_object();

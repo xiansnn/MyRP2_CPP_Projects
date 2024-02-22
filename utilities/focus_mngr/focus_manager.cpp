@@ -1,7 +1,6 @@
 #include "focus_manager.h"
 #include <string>
 
-
 FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
     min_value = 1;
@@ -40,10 +39,10 @@ void FocusManager::process_control_event(ControlEvent event)
         /* code */
         break;
     case ControlEvent::LONG_PUSH:
-        active_controlled_object->reset();
+        printf("long push\n");
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
-        /* code */
+        active_controlled_object->reset();
         break;
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
@@ -54,13 +53,14 @@ void FocusManager::process_control_event(ControlEvent event)
         {
             active_controlled_object = this;
         }
-        printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
+        // printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
         break;
     case ControlEvent::INCREMENT:
         value++;
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus = controlled_objects[value];
         has_changed = true;
         break;
     case ControlEvent::DECREMENT:
@@ -68,6 +68,7 @@ void FocusManager::process_control_event(ControlEvent event)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus = controlled_objects[value];
         has_changed = true;
         break;
 
