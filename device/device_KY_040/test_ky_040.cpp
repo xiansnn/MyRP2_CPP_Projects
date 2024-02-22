@@ -49,7 +49,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
 }
 
 FocusManager focus_manager = FocusManager();
-DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
+DisplayControlledValueOnTerminal console = DisplayControlledValueOnTerminal(CONSOLE_WIDGET_ID);
 
 int main()
 {

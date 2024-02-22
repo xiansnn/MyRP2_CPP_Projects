@@ -3,8 +3,7 @@
 
 FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
-    min_value = 1;
-    add_controlled_object(this);
+    min_value = 0;
     set_value(0);
     active_controlled_object = this;
 }
@@ -40,9 +39,9 @@ void FocusManager::process_control_event(ControlEvent event)
         break;
     case ControlEvent::LONG_PUSH:
         printf("long push\n");
+        active_controlled_object->reset();
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
-        active_controlled_object->reset();
         break;
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
