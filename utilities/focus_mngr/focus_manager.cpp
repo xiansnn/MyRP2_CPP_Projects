@@ -40,7 +40,7 @@ void FocusManager::process_control_event(ControlEvent event)
         /* code */
         break;
     case ControlEvent::LONG_PUSH:
-        /* code */
+        active_controlled_object->reset();
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         /* code */

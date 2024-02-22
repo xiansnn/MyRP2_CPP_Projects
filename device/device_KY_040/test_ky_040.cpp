@@ -72,34 +72,21 @@ int main()
 
     while (true)
     {
-        if (current_cntrl_obj->has_changed)
+         if (focus_manager.active_controlled_object->has_changed)
         {
             console.draw();
-            current_cntrl_obj->clear_change_flag();
+            focus_manager.active_controlled_object->clear_change_flag();
         }
         ControlEvent sw_event = central_switch.process_sample_event();
         focus_manager.process_control_event(sw_event);
         switch (sw_event)
         {
         case ControlEvent::RELEASED_AFTER_SHORT_TIME:
-            if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
-            {
-                current_cntrl_obj = focus_manager.update_active_controlled_object();
-            }
-            else
-            {
-                current_cntrl_obj = &focus_manager;
-            }
-            printf("+test_ky_040+new current_cntrl_obj:%d\n", current_cntrl_obj->id);
-            encoder.set_active_controlled_object(current_cntrl_obj);
-            console.set_active_displayed_object(current_cntrl_obj);
+          encoder.set_active_controlled_object(focus_manager.active_controlled_object);
+            console.set_active_displayed_object(focus_manager.active_controlled_object);
             console.draw();
 
             break;
-        case ControlEvent::LONG_PUSH:
-            current_cntrl_obj->reset();
-            break;
-
         default:
             break;
         }
