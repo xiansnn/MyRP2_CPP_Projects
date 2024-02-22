@@ -28,8 +28,7 @@ config_switch_button_t central_switch_conf{
     .active_lo = true};
 
 config_switch_button_t cfg_encoder_clk{
-    .debounce_delay_us = 5000,
-};
+    .debounce_delay_us = 5000};
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 KY040Encoder encoder = KY040Encoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
@@ -56,7 +55,7 @@ int main()
 {
     stdio_init_all();
 
-    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID,CENTRAL_SWITCH_GPIO,central_switch_conf);
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
 
     encoder.set_active_controlled_object(&focus_manager);
     console.set_active_displayed_object(&focus_manager);
