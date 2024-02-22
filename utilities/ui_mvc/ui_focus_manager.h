@@ -1,5 +1,5 @@
-#if !defined(FOCUS_MANAGER_H)
-#define FOCUS_MANAGER_H
+#if !defined(UI_FOCUS_MANAGER_H)
+#define UI_FOCUS_MANAGER_H
 
 #include <vector>
 
@@ -7,7 +7,7 @@
 
 class UI_FocusManager : public UI_ControlledObject
 {
-private:
+protected:
     std::vector<UI_ControlledObject *> controlled_objects;
     UI_Controller* current_controller;
     UI_Widget* current_widget;
@@ -27,4 +27,4 @@ public:
 
 };
 
-#endif // FOCUS_MANAGER_H
+#endif // UI_FOCUS_MANAGER_H
