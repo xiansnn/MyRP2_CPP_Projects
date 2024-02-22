@@ -32,10 +32,10 @@ int main()
 
     while (true)
     {
-        ControlEvent sw_event = central_switch.get_control_event();
+        ControlEvent sw_event = central_switch.process_sample_event();
         if (sw_event != ControlEvent::NOOP)
             printf("SW event(%s)\n", sw_button_events[sw_event].c_str());
-        ControlEvent clk_event = encoder_clk.get_control_event();
+        ControlEvent clk_event = encoder_clk.process_sample_event();
         if (clk_event != ControlEvent::NOOP)
             printf("CLK event(%s)\n", sw_button_events[clk_event].c_str());
     }

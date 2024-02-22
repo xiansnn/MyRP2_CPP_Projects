@@ -15,14 +15,7 @@ enum class ButtonState
     INACTIVE,
 };
 
-// enum class SwitchButtonEvent
-// {
-//     NOOP,
-//     PUSH,
-//     LONG_PUSH,
-//     RELEASED_AFTER_LONG_TIME,
-//     RELEASED_AFTER_SHORT_TIME
-// };
+
 
 #define DEBOUNCE_us 10000
 #define LONG_RELEASE_DELAY_us 3000000
@@ -55,7 +48,7 @@ public:
     SwitchButton(uint8_t id, uint gpio, config_switch_button_t conf = {});
     ~SwitchButton();
     bool is_button_active();
-    ControlEvent get_control_event();
+    ControlEvent process_sample_event();
 };
 
 class SwitchButtonWithIRQ : public SwitchButton

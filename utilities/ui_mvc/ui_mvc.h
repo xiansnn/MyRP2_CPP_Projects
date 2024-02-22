@@ -1,7 +1,6 @@
 #if !defined(UI_MVC_H)
 #define UI_MVC_H
 
-// #include <map>
 #include "pico/stdlib.h"
 
 #define FOCUS_MANAGER_ID 0
@@ -18,16 +17,13 @@ enum class ControlEvent
     DECREMENT
 };
 
-class UI_Controller;
-class UI_Widget;
-
 class UI_ControlledObject
 {
 private:
     
 protected:
     int value;
-    int increment_val{1};
+    int increment{1};
     int min_value;
     int max_value;
 
@@ -39,25 +35,17 @@ public:
     UI_Widget *current_widget;
 
     uint8_t id;
-    bool has_changed{false};
+    bool value_has_changed{false};
 
-    void clear_change_flag();
-    void set_current_controller(UI_Controller* controller);
-    void set_current_widget(UI_Widget* widget);
-    virtual void reset();
+    void clear_value_change_flag();
+    virtual void reset_value_clipped();
     virtual int get_value();
     virtual int get_min_value();
     virtual int get_max_value();
-    virtual void set_value(int new_value);
+    virtual void set_value_clipped(int new_value);
 
+    virtual void process_control_event(ControlEvent) = 0;
 
-    virtual void process_control_event(ControlEvent) =0;
-    virtual void on_push() = 0;
-    virtual void on_long_push() = 0;
-    virtual void on_short_release() = 0;
-    virtual void on_long_release() = 0;
-    virtual void increment() = 0;
-    virtual void decrement() = 0;
 };
 
 class UI_Controller
@@ -89,7 +77,7 @@ public:
     ~UI_Widget();
 
     virtual UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
-    virtual void draw()=0;
+    virtual void draw() = 0;
 };
 
 #endif // UI_MVC_H

@@ -6,17 +6,16 @@
 
 
 
-class DisplayEncoderOnTerminal : public UI_Widget
+class DisplayControlledValueOnTerminal : public UI_Widget
 {
 private:
     float slope;
     float offset;
     uint8_t max_line_width = 21;
-    // UI_ControlledObject *active_controlled_value;
 
 public:
-    DisplayEncoderOnTerminal(uint8_t id);
-    ~DisplayEncoderOnTerminal();
+    DisplayControlledValueOnTerminal(uint8_t id);
+    ~DisplayControlledValueOnTerminal();
     void draw();
     UI_ControlledObject* set_active_displayed_object(UI_ControlledObject *val);
 };

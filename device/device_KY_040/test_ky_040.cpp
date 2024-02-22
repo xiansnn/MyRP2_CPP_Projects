@@ -23,7 +23,7 @@
 
 config_switch_button_t central_switch_conf{
     .debounce_delay_us = 5000,
-    .long_release_delay_us = 3000000,
+    .long_release_delay_us = 1000000,
     .long_push_delay_us = 1000000,
     .active_lo = true};
 
@@ -48,10 +48,9 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
         break;
     };
 }
-FocusManager focus_manager = FocusManager(FOCUS_MANAGER_ID);
-SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO,
-                                           central_switch_conf);
-DisplayEncoderOnTerminal console = DisplayEncoderOnTerminal(CONSOLE_WIDGET_ID);
+
+FocusManager focus_manager = FocusManager();
+DisplayControlledValueOnTerminal console = DisplayControlledValueOnTerminal(CONSOLE_WIDGET_ID);
 
 int main()
 {
@@ -74,19 +73,27 @@ int main()
 
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
     focus_manager.add_controlled_object(&val3);
-    val3.set_current_controller(&encoder);
-    val3.set_current_widget(&console);
+
+    UI_ControlledObject *current_cntrl_obj = &focus_manager;
+    encoder.set_active_controlled_object(current_cntrl_obj);
+
+    console.set_active_displayed_object(current_cntrl_obj);
 
     while (true)
     {
-        if (focus_manager.get_current_focus()->has_changed)
+        if (focus_manager.active_controlled_object->value_has_changed)
         {
-            focus_manager.get_current_focus()->current_widget->draw();
-            focus_manager.get_current_focus()->clear_change_flag();
+            console.draw();
+            focus_manager.active_controlled_object->clear_value_change_flag();
         }
-        focus_manager.update_current_focus(&central_switch);
-        // ControlEvent sw_event = central_switch.get_control_event();
-        // current_cntrl_obj = focus_manager.process_control_event(sw_event);
+        focus_manager.process_control_event(&central_switch);
+        if (focus_manager.active_controlled_object_has_changed)
+        {
+            encoder.set_active_controlled_object(focus_manager.active_controlled_object);
+            console.set_active_displayed_object(focus_manager.active_controlled_object);
+            console.draw();
+            focus_manager.clear_active_controlled_object_change_flag();
+        }
 
         sleep_ms(20);
     }

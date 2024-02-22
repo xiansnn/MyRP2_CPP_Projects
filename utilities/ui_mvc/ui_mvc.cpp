@@ -22,7 +22,7 @@ UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_valu
     this->id = id;
     this->min_value = min_value;
     this->max_value = max_value;
-    this->increment_val = increment;
+    this->increment = increment;
 }
 
 UI_ControlledObject::UI_ControlledObject(uint8_t id)
@@ -34,9 +34,9 @@ UI_ControlledObject::~UI_ControlledObject()
 {
 }
 
-void UI_ControlledObject::clear_change_flag()
+void UI_ControlledObject::clear_value_change_flag()
 {
-    has_changed = false;
+    value_has_changed = false;
 }
 
 void UI_ControlledObject::set_current_controller(UI_Controller* controller)
@@ -64,16 +64,16 @@ UI_ControlledObject *UI_Widget::set_active_displayed_object(UI_ControlledObject 
     return this->active_displayed_object;
 }
 
-void UI_ControlledObject::set_value(int new_value)
+void UI_ControlledObject::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    has_changed = true;
+    value_has_changed = true;
 }
 
-void UI_ControlledObject::reset()
+void UI_ControlledObject::reset_value_clipped()
 {
     this->value = std::min(max_value, std::max(min_value, 0));
-    has_changed = true;
+    value_has_changed = true;
 }
 
 int UI_ControlledObject::get_value()

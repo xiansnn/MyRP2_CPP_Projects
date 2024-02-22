@@ -1,12 +1,11 @@
 #include "focus_manager.h"
+#include <string>
 
-FocusManager::FocusManager(uint8_t id) : UI_ControlledObject(id)
+FocusManager::FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
 {
-    min_value = 1;
-    focus_index = 0;
-    add_controlled_object(this);
-    update_current_focus();
-    set_value(0);
+    min_value = 0;
+    set_value_clipped(0);
+    active_controlled_object = this;
 }
 
 FocusManager::~FocusManager()
@@ -19,50 +18,15 @@ void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
     this->max_value = controlled_objects.size() - 1;
 }
 
-UI_ControlledObject *FocusManager::update_current_focus()
+void FocusManager::clear_active_controlled_object_change_flag()
 {
-    current_focus = controlled_objects[focus_index];
-    return current_focus;
+    active_controlled_object_has_changed = false;
 }
 
-void FocusManager::reset_focus()
+void FocusManager::process_control_event(SwitchButton* controller)
 {
-    this->focus_index = 0;
-    current_focus = controlled_objects[focus_index];
-}
-
-void FocusManager::on_push()
-{
-}
-
-void FocusManager::on_long_push()
-{
-}
-
-void FocusManager::on_short_release()
-{
-}
-
-void FocusManager::on_long_release()
-{
-}
-
-void FocusManager::increment()
-{
-    value++;
-    if (value > max_value)
-        value = min_value;
-    value = std::min(max_value, std::max(min_value, value));
-    has_changed = true;
-}
-
-void FocusManager::decrement()
-{
-    value--;
-    if (value < min_value)
-        value = max_value;
-    value = std::min(max_value, std::max(min_value, value));
-    has_changed = true;
+    ControlEvent sw_event = controller->process_sample_event();
+    process_control_event(sw_event);
 }
 
 void FocusManager::process_control_event(ControlEvent event)
@@ -70,53 +34,50 @@ void FocusManager::process_control_event(ControlEvent event)
     switch (event)
     {
     case ControlEvent::NOOP:
+        /* code */
         break;
     case ControlEvent::PUSH:
+        /* code */
+        break;
+    case ControlEvent::DOUBLE_PUSH:
+        /* code */
         break;
     case ControlEvent::LONG_PUSH:
-        current_focus->reset();
-        break;
-    case ControlEvent::RELEASED_AFTER_SHORT_TIME:
-        if (current_focus->id == FOCUS_MANAGER_ID)
-            current_focus = controlled_objects[focus_index];
-        else
-            current_focus = this;
-
-        this->current_controller->set_active_controlled_object(current_focus);
-        this->current_widget->set_active_displayed_object(current_focus);
-        this->current_widget->draw();
-
+        printf("long push\n");
+        active_controlled_object->reset_value_clipped();
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
+        break;
+    case ControlEvent::RELEASED_AFTER_SHORT_TIME:
+        if (active_controlled_object->id == FOCUS_MANAGER_ID)
+        {
+            active_controlled_object = controlled_objects[value];
+        }
+        else
+        {
+            active_controlled_object = this;
+        }
+        // printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
+        active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
         value++;
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index=value;
-        has_changed = true;
+        controlled_object_under_focus = controlled_objects[value];
+        value_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
         value--;
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        focus_index = value;
-        has_changed = true;
+        controlled_object_under_focus = controlled_objects[value];
+        value_has_changed = true;
         break;
+
     default:
         break;
     }
-}
-
-void FocusManager::update_current_focus(UI_Controller *controller)
-{
-    ControlEvent sw_event = controller->get_control_event();
-    process_control_event(sw_event);
-    current_focus = controlled_objects[focus_index];
-}
-
-UI_ControlledObject *FocusManager::get_current_focus(){
-    return current_focus;
 }

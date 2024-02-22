@@ -25,7 +25,7 @@ SwitchButton::~SwitchButton()
 {
 }
 
-ControlEvent SwitchButton::get_control_event()
+ControlEvent SwitchButton::process_sample_event()
 {
     uint32_t time_since_previous_change;
     uint32_t current_time_us = time_us_32();
