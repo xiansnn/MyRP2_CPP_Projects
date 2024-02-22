@@ -39,14 +39,12 @@ void UI_ControlledObject::clear_value_change_flag()
     value_has_changed = false;
 }
 
-void UI_ControlledObject::set_current_controller(UI_Controller* controller)
-{
-    this->current_controller = controller;
+void UI_ControlledObject::set_current_controller(UI_Controller *current_controller)
+{this->current_controller = current_controller;
 }
 
-void UI_ControlledObject::set_current_widget(UI_Widget* widget)
-{
-    this->current_widget = widget;
+void UI_ControlledObject::set_current_widget(UI_Widget *current_widget)
+{this->current_widget = current_widget;
 }
 
 UI_Widget::UI_Widget(uint8_t id)

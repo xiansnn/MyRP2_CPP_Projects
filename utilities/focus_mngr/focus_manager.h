@@ -9,7 +9,8 @@ class FocusManager : public UI_ControlledObject
 {
 private:
     std::vector<UI_ControlledObject *> controlled_objects;
-    UI_ControlledObject *current_focus;
+    UI_Controller* current_controller;
+    UI_Widget* current_widget;
 
 public:
     FocusManager();

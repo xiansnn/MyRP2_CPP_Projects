@@ -56,8 +56,10 @@ int main()
 {
     stdio_init_all();
 
-    encoder.set_active_controlled_object(focus_manager.get_current_focus());
-    console.set_active_displayed_object(focus_manager.get_current_focus());
+    SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID,CENTRAL_SWITCH_GPIO,central_switch_conf);
+
+    encoder.set_active_controlled_object(&focus_manager);
+    console.set_active_displayed_object(&focus_manager);
     focus_manager.set_current_controller(&encoder);
     focus_manager.set_current_widget(&console);
 

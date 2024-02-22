@@ -17,6 +17,9 @@ enum class ControlEvent
     DECREMENT
 };
 
+class UI_Controller;
+class UI_Widget;
+
 class UI_ControlledObject
 {
 private:
@@ -38,6 +41,8 @@ public:
     bool value_has_changed{false};
 
     void clear_value_change_flag();
+    virtual void set_current_controller(UI_Controller* current_controller);
+    virtual void set_current_widget(UI_Widget* current_widget);
     virtual void reset_value_clipped();
     virtual int get_value();
     virtual int get_min_value();
@@ -61,7 +66,7 @@ public:
     ~UI_Controller();
 
     UI_ControlledObject *set_active_controlled_object(UI_ControlledObject *cntrl_obj);
-    virtual ControlEvent get_control_event() = 0;
+
 };
 
 class UI_Widget
