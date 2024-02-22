@@ -34,9 +34,9 @@ UI_ControlledObject::~UI_ControlledObject()
 {
 }
 
-void UI_ControlledObject::clear_change_flag()
+void UI_ControlledObject::clear_value_change_flag()
 {
-    has_changed = false;
+    value_has_changed = false;
 }
 
 UI_Widget::UI_Widget(uint8_t id)
@@ -57,13 +57,13 @@ UI_ControlledObject *UI_Widget::set_active_displayed_object(UI_ControlledObject 
 void UI_ControlledObject::set_value(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    has_changed = true;
+    value_has_changed = true;
 }
 
 void UI_ControlledObject::reset()
 {
     this->value = std::min(max_value, std::max(min_value, 0));
-    has_changed = true;
+    value_has_changed = true;
 }
 
 int UI_ControlledObject::get_value()

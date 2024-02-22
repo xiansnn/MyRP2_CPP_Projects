@@ -72,24 +72,21 @@ int main()
 
     while (true)
     {
-        if (focus_manager.active_controlled_object->has_changed)
+        if (focus_manager.active_controlled_object->value_has_changed)
         {
             console.draw();
-            focus_manager.active_controlled_object->clear_change_flag();
+            focus_manager.active_controlled_object->clear_value_change_flag();
         }
         ControlEvent sw_event = central_switch.process_sample_event();
         focus_manager.process_control_event(sw_event);
-        switch (sw_event)
+        if (focus_manager.active_controlled_object_has_changed)
         {
-        case ControlEvent::RELEASED_AFTER_SHORT_TIME:
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);
             console.set_active_displayed_object(focus_manager.active_controlled_object);
             console.draw();
-
-            break;
-        default:
-            break;
+            focus_manager.clear_active_controlled_object_change_flag();
         }
+
         sleep_ms(20);
     }
 

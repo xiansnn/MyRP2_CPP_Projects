@@ -18,10 +18,16 @@ void FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
     this->max_value = controlled_objects.size() - 1;
 }
 
-UI_ControlledObject *FocusManager::update_active_controlled_object()
+// UI_ControlledObject *FocusManager::update_active_controlled_object()
+// {
+//     active_controlled_object = controlled_objects[value];
+//     active_controlled_object_has_changed = true;
+//     return active_controlled_object;
+// }
+
+void FocusManager::clear_active_controlled_object_change_flag()
 {
-    active_controlled_object = controlled_objects[value];
-    return active_controlled_object;
+    active_controlled_object_has_changed = false;
 }
 
 void FocusManager::process_control_event(ControlEvent event)
@@ -53,6 +59,7 @@ void FocusManager::process_control_event(ControlEvent event)
             active_controlled_object = this;
         }
         // printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
+        active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
         value++;
@@ -60,7 +67,7 @@ void FocusManager::process_control_event(ControlEvent event)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
         controlled_object_under_focus = controlled_objects[value];
-        has_changed = true;
+        value_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
         value--;
@@ -68,7 +75,7 @@ void FocusManager::process_control_event(ControlEvent event)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
         controlled_object_under_focus = controlled_objects[value];
-        has_changed = true;
+        value_has_changed = true;
         break;
 
     default:

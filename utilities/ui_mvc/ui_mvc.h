@@ -31,9 +31,9 @@ public:
     ~UI_ControlledObject();
 
     uint8_t id;
-    bool has_changed{false};
+    bool value_has_changed{false};
 
-    void clear_change_flag();
+    void clear_value_change_flag();
     virtual void reset();
     virtual int get_value();
     virtual int get_min_value();
