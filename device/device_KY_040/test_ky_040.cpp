@@ -82,16 +82,15 @@ int main()
         switch (sw_event)
         {
         case ControlEvent::RELEASED_AFTER_SHORT_TIME:
-            printf("ID:%d\n", current_cntrl_obj->id);
             if (current_cntrl_obj->id == FOCUS_MANAGER_ID)
             {
-                current_cntrl_obj = focus_manager.get_active_controlled_object();
+                current_cntrl_obj = focus_manager.update_active_controlled_object();
             }
             else
             {
                 current_cntrl_obj = &focus_manager;
             }
-            printf("ID:%d\n", current_cntrl_obj->id);
+            printf("+test_ky_040+new current_cntrl_obj:%d\n", current_cntrl_obj->id);
             encoder.set_active_controlled_object(current_cntrl_obj);
             console.set_active_displayed_object(current_cntrl_obj);
             console.draw();

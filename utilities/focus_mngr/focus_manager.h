@@ -7,17 +7,15 @@
 class FocusManager : public UI_ControlledObject
 {
 private:
-    uint8_t focus_index;
     std::vector<UI_ControlledObject *> controlled_objects;
-    UI_ControlledObject* active_controlled_object;
-    void set_active_controlled_object(uint8_t new_focus_index);
 
 public:
     FocusManager();
     ~FocusManager();
+    UI_ControlledObject* active_controlled_object;
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
-    UI_ControlledObject *get_active_controlled_object();
+    UI_ControlledObject *update_active_controlled_object();
 
     void process_control_event(ControlEvent event);
 
