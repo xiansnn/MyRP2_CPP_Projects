@@ -2,7 +2,7 @@ add_library( ui_mvc ui_mvc.cpp)
 target_link_libraries(ui_mvc pico_stdlib)
 
 add_library( ui_focus_manager ui_focus_manager.cpp)
-target_link_libraries(ui_mvc pico_stdlib)
+target_link_libraries(ui_focus_manager pico_stdlib)
 
 # add_executable(test_controlled_value test_controlled_value.cpp)
 # target_link_libraries(test_controlled_value controlled_value pico_stdlib debug_probe)
