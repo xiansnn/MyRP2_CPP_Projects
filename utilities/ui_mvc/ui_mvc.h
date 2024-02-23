@@ -23,26 +23,25 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
-    
 protected:
     int value;
     int increment{1};
     int min_value;
     int max_value;
+    UI_Controller *current_controller;
+    UI_Widget *current_widget;
 
 public:
     UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment = 1);
     UI_ControlledObject(uint8_t id);
     ~UI_ControlledObject();
-    UI_Controller *current_controller;
-    UI_Widget *current_widget;
 
     uint8_t id;
     bool value_has_changed{false};
 
     void clear_value_change_flag();
-    virtual void set_current_controller(UI_Controller* current_controller);
-    virtual void set_current_widget(UI_Widget* current_widget);
+    virtual void set_current_controller(UI_Controller *current_controller);
+    virtual void set_current_widget(UI_Widget *current_widget);
     virtual void reset_value_clipped();
     virtual int get_value();
     virtual int get_min_value();
@@ -50,7 +49,6 @@ public:
     virtual void set_value_clipped(int new_value);
 
     virtual void process_control_event(ControlEvent) = 0;
-
 };
 
 class UI_Controller
@@ -81,7 +79,8 @@ public:
     UI_Widget(uint8_t id);
     ~UI_Widget();
 
-    virtual UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
+    UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
+    UI_ControlledObject *get_active_displayed_object();
     virtual void draw() = 0;
 };
 

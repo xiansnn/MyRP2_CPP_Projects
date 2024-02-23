@@ -14,7 +14,7 @@ typedef struct config_bar_widget
     const unsigned char *font{nullptr};
 } config_bar_widget_t;
 
-class Bar : public Framebuffer, public UI_Widget
+class W_Bar : public Framebuffer, public UI_Widget
 {
 private:
     ControlledValue* cntrl_value;
@@ -29,8 +29,8 @@ private:
     uint8_t convert_level_value_to_px(int level);
 
 public:
-    Bar(uint8_t id, ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
-    ~Bar();
+    W_Bar(uint8_t id, ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
+    ~W_Bar();
     void draw();
     void draw_border();
     void draw_level_value(int value);

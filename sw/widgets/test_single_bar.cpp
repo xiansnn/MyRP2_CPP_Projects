@@ -95,9 +95,9 @@ int main()
     val3.has_changed = true;
 
     Framebuffer header = Framebuffer(80, 8);
-    Bar bar1 = Bar(&val1, cfg_bar);
-    Bar bar2 = Bar(&val2, cfg_bar);
-    Bar bar3 = Bar(&val3, cfg_bar);
+    W_Bar bar1 = W_Bar(&val1, cfg_bar);
+    W_Bar bar2 = W_Bar(&val2, cfg_bar);
+    W_Bar bar3 = W_Bar(&val3, cfg_bar);
 
     std::vector<ControlledValue *> cntrl_values = {&val1, &val2, &val3};
 

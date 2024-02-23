@@ -2,14 +2,14 @@
 
 #define MAX_LABEL_SIZE 5
 
-uint8_t Bar::convert_level_value_to_px(int level)
+uint8_t W_Bar::convert_level_value_to_px(int level)
 {
     uint8_t position = level * level_coef + level_offset;
     position = std::min(px_max, std::max(px_min, position));
     return position;
 }
 
-Bar::Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : 
+W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : 
 Framebuffer(config.width, config.height), UI_Widget(id)
 {
     this->config = config;
@@ -25,11 +25,11 @@ Framebuffer(config.width, config.height), UI_Widget(id)
     level_offset = px_max - level_coef * cntrl_value->get_max_value();
 }
 
-Bar::~Bar()
+W_Bar::~W_Bar()
 {
 }
 
-void Bar::draw()
+void W_Bar::draw()
 {
     uint8_t px = convert_level_value_to_px(cntrl_value->get_value());
     rect(0, 0, frame_width, frame_height, true, Framebuffer_color::black); // clear the full framebuffer
@@ -58,12 +58,12 @@ void Bar::draw()
         rect(bar_start, 0, bar_end - bar_start, frame_height, true);
 }
 
-void Bar::draw_border()
+void W_Bar::draw_border()
 {
     rect(px_min, 0, px_max - px_min, frame_height);
 }
 
-void Bar::draw_level_value(int value)
+void W_Bar::draw_level_value(int value)
 {
     this->clear_text_buffer();
     sprintf(this->text_buffer, "%d", value);

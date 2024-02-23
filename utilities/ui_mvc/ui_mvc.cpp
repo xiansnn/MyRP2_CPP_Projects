@@ -62,6 +62,11 @@ UI_ControlledObject *UI_Widget::set_active_displayed_object(UI_ControlledObject 
     return this->active_displayed_object;
 }
 
+UI_ControlledObject *UI_Widget::get_active_displayed_object()
+{
+    return this->active_displayed_object;
+}
+
 void UI_ControlledObject::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));

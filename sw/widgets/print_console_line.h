@@ -6,7 +6,7 @@
 
 
 
-class DisplayControlledValueOnTerminal : public UI_Widget
+class W_DisplayControlledValueOnTerminal : public UI_Widget
 {
 private:
     float slope;
@@ -14,8 +14,8 @@ private:
     uint8_t max_line_width = 21;
 
 public:
-    DisplayControlledValueOnTerminal(uint8_t id);
-    ~DisplayControlledValueOnTerminal();
+    W_DisplayControlledValueOnTerminal(uint8_t id);
+    ~W_DisplayControlledValueOnTerminal();
     void draw();
     UI_ControlledObject* set_active_displayed_object(UI_ControlledObject *val);
 };
