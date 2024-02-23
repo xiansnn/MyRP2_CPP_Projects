@@ -154,8 +154,6 @@ int main()
 
     encoder.set_active_controlled_object(&focus_manager);
 
-    focus_manager.set_current_controller(&encoder);
-    focus_manager.set_current_widget(&display_focus);
     focus_manager.add_controlled_object(&fm_freq);
     focus_manager.add_controlled_object(&val1);
     focus_manager.add_controlled_object(&val2);
@@ -167,18 +165,6 @@ int main()
     display_val1.set_active_displayed_object(&val1);
     display_val2.set_active_displayed_object(&val2);
     display_val3.set_active_displayed_object(&val3);
-
-    fm_freq.set_current_controller(&encoder);
-    fm_freq.set_current_widget(&display_fm_frequency);
-
-    val1.set_current_controller(&encoder);
-    val1.set_current_widget(&console);
-
-    val2.set_current_controller(&encoder);
-    val2.set_current_widget(&console);
-
-    val3.set_current_controller(&encoder);
-    val3.set_current_widget(&console);
 
     UI_ControlledObject *current_cntrl_obj = &focus_manager;
     encoder.set_active_controlled_object(current_cntrl_obj);

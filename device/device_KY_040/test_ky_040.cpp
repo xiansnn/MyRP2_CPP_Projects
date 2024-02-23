@@ -59,18 +59,12 @@ int main()
 
     encoder.set_active_controlled_object(&focus_manager);
     console.set_active_displayed_object(&focus_manager);
-    focus_manager.set_current_controller(&encoder);
-    focus_manager.set_current_widget(&console);
 
     ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
     focus_manager.add_controlled_object(&val1);
-    val1.set_current_controller(&encoder);
-    val1.set_current_widget(&console);
 
     ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
     focus_manager.add_controlled_object(&val2);
-    val2.set_current_controller(&encoder);
-    val2.set_current_widget(&console);
 
     ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
     focus_manager.add_controlled_object(&val3);

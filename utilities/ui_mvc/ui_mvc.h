@@ -28,8 +28,6 @@ protected:
     int increment{1};
     int min_value;
     int max_value;
-    UI_Controller *current_controller;
-    UI_Widget *current_widget;
 
 public:
     UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment = 1);
@@ -40,8 +38,6 @@ public:
     bool value_has_changed{false};
 
     void clear_value_change_flag();
-    virtual void set_current_controller(UI_Controller *current_controller);
-    virtual void set_current_widget(UI_Widget *current_widget);
     virtual void reset_value_clipped();
     virtual int get_value();
     virtual int get_min_value();
