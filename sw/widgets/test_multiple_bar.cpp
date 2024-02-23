@@ -173,8 +173,8 @@ int main()
 
     while (true)
     {
-        display_focus.draw();
-        screen.show(&display_focus, 0, 0);
+        // display_focus.draw();
+        // screen.show(&display_focus, 0, 0);
         if (focus_manager.active_controlled_object->value_has_changed)
         {
             pr_D1.hi();
