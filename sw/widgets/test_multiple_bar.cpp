@@ -127,7 +127,14 @@ W_DrawFMFrequency::W_DrawFMFrequency(uint8_t id, size_t width, size_t height,
 void W_DrawFMFrequency::draw()
 {
     clear_text_buffer();
-    sprintf(text_buffer, "%5.1f MHz", (float)active_displayed_object->get_value() / 10);
+    char status;
+    if (active_displayed_object->is_active)
+        status = '#';
+    else if (active_displayed_object->has_focus)
+        status = '>';
+    else
+        status = ' ';
+    sprintf(text_buffer, "%c%5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
     print_text();
 }
 
@@ -140,7 +147,7 @@ MB_FocusManager focus_manager = MB_FocusManager();
 W_DisplayControlledValueOnTerminal console = W_DisplayControlledValueOnTerminal(CONSOLE_WIDGET_ID);
 W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8);
 
-W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 80, 8);
+W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8);
 W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, cfg_bar);
 W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, cfg_bar);
 W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, cfg_bar);
@@ -173,17 +180,15 @@ int main()
 
     while (true)
     {
-        // display_focus.draw();
-        // screen.show(&display_focus, 0, 0);
         if (focus_manager.active_controlled_object->value_has_changed)
         {
             pr_D1.hi();
             // console.draw();
 
-            display_focus.draw();
-            screen.show(&display_focus, 0, 0);
+            // display_focus.draw();
+            // screen.show(&display_focus, 0, 0);
             display_fm_frequency.draw();
-            screen.show(&display_fm_frequency, 40, 16);
+            screen.show(&display_fm_frequency, 0, 16);
             display_val1.draw();
             screen.show(&display_val1, 0, 32);
             display_val2.draw();
@@ -199,7 +204,16 @@ int main()
         {
             pr_D4.hi();
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);
-            // console.set_active_displayed_object(focus_manager.active_controlled_object);
+            // display_focus.draw();
+            // screen.show(&display_focus, 0, 0);
+            display_fm_frequency.draw();
+            screen.show(&display_fm_frequency, 0, 16);
+            display_val1.draw();
+            screen.show(&display_val1, 0, 32);
+            display_val2.draw();
+            screen.show(&display_val2, 0, 40);
+            display_val3.draw();
+            screen.show(&display_val3, 0, 48);
             focus_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }

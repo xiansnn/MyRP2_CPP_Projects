@@ -30,19 +30,22 @@ protected:
     int max_value;
 
 public:
-    UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment = 1);
-    UI_ControlledObject(uint8_t id);
+    UI_ControlledObject(uint8_t id, int min_value=0, int max_value=10, int increment = 1);
     ~UI_ControlledObject();
 
     uint8_t id;
     bool value_has_changed{false};
+    bool has_focus{false};
+    bool is_active{false};
 
     void clear_value_change_flag();
-    virtual void reset_value_clipped();
     virtual int get_value();
-    virtual int get_min_value();
-    virtual int get_max_value();
     virtual void set_value_clipped(int new_value);
+
+    virtual int get_min_value();
+    virtual void set_min_value(int value);
+    virtual int get_max_value();
+    virtual void set_max_value(int value);
 
     virtual void process_control_event(ControlEvent) = 0;
 };
@@ -50,32 +53,32 @@ public:
 class UI_Controller
 {
 private:
-    uint8_t id;
-
 protected:
     UI_ControlledObject *active_controlled_object;
 
 public:
+    uint8_t id;
     UI_Controller(uint8_t id);
     ~UI_Controller();
 
-    UI_ControlledObject *set_active_controlled_object(UI_ControlledObject *cntrl_obj);
+    void set_active_controlled_object(UI_ControlledObject *cntrl_obj);
+    UI_ControlledObject *get_active_controlled_object();
+    
 
 };
 
 class UI_Widget
 {
 private:
-    uint8_t id;
-
 protected:
     UI_ControlledObject *active_displayed_object;
 
 public:
+    uint8_t id;
     UI_Widget(uint8_t id);
     ~UI_Widget();
 
-    UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *displayed_object);
+    void set_active_displayed_object(UI_ControlledObject *displayed_object);
     UI_ControlledObject *get_active_displayed_object();
     virtual void draw() = 0;
 };

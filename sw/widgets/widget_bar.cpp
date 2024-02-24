@@ -1,6 +1,6 @@
 #include "widget_bar.h"
 
-#define MAX_LABEL_SIZE 5
+#define MAX_LABEL_SIZE 8
 
 uint8_t W_Bar::convert_level_value_to_px(int level)
 {
@@ -9,8 +9,7 @@ uint8_t W_Bar::convert_level_value_to_px(int level)
     return position;
 }
 
-W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : 
-Framebuffer(config.width, config.height), UI_Widget(id)
+W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : Framebuffer(config.width, config.height), UI_Widget(id)
 {
     this->config = config;
     this->cntrl_value = cntrl_value;
@@ -66,6 +65,13 @@ void W_Bar::draw_border()
 void W_Bar::draw_level_value(int value)
 {
     this->clear_text_buffer();
-    sprintf(this->text_buffer, "%d", value);
+    char status;
+    if (active_displayed_object->is_active)
+        status = '#';
+    else if (active_displayed_object->has_focus)
+        status = '>';
+    else
+        status = ' ';
+    sprintf(this->text_buffer, "%c%+d", status, value);
     print_text();
 }

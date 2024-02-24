@@ -30,7 +30,7 @@ void FocusManager::process_control_event(ControlEvent event)
         break;
     case ControlEvent::LONG_PUSH:
         printf("long push\n");
-        active_controlled_object->reset_value_clipped();
+        active_controlled_object->set_value_clipped(0);
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         break;
