@@ -12,9 +12,9 @@ UI_Controller::~UI_Controller()
 
 void UI_Controller::set_active_controlled_object(UI_ControlledObject *cntrl_obj)
 {
-    this->active_controlled_object->is_active = false;
+    this->active_controlled_object->set_active_status(false);
     this->active_controlled_object = cntrl_obj;
-    this->active_controlled_object->is_active = true;
+    this->active_controlled_object->set_active_status(true);
 }
 
 UI_ControlledObject *UI_Controller::get_active_controlled_object()
@@ -33,6 +33,35 @@ UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_valu
 
 UI_ControlledObject::~UI_ControlledObject()
 {
+}
+
+void UI_ControlledObject::set_focus_status(bool value)
+{
+    this->status_has_changed = (has_focus == false and value == true) ? true : false;
+    this->has_focus = value;
+}
+
+bool UI_ControlledObject::get_focus_status()
+{
+    clear_status_change_flag();
+    return this->has_focus;
+}
+
+void UI_ControlledObject::set_active_status(bool value)
+{
+    this->status_has_changed = (is_active == false and value == true) ? true : false;
+    this->is_active = value;
+}
+
+bool UI_ControlledObject::get_active_status()
+{
+    clear_status_change_flag();
+    return is_active;
+}
+
+void UI_ControlledObject::clear_status_change_flag()
+{
+    this->status_has_changed = false;
 }
 
 void UI_ControlledObject::clear_value_change_flag()

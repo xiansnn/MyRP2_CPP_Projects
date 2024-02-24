@@ -37,9 +37,9 @@ void MB_FocusManager::process_control_event(ControlEvent event)
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
         {
-            active_controlled_object->is_active=false;
+            active_controlled_object->set_active_status(false);
             active_controlled_object = controlled_objects[value];
-            active_controlled_object->is_active=true;
+            active_controlled_object->set_active_status(true);
             // active_controlled_object->is_active = true;
         }
         else
@@ -55,9 +55,9 @@ void MB_FocusManager::process_control_event(ControlEvent event)
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        controlled_object_under_focus->has_focus = false;
+        controlled_object_under_focus->set_focus_status(false);
         controlled_object_under_focus = controlled_objects[value];
-        controlled_object_under_focus->has_focus = true;
+        controlled_object_under_focus->set_focus_status(true);
 
         value_has_changed = true;
         break;
@@ -66,9 +66,9 @@ void MB_FocusManager::process_control_event(ControlEvent event)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        controlled_object_under_focus->has_focus = false;
+        controlled_object_under_focus->set_focus_status(false);
         controlled_object_under_focus = controlled_objects[value];
-        controlled_object_under_focus->has_focus = true;
+        controlled_object_under_focus->set_focus_status(true);
         value_has_changed = true;
         break;
 

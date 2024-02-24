@@ -23,6 +23,8 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
+    bool has_focus{false};
+    bool is_active{false};
 protected:
     int value;
     int increment{1};
@@ -35,8 +37,13 @@ public:
 
     uint8_t id;
     bool value_has_changed{false};
-    bool has_focus{false};
-    bool is_active{false};
+    bool status_has_changed{false};
+
+    void set_focus_status(bool value);
+    bool get_focus_status();
+    void set_active_status(bool value);
+    bool get_active_status();
+    void clear_status_change_flag();
 
     void clear_value_change_flag();
     virtual int get_value();

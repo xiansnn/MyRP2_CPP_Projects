@@ -128,13 +128,13 @@ void W_DrawFMFrequency::draw()
 {
     clear_text_buffer();
     char status;
-    if (active_displayed_object->is_active)
+    if (active_displayed_object->get_active_status())
         status = '#';
-    else if (active_displayed_object->has_focus)
+    else if (active_displayed_object->get_focus_status())
         status = '>';
     else
         status = ' ';
-    sprintf(text_buffer, "%c%5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
+    sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
     print_text();
 }
 

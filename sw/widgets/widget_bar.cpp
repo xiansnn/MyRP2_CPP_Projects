@@ -66,9 +66,9 @@ void W_Bar::draw_level_value(int value)
 {
     this->clear_text_buffer();
     char status;
-    if (active_displayed_object->is_active)
+    if (active_displayed_object->get_active_status())
         status = '#';
-    else if (active_displayed_object->has_focus)
+    else if (active_displayed_object->get_focus_status())
         status = '>';
     else
         status = ' ';
