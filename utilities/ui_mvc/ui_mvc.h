@@ -71,7 +71,6 @@ public:
     void set_active_controlled_object(UI_ControlledObject *cntrl_obj);
     UI_ControlledObject *get_active_controlled_object();
     
-
 };
 
 class UI_Widget

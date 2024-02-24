@@ -40,14 +40,9 @@ void MB_FocusManager::process_control_event(ControlEvent event)
             active_controlled_object->set_active_status(false);
             active_controlled_object = controlled_objects[value];
             active_controlled_object->set_active_status(true);
-            // active_controlled_object->is_active = true;
         }
         else
-        {
-            // active_controlled_object->is_active = false;
             active_controlled_object = this;
-        }
-        // printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
         active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:

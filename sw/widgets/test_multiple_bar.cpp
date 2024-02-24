@@ -152,6 +152,18 @@ W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, cfg_bar);
 W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, cfg_bar);
 W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, cfg_bar);
 
+void refresh(SSD1306 screen)
+{
+    display_fm_frequency.draw();
+    screen.show(&display_fm_frequency, 0, 16);
+    display_val1.draw();
+    screen.show(&display_val1, 0, 32);
+    display_val2.draw();
+    screen.show(&display_val2, 0, 40);
+    display_val3.draw();
+    screen.show(&display_val3, 0, 48);
+};
+
 int main()
 {
     stdio_init_all();
@@ -167,35 +179,20 @@ int main()
     focus_manager.add_controlled_object(&val3);
 
     display_fm_frequency.set_active_displayed_object(&fm_freq);
-    console.set_active_displayed_object(&focus_manager);
-    display_focus.set_active_displayed_object(&focus_manager);
     display_val1.set_active_displayed_object(&val1);
     display_val2.set_active_displayed_object(&val2);
     display_val3.set_active_displayed_object(&val3);
 
-    UI_ControlledObject *current_cntrl_obj = &focus_manager;
-    encoder.set_active_controlled_object(current_cntrl_obj);
-
-    console.set_active_displayed_object(current_cntrl_obj);
+    UI_ControlledObject *current_controled_obj = &focus_manager;
+    encoder.set_active_controlled_object(current_controled_obj);
+    console.set_active_displayed_object(current_controled_obj);
 
     while (true)
     {
         if (focus_manager.active_controlled_object->value_has_changed)
         {
             pr_D1.hi();
-            // console.draw();
-
-            // display_focus.draw();
-            // screen.show(&display_focus, 0, 0);
-            display_fm_frequency.draw();
-            screen.show(&display_fm_frequency, 0, 16);
-            display_val1.draw();
-            screen.show(&display_val1, 0, 32);
-            display_val2.draw();
-            screen.show(&display_val2, 0, 40);
-            display_val3.draw();
-            screen.show(&display_val3, 0, 48);
-
+            refresh(screen);
             focus_manager.active_controlled_object->clear_value_change_flag();
             pr_D1.lo();
         }
@@ -204,16 +201,7 @@ int main()
         {
             pr_D4.hi();
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);
-            // display_focus.draw();
-            // screen.show(&display_focus, 0, 0);
-            display_fm_frequency.draw();
-            screen.show(&display_fm_frequency, 0, 16);
-            display_val1.draw();
-            screen.show(&display_val1, 0, 32);
-            display_val2.draw();
-            screen.show(&display_val2, 0, 40);
-            display_val3.draw();
-            screen.show(&display_val3, 0, 48);
+            refresh(screen);
             focus_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }
