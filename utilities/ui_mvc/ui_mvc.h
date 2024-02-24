@@ -36,8 +36,8 @@ public:
     ~UI_ControlledObject();
 
     uint8_t id;
-    bool value_has_changed{false};
-    bool status_has_changed{false};
+    bool value_has_changed{true};
+    bool status_has_changed{true};
 
     void set_focus_status(bool value);
     bool get_focus_status();
@@ -76,6 +76,7 @@ public:
 class UI_Widget
 {
 private:
+    // bool refresh_requested;
 protected:
     UI_ControlledObject *active_displayed_object;
 
@@ -83,6 +84,8 @@ public:
     uint8_t id;
     UI_Widget(uint8_t id);
     ~UI_Widget();
+    bool refresh_requested();
+
 
     void set_active_displayed_object(UI_ControlledObject *displayed_object);
     UI_ControlledObject *get_active_displayed_object();

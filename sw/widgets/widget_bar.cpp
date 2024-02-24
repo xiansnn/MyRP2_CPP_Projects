@@ -11,6 +11,7 @@ uint8_t W_Bar::convert_level_value_to_px(int level)
 
 W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : Framebuffer(config.width, config.height), UI_Widget(id)
 {
+    active_displayed_object = cntrl_value; // TODO cntrlvalue already exists
     this->config = config;
     this->cntrl_value = cntrl_value;
     if (config.with_label)
@@ -56,7 +57,6 @@ void W_Bar::draw()
     else
         rect(bar_start, 0, bar_end - bar_start, frame_height, true);
 }
-
 void W_Bar::draw_border()
 {
     rect(px_min, 0, px_max - px_min, frame_height);

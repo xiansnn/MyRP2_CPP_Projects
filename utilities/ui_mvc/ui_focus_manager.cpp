@@ -2,7 +2,7 @@
 #include "ui_mvc.h"
 #include <string>
 
-UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
+UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)  // TODO focus manager is also a controller
 {
     min_value = 0;
     set_value_clipped(0);

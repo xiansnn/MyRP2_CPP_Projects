@@ -126,6 +126,7 @@ W_DrawFMFrequency::W_DrawFMFrequency(uint8_t id, size_t width, size_t height,
 
 void W_DrawFMFrequency::draw()
 {
+
     clear_text_buffer();
     char status;
     if (active_displayed_object->get_active_status())
@@ -154,14 +155,26 @@ W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, cfg_bar);
 
 void refresh(SSD1306 screen)
 {
-    display_fm_frequency.draw();
-    screen.show(&display_fm_frequency, 0, 16);
-    display_val1.draw();
-    screen.show(&display_val1, 0, 32);
-    display_val2.draw();
-    screen.show(&display_val2, 0, 40);
-    display_val3.draw();
-    screen.show(&display_val3, 0, 48);
+    if (display_fm_frequency.refresh_requested())
+    {
+        display_fm_frequency.draw();
+        screen.show(&display_fm_frequency, 0, 16);
+    }
+    if (display_val1.refresh_requested())
+    {
+        display_val1.draw();
+        screen.show(&display_val1, 0, 32);
+    }
+    if (display_val2.refresh_requested())
+    {
+        display_val2.draw();
+        screen.show(&display_val2, 0, 40);
+    }
+    if (display_val3.refresh_requested())
+    {
+        display_val3.draw();
+        screen.show(&display_val3, 0, 48);
+    }
 };
 
 int main()
