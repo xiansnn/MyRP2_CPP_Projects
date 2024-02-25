@@ -35,6 +35,11 @@ UI_ControlledObject::~UI_ControlledObject()
 {
 }
 
+bool UI_ControlledObject::has_status_changed()
+{
+    return status_has_changed;
+}
+
 void UI_ControlledObject::set_focus_status(bool value)
 {
     this->status_has_changed = (has_focus != value ) ? true : false;
@@ -43,7 +48,6 @@ void UI_ControlledObject::set_focus_status(bool value)
 
 bool UI_ControlledObject::get_focus_status()
 {
-    clear_status_change_flag();
     return this->has_focus;
 }
 
@@ -68,6 +72,8 @@ void UI_ControlledObject::clear_value_change_flag()
     value_has_changed = false;
 }
 
+
+
 UI_Widget::UI_Widget(uint8_t id)
 {
     this->id = id;
@@ -79,7 +85,7 @@ UI_Widget::~UI_Widget()
 
 bool UI_Widget::refresh_requested()
 {
-    return (active_displayed_object->status_has_changed or active_displayed_object->value_has_changed) ? true : false;
+    return (active_displayed_object->has_status_changed() or active_displayed_object->has_value_changed()) ? true : false;
 }
 
 void UI_Widget::refresh_done()
@@ -107,6 +113,11 @@ void UI_ControlledObject::set_value_clipped(int new_value)
 int UI_ControlledObject::get_value()
 {
     return value;
+}
+
+bool UI_ControlledObject::has_value_changed()
+{
+    return value_has_changed;
 }
 
 int UI_ControlledObject::get_min_value()

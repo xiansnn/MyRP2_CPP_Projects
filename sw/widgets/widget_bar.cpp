@@ -11,9 +11,8 @@ uint8_t W_Bar::convert_level_value_to_px(int level)
 
 W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t config) : Framebuffer(config.width, config.height), UI_Widget(id)
 {
-    active_displayed_object = cntrl_value; // TODO cntrlvalue already exists
+    active_displayed_object = cntrl_value;
     this->config = config;
-    this->cntrl_value = cntrl_value;
     if (config.with_label)
         label_value_max_width = MAX_LABEL_SIZE * config.font[FONT_WIDTH];
     else
@@ -21,8 +20,8 @@ W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, config_bar_widget_t confi
 
     px_max = frame_width;
     px_min = label_value_max_width;
-    level_coef = (float)(px_max - px_min) / (cntrl_value->get_max_value() - cntrl_value->get_min_value());
-    level_offset = px_max - level_coef * cntrl_value->get_max_value();
+    level_coef = (float)(px_max - px_min) / (active_displayed_object->get_max_value() - active_displayed_object->get_min_value());
+    level_offset = px_max - level_coef * active_displayed_object->get_max_value();
 }
 
 W_Bar::~W_Bar()
@@ -31,17 +30,17 @@ W_Bar::~W_Bar()
 
 void W_Bar::draw()
 {
-    uint8_t px = convert_level_value_to_px(cntrl_value->get_value());
+    uint8_t px = convert_level_value_to_px(active_displayed_object->get_value());
     rect(0, 0, frame_width, frame_height, true, Framebuffer_color::black); // clear the full framebuffer
     if (config.with_label)
-        draw_level_value(cntrl_value->get_value());
+        draw_level_value(active_displayed_object->get_value());
 
     if (config.with_border)
         draw_border();
 
     uint8_t bar_start;
     uint8_t bar_end;
-    if (cntrl_value->get_value() >= 0)
+    if (active_displayed_object->get_value() >= 0)
     {
         bar_start = convert_level_value_to_px(0);
         bar_end = px;
@@ -52,7 +51,7 @@ void W_Bar::draw()
         bar_end = convert_level_value_to_px(0);
     }
 
-    if (cntrl_value->get_value() == 0)
+    if (active_displayed_object->get_value() == 0)
         rect(bar_start, 0, 1, frame_height, true);
     else
         rect(bar_start, 0, bar_end - bar_start, frame_height, true);

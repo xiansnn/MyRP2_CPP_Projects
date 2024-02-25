@@ -17,12 +17,10 @@ typedef struct config_bar_widget
 class W_Bar : public Framebuffer, public UI_Widget
 {
 private:
-    ControlledValue* cntrl_value;
     config_bar_widget_t config{};
     size_t label_value_max_width;
     uint8_t px_max;
     uint8_t px_min;
-    // uint8_t px;
     float level_coef;
     int level_offset;
 

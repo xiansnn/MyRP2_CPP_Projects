@@ -76,7 +76,7 @@ int main()
 
     while (true)
     {
-        if (focus_manager.active_controlled_object->value_has_changed)
+        if (focus_manager.active_controlled_object->has_value_changed())
         {
             console.draw();
             focus_manager.active_controlled_object->clear_value_change_flag();

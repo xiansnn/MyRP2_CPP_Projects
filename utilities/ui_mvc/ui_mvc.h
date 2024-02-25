@@ -26,33 +26,38 @@ private:
     bool has_focus{false};
     bool is_active{false};
 protected:
+    bool value_has_changed{true};
+    bool status_has_changed{true};
     int value;
     int increment{1};
     int min_value;
     int max_value;
 
 public:
+    uint8_t id;
+    virtual int get_min_value();
+    virtual void set_min_value(int value);
+    virtual int get_max_value();
+    virtual void set_max_value(int value);
+
     UI_ControlledObject(uint8_t id, int min_value=0, int max_value=10, int increment = 1);
     ~UI_ControlledObject();
 
-    uint8_t id;
-    bool value_has_changed{true};
-    bool status_has_changed{true};
 
+    virtual int get_value();
+    bool has_value_changed();
+    void clear_value_change_flag();
+    virtual void set_value_clipped(int new_value);
+
+    bool has_status_changed();
     void set_focus_status(bool value);
     bool get_focus_status();
     void set_active_status(bool value);
     bool get_active_status();
     void clear_status_change_flag();
 
-    void clear_value_change_flag();
-    virtual int get_value();
-    virtual void set_value_clipped(int new_value);
 
-    virtual int get_min_value();
-    virtual void set_min_value(int value);
-    virtual int get_max_value();
-    virtual void set_max_value(int value);
+
 
     virtual void process_control_event(ControlEvent) = 0;
 };
