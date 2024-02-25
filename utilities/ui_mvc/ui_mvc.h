@@ -25,6 +25,7 @@ class UI_ControlledObject
 private:
     bool has_focus{false};
     bool is_active{false};
+
 protected:
     bool value_has_changed{true};
     bool status_has_changed{true};
@@ -40,9 +41,8 @@ public:
     virtual int get_max_value();
     virtual void set_max_value(int value);
 
-    UI_ControlledObject(uint8_t id, int min_value=0, int max_value=10, int increment = 1);
+    UI_ControlledObject(uint8_t id, int min_value = 0, int max_value = 10, int increment = 1);
     ~UI_ControlledObject();
-
 
     virtual int get_value();
     bool has_value_changed();
@@ -55,9 +55,6 @@ public:
     void set_active_status(bool value);
     bool get_active_status();
     void clear_status_change_flag();
-
-
-
 
     virtual void process_control_event(ControlEvent) = 0;
 };
@@ -75,7 +72,6 @@ public:
 
     void set_active_controlled_object(UI_ControlledObject *cntrl_obj);
     UI_ControlledObject *get_active_controlled_object();
-    
 };
 
 class UI_Widget
@@ -86,11 +82,12 @@ protected:
 
 public:
     uint8_t id;
-    UI_Widget(uint8_t id);
+    uint8_t anchor_x;
+    uint8_t anchor_y;
+    UI_Widget(uint8_t id, uint8_t anchor_x = 0, uint8_t anchor_y = 0);
     ~UI_Widget();
     bool refresh_requested();
     void refresh_done();
-
 
     void set_active_displayed_object(UI_ControlledObject *displayed_object);
     UI_ControlledObject *get_active_displayed_object();

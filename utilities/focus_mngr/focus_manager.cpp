@@ -36,7 +36,8 @@ void FocusManager::process_control_event(ControlEvent event)
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
         {
-            active_controlled_object = controlled_objects[value];
+            // active_controlled_object = controlled_objects[value];
+            update_active_controlled_object(value);
         }
         else
         {

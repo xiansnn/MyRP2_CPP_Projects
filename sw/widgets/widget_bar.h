@@ -27,7 +27,7 @@ private:
     uint8_t convert_level_value_to_px(int level);
 
 public:
-    W_Bar(uint8_t id, ControlledValue* cntrl_value,  config_bar_widget_t bar_config ={});
+    W_Bar(uint8_t id, ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_bar_widget_t bar_config ={});
     ~W_Bar();
     void draw();
     void draw_border();

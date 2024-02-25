@@ -2,7 +2,7 @@
 #include "ui_mvc.h"
 #include <string>
 
-UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)  // TODO focus manager is also a controller
+UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID) // TODO focus manager is also a controller
 {
     min_value = 0;
     set_value_clipped(0);
@@ -17,11 +17,17 @@ void UI_FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj)
 {
     this->controlled_objects.push_back(cntrl_obj);
     this->max_value = controlled_objects.size() - 1;
-    this->controlled_object_under_focus=cntrl_obj;
+    this->controlled_object_under_focus = cntrl_obj;
+}
+
+void UI_FocusManager::update_active_controlled_object(int value)
+{
+    active_controlled_object->set_active_status(false);
+    active_controlled_object = controlled_objects[value];
+    active_controlled_object->set_active_status(true);
 }
 
 void UI_FocusManager::clear_active_controlled_object_change_flag()
 {
     active_controlled_object_has_changed = false;
 }
-

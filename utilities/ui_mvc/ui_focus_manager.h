@@ -9,8 +9,6 @@ class UI_FocusManager : public UI_ControlledObject
 {
 protected:
     std::vector<UI_ControlledObject *> controlled_objects;
-    UI_Controller* current_controller;
-    UI_Widget* current_widget;
 
 public:
     UI_FocusManager();
@@ -19,6 +17,7 @@ public:
     UI_ControlledObject* controlled_object_under_focus;
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
+    void update_active_controlled_object(int value);
 
     bool active_controlled_object_has_changed;
     void clear_active_controlled_object_change_flag();

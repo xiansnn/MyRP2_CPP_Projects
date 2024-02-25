@@ -74,9 +74,11 @@ void UI_ControlledObject::clear_value_change_flag()
 
 
 
-UI_Widget::UI_Widget(uint8_t id)
+UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y)
 {
     this->id = id;
+    this->anchor_x = x;
+    this->anchor_y = y;
 }
 
 UI_Widget::~UI_Widget()

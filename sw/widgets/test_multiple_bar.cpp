@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 #include "probe.h"
 Probe pr_D1 = Probe(1);
@@ -88,15 +89,15 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
 class W_DisplayFocus : public WText
 {
 public:
-    W_DisplayFocus(uint8_t id, size_t width, size_t height,
+    W_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
                    Framebuffer_format format = Framebuffer_format::MONO_VLSB,
                    config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
 };
 
-W_DisplayFocus::W_DisplayFocus(uint8_t id, size_t width, size_t height,
+W_DisplayFocus::W_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
                                Framebuffer_format format,
-                               config_framebuffer_text_t txt_cnf) : WText(id, width, height,
+                               config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
                                                                           format, txt_cnf)
 {
 }
@@ -111,15 +112,15 @@ void W_DisplayFocus::draw()
 class W_DrawFMFrequency : public WText
 {
 public:
-    W_DrawFMFrequency(uint8_t id, size_t width, size_t height,
+    W_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
                       Framebuffer_format format = Framebuffer_format::MONO_VLSB,
                       config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
 };
 
-W_DrawFMFrequency::W_DrawFMFrequency(uint8_t id, size_t width, size_t height,
+W_DrawFMFrequency::W_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
                                      Framebuffer_format format,
-                                     config_framebuffer_text_t txt_cnf) : WText(id, width, height,
+                                     config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
                                                                                 format, txt_cnf)
 {
 }
@@ -145,37 +146,50 @@ ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
 ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
 
 MB_FocusManager focus_manager = MB_FocusManager();
-W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8);
+W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
 
-W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8);
-W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, cfg_bar);
-W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, cfg_bar);
-W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, cfg_bar);
+W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
+W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
+W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
+W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
 
-void refresh(SSD1306 screen)
+std::list<Framebuffer *> widgets;
+
+void refresh(SSD1306* screen)
 {
+
+    // for (Framebuffer*  w : widgets)
+    // {
+    //     if (w->refresh_requested())
+    //     {
+    //         w->draw();
+    //         screen->show(w, w->anchor_x, w->anchor_y);
+    //         w->refresh_done();
+    //     }
+    // }
+
     if (display_fm_frequency.refresh_requested())
     {
         display_fm_frequency.draw();
-        screen.show(&display_fm_frequency, 0, 16);
+        screen->show(&display_fm_frequency, display_fm_frequency.anchor_x, display_fm_frequency.anchor_y);
         display_fm_frequency.refresh_done();
     }
     if (display_val1.refresh_requested())
     {
         display_val1.draw();
-        screen.show(&display_val1, 0, 32);
+        screen->show(&display_val1, display_val1.anchor_x, display_val1.anchor_y);
         display_val1.refresh_done();
     }
     if (display_val2.refresh_requested())
     {
         display_val2.draw();
-        screen.show(&display_val2, 0, 40);
+        screen->show(&display_val2, display_val2.anchor_x, display_val2.anchor_y);
         display_val2.refresh_done();
     }
     if (display_val3.refresh_requested())
     {
         display_val3.draw();
-        screen.show(&display_val3, 0, 48);
+        screen->show(&display_val3, display_val3.anchor_x, display_val3.anchor_y);
         display_val3.refresh_done();
     }
 };
@@ -199,14 +213,19 @@ int main()
     display_val2.set_active_displayed_object(&val2);
     display_val3.set_active_displayed_object(&val3);
 
+    widgets.push_back(&display_fm_frequency);
+    widgets.push_back(&display_val1);
+    widgets.push_back(&display_val2);
+    widgets.push_back(&display_val3);
+
     UI_ControlledObject *current_controled_obj = &focus_manager;
     encoder.set_active_controlled_object(current_controled_obj);
 
     while (true)
     {
         focus_manager.process_control_event(&central_switch);
-        refresh(screen);
-        if (focus_manager.active_controlled_object_has_changed)
+        refresh(&screen);
+        if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
             pr_D4.hi();
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);

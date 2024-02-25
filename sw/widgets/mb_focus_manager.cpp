@@ -35,11 +35,7 @@ void MB_FocusManager::process_control_event(ControlEvent event)
         break;
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
-        {
-            active_controlled_object->set_active_status(false);
-            active_controlled_object = controlled_objects[value];
-            active_controlled_object->set_active_status(true);
-        }
+            update_active_controlled_object(value);
         else
             active_controlled_object = this;
         active_controlled_object_has_changed = true;
