@@ -76,7 +76,6 @@ public:
 class UI_Widget
 {
 private:
-    // bool refresh_requested;
 protected:
     UI_ControlledObject *active_displayed_object;
 
@@ -85,6 +84,7 @@ public:
     UI_Widget(uint8_t id);
     ~UI_Widget();
     bool refresh_requested();
+    void refresh_done();
 
 
     void set_active_displayed_object(UI_ControlledObject *displayed_object);

@@ -145,7 +145,6 @@ ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
 ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
 
 MB_FocusManager focus_manager = MB_FocusManager();
-W_DisplayControlledValueOnTerminal console = W_DisplayControlledValueOnTerminal(CONSOLE_WIDGET_ID);
 W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8);
 
 W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8);
@@ -159,21 +158,25 @@ void refresh(SSD1306 screen)
     {
         display_fm_frequency.draw();
         screen.show(&display_fm_frequency, 0, 16);
+        display_fm_frequency.refresh_done();
     }
     if (display_val1.refresh_requested())
     {
         display_val1.draw();
         screen.show(&display_val1, 0, 32);
+        display_val1.refresh_done();
     }
     if (display_val2.refresh_requested())
     {
         display_val2.draw();
         screen.show(&display_val2, 0, 40);
+        display_val2.refresh_done();
     }
     if (display_val3.refresh_requested())
     {
         display_val3.draw();
         screen.show(&display_val3, 0, 48);
+        display_val3.refresh_done();
     }
 };
 
@@ -198,23 +201,15 @@ int main()
 
     UI_ControlledObject *current_controled_obj = &focus_manager;
     encoder.set_active_controlled_object(current_controled_obj);
-    console.set_active_displayed_object(current_controled_obj);
 
     while (true)
     {
-        if (focus_manager.active_controlled_object->value_has_changed)
-        {
-            pr_D1.hi();
-            refresh(screen);
-            focus_manager.active_controlled_object->clear_value_change_flag();
-            pr_D1.lo();
-        }
         focus_manager.process_control_event(&central_switch);
+        refresh(screen);
         if (focus_manager.active_controlled_object_has_changed)
         {
             pr_D4.hi();
             encoder.set_active_controlled_object(focus_manager.active_controlled_object);
-            refresh(screen);
             focus_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }

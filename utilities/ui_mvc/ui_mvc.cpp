@@ -37,7 +37,6 @@ UI_ControlledObject::~UI_ControlledObject()
 
 void UI_ControlledObject::set_focus_status(bool value)
 {
-    // this->status_has_changed = status_has_changed or value;
     this->status_has_changed = (has_focus != value ) ? true : false;
     this->has_focus = value;
 }
@@ -50,14 +49,12 @@ bool UI_ControlledObject::get_focus_status()
 
 void UI_ControlledObject::set_active_status(bool value)
 {
-    // this->status_has_changed = status_has_changed or value;
     this->status_has_changed = (is_active !=  value ) ? true : false;
     this->is_active = value;
 }
 
 bool UI_ControlledObject::get_active_status()
 {
-    clear_status_change_flag();
     return is_active;
 }
 
@@ -83,6 +80,12 @@ UI_Widget::~UI_Widget()
 bool UI_Widget::refresh_requested()
 {
     return (active_displayed_object->status_has_changed or active_displayed_object->value_has_changed) ? true : false;
+}
+
+void UI_Widget::refresh_done()
+{
+    active_displayed_object->clear_status_change_flag();//    status_has_changed = false;
+    active_displayed_object->clear_value_change_flag();//    value_has_changed = false;
 }
 
 void UI_Widget::set_active_displayed_object(UI_ControlledObject *displayed_object)

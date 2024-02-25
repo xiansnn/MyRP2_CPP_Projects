@@ -29,7 +29,6 @@ void MB_FocusManager::process_control_event(ControlEvent event)
         /* code */
         break;
     case ControlEvent::LONG_PUSH:
-        printf("long push\n");
         active_controlled_object->set_value_clipped(0);
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
@@ -46,7 +45,7 @@ void MB_FocusManager::process_control_event(ControlEvent event)
         active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
-        value++;
+        value++; // TODO wrap peut etre inclu dans ui_controlled_object
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
