@@ -5,7 +5,7 @@
 
 KY040Encoder::KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
                            config_switch_button_t clk_conf)
-    : SwitchButtonWithIRQ(id, encoder_clk_gpio, call_back, clk_conf) // TODO change name : RotaryEncoder
+    : SwitchButtonWithIRQ(id, encoder_clk_gpio, call_back, clk_conf)
 {
     this->dt_gpio = encoder_dt_gpio;
     this->active_lo = true;
