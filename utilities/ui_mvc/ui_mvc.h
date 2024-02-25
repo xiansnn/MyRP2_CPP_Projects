@@ -2,6 +2,7 @@
 #define UI_MVC_H
 
 #include "pico/stdlib.h"
+#include "framebuffer.h"
 
 #define FOCUS_MANAGER_ID 0
 
@@ -74,7 +75,9 @@ public:
     UI_ControlledObject *get_active_controlled_object();
 };
 
-class UI_Widget
+
+//Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+class UI_Widget  // TODO ui_widget herite de framebuffer
 {
 private:
 protected:

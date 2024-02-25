@@ -1,6 +1,7 @@
 #include "ui_mvc.h"
 #include <bits/stl_algobase.h>
 
+
 UI_Controller::UI_Controller(uint8_t id)
 {
     this->id = id;
@@ -74,7 +75,7 @@ void UI_ControlledObject::clear_value_change_flag()
 
 
 
-UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y)
+UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y) 
 {
     this->id = id;
     this->anchor_x = x;
