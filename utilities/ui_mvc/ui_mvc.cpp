@@ -56,12 +56,12 @@ void UI_ControlledObject::clear_status_change_flag()
     this->status_has_changed = false;
 }
 
-
-UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y)
+UI_Widget::UI_Widget(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                     Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
     this->id = id;
-    this->anchor_x = x;
-    this->anchor_y = y;
+    this->anchor_x = anchor_x;
+    this->anchor_y = anchor_y;
 }
 
 UI_Widget::~UI_Widget()

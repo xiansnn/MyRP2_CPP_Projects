@@ -17,7 +17,8 @@ enum class ControlEvent
     INCREMENT,
     DECREMENT
 };
-enum class ControlledObjectStatus{
+enum class ControlledObjectStatus
+{
     NONE,
     HAS_FOCUS,
     IS_ACTIVE
@@ -33,6 +34,7 @@ private:
 
 protected:
     bool status_has_changed{true};
+
     int value;
     int increment{1};
     int min_value;
@@ -44,18 +46,16 @@ public:
     virtual void set_min_value(int value);
     virtual int get_max_value();
     virtual void set_max_value(int value);
+    virtual int get_value();
+    virtual void set_value_clipped(int new_value);
 
     UI_ControlledObject(uint8_t id, int min_value = 0, int max_value = 10, int increment = 1);
     ~UI_ControlledObject();
-
-    virtual int get_value();
-    virtual void set_value_clipped(int new_value);
 
     bool has_status_changed();
     void clear_status_change_flag();
     void update_status(ControlledObjectStatus status);
     ControlledObjectStatus get_status();
-
 
     virtual void process_control_event(ControlEvent) = 0;
 };
@@ -76,8 +76,7 @@ public:
 };
 
 
-//Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-class UI_Widget  // TODO ui_widget herite de framebuffer
+class UI_Widget : public Framebuffer
 {
 private:
 protected:
@@ -87,7 +86,9 @@ public:
     uint8_t id;
     uint8_t anchor_x;
     uint8_t anchor_y;
-    UI_Widget(uint8_t id, uint8_t anchor_x = 0, uint8_t anchor_y = 0);
+    UI_Widget(uint8_t id, size_t width, size_t height, uint8_t anchor_x = 0, uint8_t anchor_y = 0,
+              Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+              config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     ~UI_Widget();
     bool refresh_requested();
     void refresh_done();

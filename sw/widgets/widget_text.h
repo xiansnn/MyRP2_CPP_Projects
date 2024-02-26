@@ -5,7 +5,7 @@
 #include "ui_mvc.h"
 #include "pico/stdlib.h"
 
-class WText : public Framebuffer , public UI_Widget
+class WText : public UI_Widget
 {
 private:
     /* data */
