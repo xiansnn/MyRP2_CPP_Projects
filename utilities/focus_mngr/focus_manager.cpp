@@ -9,7 +9,7 @@ FocusManager::~FocusManager()
 {
 }
 
-void FocusManager::process_control_event(SwitchButton* controller)
+void FocusManager::process_control_event(SwitchButton *controller)
 {
     ControlEvent sw_event = controller->process_sample_event();
     process_control_event(sw_event);
@@ -36,14 +36,15 @@ void FocusManager::process_control_event(ControlEvent event)
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
         {
-            // active_controlled_object = controlled_objects[value];
-            update_active_controlled_object(value);
+            active_controlled_object->update_status(ControlledObjectStatus::NONE);
+            active_controlled_object = controlled_objects[value];
+            active_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
         }
         else
         {
+            active_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
             active_controlled_object = this;
         }
-        // printf("-focus_mngr-new active_controlled_object[%d]\n", active_controlled_object->id);
         active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
@@ -52,7 +53,7 @@ void FocusManager::process_control_event(ControlEvent event)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
         controlled_object_under_focus = controlled_objects[value];
-        value_has_changed = true;
+        status_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
         value--;
@@ -60,7 +61,7 @@ void FocusManager::process_control_event(ControlEvent event)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
         controlled_object_under_focus = controlled_objects[value];
-        value_has_changed = true;
+        status_has_changed = true;
         break;
 
     default:

@@ -1,7 +1,6 @@
 #include "ui_mvc.h"
 #include <bits/stl_algobase.h>
 
-
 UI_Controller::UI_Controller(uint8_t id)
 {
     this->id = id;
@@ -13,9 +12,9 @@ UI_Controller::~UI_Controller()
 
 void UI_Controller::set_active_controlled_object(UI_ControlledObject *cntrl_obj)
 {
-    this->active_controlled_object->set_active_status(false);
+    active_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
     this->active_controlled_object = cntrl_obj;
-    this->active_controlled_object->set_active_status(true);
+    active_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
 }
 
 UI_ControlledObject *UI_Controller::get_active_controlled_object()
@@ -41,26 +40,15 @@ bool UI_ControlledObject::has_status_changed()
     return status_has_changed;
 }
 
-void UI_ControlledObject::set_focus_status(bool value)
+void UI_ControlledObject::update_status(ControlledObjectStatus new_status)
 {
-    this->status_has_changed = (has_focus != value ) ? true : false;
-    this->has_focus = value;
+    this->status_has_changed = (this->status != new_status) ? true : false;
+    this->status = new_status;
 }
 
-bool UI_ControlledObject::get_focus_status()
+ControlledObjectStatus UI_ControlledObject::get_status()
 {
-    return this->has_focus;
-}
-
-void UI_ControlledObject::set_active_status(bool value)
-{
-    this->status_has_changed = (is_active !=  value ) ? true : false;
-    this->is_active = value;
-}
-
-bool UI_ControlledObject::get_active_status()
-{
-    return is_active;
+    return this->status;
 }
 
 void UI_ControlledObject::clear_status_change_flag()
@@ -68,14 +56,8 @@ void UI_ControlledObject::clear_status_change_flag()
     this->status_has_changed = false;
 }
 
-void UI_ControlledObject::clear_value_change_flag()
-{
-    value_has_changed = false;
-}
 
-
-
-UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y) 
+UI_Widget::UI_Widget(uint8_t id, uint8_t x, uint8_t y)
 {
     this->id = id;
     this->anchor_x = x;
@@ -88,13 +70,12 @@ UI_Widget::~UI_Widget()
 
 bool UI_Widget::refresh_requested()
 {
-    return (active_displayed_object->has_status_changed() or active_displayed_object->has_value_changed()) ? true : false;
+    return (active_displayed_object->has_status_changed()) ? true : false;
 }
 
 void UI_Widget::refresh_done()
 {
-    active_displayed_object->clear_status_change_flag();//    status_has_changed = false;
-    active_displayed_object->clear_value_change_flag();//    value_has_changed = false;
+    active_displayed_object->clear_status_change_flag(); //    status_has_changed = false;
 }
 
 void UI_Widget::set_active_displayed_object(UI_ControlledObject *displayed_object)
@@ -110,17 +91,12 @@ UI_ControlledObject *UI_Widget::get_active_displayed_object()
 void UI_ControlledObject::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    value_has_changed = true;
+    status_has_changed = true;
 }
 
 int UI_ControlledObject::get_value()
 {
     return value;
-}
-
-bool UI_ControlledObject::has_value_changed()
-{
-    return value_has_changed;
 }
 
 int UI_ControlledObject::get_min_value()

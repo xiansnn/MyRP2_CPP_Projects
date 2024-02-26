@@ -66,12 +66,18 @@ void W_Bar::draw_level_value(int value)
 {
     this->clear_text_buffer();
     char status;
-    if (active_displayed_object->get_active_status())
-        status = '#';
-    else if (active_displayed_object->get_focus_status())
+    switch (active_displayed_object->get_status())
+    {
+    case ControlledObjectStatus::HAS_FOCUS :
         status = '>';
-    else
+        break;
+    case ControlledObjectStatus::IS_ACTIVE :
+        status = '#';
+        break;
+    default:
         status = ' ';
+        break;
+    }
     sprintf(this->text_buffer, "%c%+d", status, value);
     print_text();
 }

@@ -130,12 +130,25 @@ void W_DrawFMFrequency::draw()
 
     clear_text_buffer();
     char status;
-    if (active_displayed_object->get_active_status())
-        status = '#';
-    else if (active_displayed_object->get_focus_status())
+    switch (active_displayed_object->get_status())
+    {
+    case ControlledObjectStatus::HAS_FOCUS :
         status = '>';
-    else
+        break;
+    case ControlledObjectStatus::IS_ACTIVE :
+        status = '#';
+        break;
+    default:
         status = ' ';
+        break;
+    }
+
+    // if (active_displayed_object->get_active_status())
+    //     status = '#';
+    // else if (active_displayed_object->get_focus_status())
+    //     status = '>';
+    // else
+    //     status = ' ';
     sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
     print_text();
 }

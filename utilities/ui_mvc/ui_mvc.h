@@ -17,6 +17,11 @@ enum class ControlEvent
     INCREMENT,
     DECREMENT
 };
+enum class ControlledObjectStatus{
+    NONE,
+    HAS_FOCUS,
+    IS_ACTIVE
+};
 
 class UI_Controller;
 class UI_Widget;
@@ -24,11 +29,9 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
-    bool has_focus{false};
-    bool is_active{false};
+    ControlledObjectStatus status{ControlledObjectStatus::NONE};
 
 protected:
-    bool value_has_changed{true};
     bool status_has_changed{true};
     int value;
     int increment{1};
@@ -46,16 +49,13 @@ public:
     ~UI_ControlledObject();
 
     virtual int get_value();
-    bool has_value_changed();
-    void clear_value_change_flag();
     virtual void set_value_clipped(int new_value);
 
     bool has_status_changed();
-    void set_focus_status(bool value);
-    bool get_focus_status();
-    void set_active_status(bool value);
-    bool get_active_status();
     void clear_status_change_flag();
+    void update_status(ControlledObjectStatus status);
+    ControlledObjectStatus get_status();
+
 
     virtual void process_control_event(ControlEvent) = 0;
 };

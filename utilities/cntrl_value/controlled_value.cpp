@@ -39,14 +39,14 @@ void ControlledValue::process_control_event(ControlEvent event)
         if ((wrap) and (value > max_value))
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        value_has_changed = true;
+        status_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
         value -= increment;
         if ((wrap) and (value < min_value))
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        value_has_changed = true;
+        status_has_changed = true;
         break;
 
     default:
