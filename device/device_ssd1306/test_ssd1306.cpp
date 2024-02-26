@@ -80,7 +80,7 @@ void test_addressing_mode(SSD1306 *display)
     {
         memset(image, 0x55, sizeof(image));
         area = SSD1306::compute_render_area(i * 10, 100 + i * 10, 8 * i, 8 * i);
-        display->show_render_area(image, area, PAGE_ADDRESSING_MODE); // TODO semble dependre de ce qu'il y a avant
+        display->show_render_area(image, area, PAGE_ADDRESSING_MODE); // FIXME semble dependre de ce qu'il y a avant
         sleep_ms(1000);
     }
 };
