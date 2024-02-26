@@ -142,13 +142,6 @@ void W_DrawFMFrequency::draw()
         status = ' ';
         break;
     }
-
-    // if (active_displayed_object->get_active_status())
-    //     status = '#';
-    // else if (active_displayed_object->get_focus_status())
-    //     status = '>';
-    // else
-    //     status = ' ';
     sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
     print_text();
 }
@@ -166,44 +159,19 @@ W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
 W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
 W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
 
-std::list<Framebuffer *> widgets;
+std::list<UI_Widget *> widgets;
 
 void refresh(SSD1306* screen)
 {
 
-    // for (Framebuffer*  w : widgets)
-    // {
-    //     if (w->refresh_requested())
-    //     {
-    //         w->draw();
-    //         screen->show(w, w->anchor_x, w->anchor_y);
-    //         w->refresh_done();
-    //     }
-    // }
-
-    if (display_fm_frequency.refresh_requested())
+    for (UI_Widget*  w : widgets)
     {
-        display_fm_frequency.draw();
-        screen->show(&display_fm_frequency, display_fm_frequency.anchor_x, display_fm_frequency.anchor_y);
-        display_fm_frequency.refresh_done();
-    }
-    if (display_val1.refresh_requested())
-    {
-        display_val1.draw();
-        screen->show(&display_val1, display_val1.anchor_x, display_val1.anchor_y);
-        display_val1.refresh_done();
-    }
-    if (display_val2.refresh_requested())
-    {
-        display_val2.draw();
-        screen->show(&display_val2, display_val2.anchor_x, display_val2.anchor_y);
-        display_val2.refresh_done();
-    }
-    if (display_val3.refresh_requested())
-    {
-        display_val3.draw();
-        screen->show(&display_val3, display_val3.anchor_x, display_val3.anchor_y);
-        display_val3.refresh_done();
+        if (w->refresh_requested())
+        {
+            w->draw();
+            screen->show(w, w->anchor_x, w->anchor_y);
+            w->refresh_done();
+        }
     }
 };
 
@@ -237,7 +205,7 @@ int main()
     while (true)
     {
         focus_manager.process_control_event(&central_switch);
-        refresh(&screen);
+        refresh(&screen); // TODO inclure refresh as member of focus manager
         if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
             pr_D4.hi();
