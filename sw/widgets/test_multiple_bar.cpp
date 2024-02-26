@@ -209,7 +209,7 @@ int main()
         if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
             pr_D4.hi();
-            encoder.set_active_controlled_object(focus_manager.active_controlled_object);
+            encoder.set_active_controlled_object(focus_manager.get_active_controlled_object());
             focus_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }

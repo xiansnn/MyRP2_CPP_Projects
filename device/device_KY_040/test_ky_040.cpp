@@ -80,7 +80,7 @@ int main()
         console.draw();
         if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
-            encoder.set_active_controlled_object(focus_manager.active_controlled_object);
+            encoder.set_active_controlled_object(focus_manager.get_active_controlled_object());
             focus_manager.clear_active_controlled_object_change_flag();
         }
 

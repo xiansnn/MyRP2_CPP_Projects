@@ -2,7 +2,7 @@
 #include "ui_mvc.h"
 #include <string>
 
-UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID)
+UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
 {
     min_value = 0;
     set_value_clipped(0);
