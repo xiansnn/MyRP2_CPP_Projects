@@ -1,7 +1,7 @@
 #include "mb_focus_manager.h"
 #include <string>
 
-MB_WidgetManager::MB_WidgetManager() : UI_WidgetManager()
+MB_WidgetManager::MB_WidgetManager(DisplayDevice* screen) : UI_WidgetManager(screen)
 {
 }
 

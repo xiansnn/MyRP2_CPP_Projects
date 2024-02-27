@@ -11,7 +11,7 @@ class KY_40_WidgetManager : public UI_WidgetManager
 private:
     
 public:
-    KY_40_WidgetManager();
+    KY_40_WidgetManager(DisplayDevice* screen = nullptr);
     ~KY_40_WidgetManager();
     
     void process_control_event(SwitchButton* controller);

@@ -70,7 +70,7 @@ config_switch_button_t cfg_encoder_clk{
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
 RotaryEncoder encoder = RotaryEncoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
-                                    shared_irq_call_back, cfg_encoder_clk);
+                                      shared_irq_call_back, cfg_encoder_clk);
 SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
@@ -132,10 +132,10 @@ void W_DrawFMFrequency::draw()
     char status;
     switch (active_displayed_object->get_status())
     {
-    case ControlledObjectStatus::HAS_FOCUS :
+    case ControlledObjectStatus::HAS_FOCUS:
         status = '>';
         break;
-    case ControlledObjectStatus::IS_ACTIVE :
+    case ControlledObjectStatus::IS_ACTIVE:
         status = '#';
         break;
     default:
@@ -151,7 +151,10 @@ ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
 ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
 ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
 
-MB_WidgetManager focus_manager = MB_WidgetManager();
+hw_I2C_master master = hw_I2C_master(cfg_i2c);
+SSD1306 screen = SSD1306(&master, cfg_ssd1306);
+
+MB_WidgetManager focus_manager = MB_WidgetManager(&screen);
 W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
 
 W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
@@ -159,27 +162,9 @@ W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
 W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
 W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
 
-std::list<UI_Widget *> widgets;
-
-void refresh(SSD1306* screen)
-{
-
-    for (UI_Widget*  w : widgets)
-    {
-        if (w->refresh_requested())
-        {
-            w->draw();
-            screen->show(w, w->anchor_x, w->anchor_y);
-            w->refresh_done();
-        }
-    }
-};
-
 int main()
 {
     stdio_init_all();
-    hw_I2C_master master = hw_I2C_master(cfg_i2c);
-    SSD1306 screen = SSD1306(&master, cfg_ssd1306);
     screen.clear_pixel_buffer_and_show_full_screen();
 
     encoder.set_active_controlled_object(&focus_manager);
@@ -194,10 +179,10 @@ int main()
     display_val2.set_active_displayed_object(&val2);
     display_val3.set_active_displayed_object(&val3);
 
-    widgets.push_back(&display_fm_frequency);
-    widgets.push_back(&display_val1);
-    widgets.push_back(&display_val2);
-    widgets.push_back(&display_val3);
+    focus_manager.add_widget(&display_fm_frequency);
+    focus_manager.add_widget(&display_val1);
+    focus_manager.add_widget(&display_val2);
+    focus_manager.add_widget(&display_val3);
 
     UI_ControlledObject *current_controled_obj = &focus_manager;
     encoder.set_active_controlled_object(current_controled_obj);
@@ -205,7 +190,7 @@ int main()
     while (true)
     {
         focus_manager.process_control_event(&central_switch);
-        refresh(&screen); // TODO inclure refresh as member of focus manager
+        focus_manager.refresh();
         if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
             pr_D4.hi();

@@ -58,7 +58,7 @@ typedef struct struct_render_area
     size_t buflen{SSD1306_BUF_LEN};
 } render_area_t;
 
-class SSD1306 : public Framebuffer
+class SSD1306 : public DisplayDevice
 {
 private:
     hw_I2C_master *i2c_master;
