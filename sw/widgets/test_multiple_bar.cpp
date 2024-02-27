@@ -154,48 +154,48 @@ ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
 hw_I2C_master master = hw_I2C_master(cfg_i2c);
 SSD1306 screen = SSD1306(&master, cfg_ssd1306);
 
-MB_WidgetManager focus_manager = MB_WidgetManager(&screen);
+MB_WidgetManager widget_manager = MB_WidgetManager(&screen);
 W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
 
-W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
-W_Bar display_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
-W_Bar display_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
-W_Bar display_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
+W_DrawFMFrequency widget_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
+W_Bar widget_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
+W_Bar widget_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
+W_Bar widget_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
 
 int main()
 {
     stdio_init_all();
     screen.clear_pixel_buffer_and_show_full_screen();
 
-    encoder.set_active_controlled_object(&focus_manager);
+    encoder.set_active_controlled_object(&widget_manager);
 
-    focus_manager.add_controlled_object(&fm_freq);
-    focus_manager.add_controlled_object(&val1);
-    focus_manager.add_controlled_object(&val2);
-    focus_manager.add_controlled_object(&val3);
+    widget_manager.add_controlled_object(&fm_freq);
+    widget_manager.add_controlled_object(&val1);
+    widget_manager.add_controlled_object(&val2);
+    widget_manager.add_controlled_object(&val3);
 
-    display_fm_frequency.set_active_displayed_object(&fm_freq);
-    display_val1.set_active_displayed_object(&val1);
-    display_val2.set_active_displayed_object(&val2);
-    display_val3.set_active_displayed_object(&val3);
+    widget_fm_frequency.set_active_displayed_object(&fm_freq);
+    widget_val1.set_active_displayed_object(&val1);
+    widget_val2.set_active_displayed_object(&val2);
+    widget_val3.set_active_displayed_object(&val3);
 
-    focus_manager.add_widget(&display_fm_frequency);
-    focus_manager.add_widget(&display_val1);
-    focus_manager.add_widget(&display_val2);
-    focus_manager.add_widget(&display_val3);
+    widget_manager.add_widget(&widget_fm_frequency);
+    widget_manager.add_widget(&widget_val1);
+    widget_manager.add_widget(&widget_val2);
+    widget_manager.add_widget(&widget_val3);
 
-    UI_ControlledObject *current_controled_obj = &focus_manager;
+    UI_ControlledObject *current_controled_obj = &widget_manager;
     encoder.set_active_controlled_object(current_controled_obj);
 
     while (true)
     {
-        focus_manager.process_control_event(&central_switch);
-        focus_manager.refresh();
-        if (focus_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
+        widget_manager.process_control_event(&central_switch);
+        widget_manager.refresh();
+        if (widget_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
         {
             pr_D4.hi();
-            encoder.set_active_controlled_object(focus_manager.get_active_controlled_object());
-            focus_manager.clear_active_controlled_object_change_flag();
+            encoder.set_active_controlled_object(widget_manager.get_active_controlled_object());
+            widget_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }
 
