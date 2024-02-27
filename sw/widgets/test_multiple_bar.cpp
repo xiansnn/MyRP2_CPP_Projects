@@ -184,8 +184,7 @@ int main()
     widget_manager.add_widget(&widget_val2);
     widget_manager.add_widget(&widget_val3);
 
-    UI_ControlledObject *current_controled_obj = &widget_manager;
-    encoder.set_active_controlled_object(current_controled_obj);
+    encoder.set_active_controlled_object(widget_manager.get_active_controlled_object());
 
     while (true)
     {

@@ -21,7 +21,11 @@ void UI_WidgetManager::refresh()
         if (w->refresh_requested())
         {
             w->draw();
+            if (this->screen_framebuffer != nullptr)
+            {
             this->screen_framebuffer->show(w, w->anchor_x, w->anchor_y);
+            }
+            
             w->refresh_done();
         }
     }

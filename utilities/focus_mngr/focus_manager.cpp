@@ -42,7 +42,6 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         }
         else
         {
-            active_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
             active_controlled_object = this;
         }
         active_controlled_object_has_changed = true;
@@ -52,7 +51,10 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus->update_status(ControlledObjectStatus::NONE);
         controlled_object_under_focus = controlled_objects[value];
+        controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
+
         status_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
@@ -60,9 +62,11 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus->update_status(ControlledObjectStatus::NONE);
         controlled_object_under_focus = controlled_objects[value];
+        controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         status_has_changed = true;
-        break;
+       break;
 
     default:
         break;
