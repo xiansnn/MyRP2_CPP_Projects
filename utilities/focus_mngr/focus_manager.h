@@ -6,13 +6,13 @@
 #include "ui_focus_manager.h"
 #include "switch_button.h"
 
-class FocusManager : public UI_FocusManager
+class KY_40_WidgetManager : public UI_WidgetManager
 {
 private:
     
 public:
-    FocusManager();
-    ~FocusManager();
+    KY_40_WidgetManager();
+    ~KY_40_WidgetManager();
     
     void process_control_event(SwitchButton* controller);
     void process_control_event(ControlEvent event);

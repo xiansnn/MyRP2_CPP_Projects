@@ -5,14 +5,14 @@
 
 #include "ui_mvc.h"
 
-class UI_FocusManager : public UI_ControlledObject , public UI_Controller
+class UI_WidgetManager : public UI_ControlledObject , public UI_Controller
 {
 protected:
     std::vector<UI_ControlledObject *> controlled_objects;
 
 public:
-    UI_FocusManager();
-    ~UI_FocusManager();
+    UI_WidgetManager();
+    ~UI_WidgetManager();
     UI_ControlledObject* controlled_object_under_focus;
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);

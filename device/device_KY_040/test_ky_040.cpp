@@ -48,7 +48,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     };
 }
 
-FocusManager focus_manager = FocusManager();
+KY_40_WidgetManager focus_manager = KY_40_WidgetManager();
 W_DisplayControlledValueOnTerminal console = W_DisplayControlledValueOnTerminal(CONSOLE_WIDGET_ID,0,0 );
 
 int main()

@@ -2,18 +2,18 @@
 #include "ui_mvc.h"
 #include <string>
 
-UI_FocusManager::UI_FocusManager() : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
+UI_WidgetManager::UI_WidgetManager() : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
 {
     min_value = 0;
     set_value_clipped(0);
     active_controlled_object = this;
 }
 
-UI_FocusManager::~UI_FocusManager()
+UI_WidgetManager::~UI_WidgetManager()
 {
 }
 
-void UI_FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj) //
+void UI_WidgetManager::add_controlled_object(UI_ControlledObject *cntrl_obj) //
 {
     this->controlled_objects.push_back(cntrl_obj);
     this->max_value = controlled_objects.size() - 1;
@@ -21,7 +21,7 @@ void UI_FocusManager::add_controlled_object(UI_ControlledObject *cntrl_obj) //
 }
 
 
-void UI_FocusManager::clear_active_controlled_object_change_flag()
+void UI_WidgetManager::clear_active_controlled_object_change_flag()
 {
     active_controlled_object_has_changed = false;
 }

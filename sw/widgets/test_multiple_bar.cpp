@@ -151,7 +151,7 @@ ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
 ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
 ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
 
-MB_FocusManager focus_manager = MB_FocusManager();
+MB_WidgetManager focus_manager = MB_WidgetManager();
 W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
 
 W_DrawFMFrequency display_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);

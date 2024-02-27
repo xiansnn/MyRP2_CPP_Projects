@@ -1,21 +1,21 @@
 #include "mb_focus_manager.h"
 #include <string>
 
-MB_FocusManager::MB_FocusManager() : UI_FocusManager()
+MB_WidgetManager::MB_WidgetManager() : UI_WidgetManager()
 {
 }
 
-MB_FocusManager::~MB_FocusManager()
+MB_WidgetManager::~MB_WidgetManager()
 {
 }
 
-void MB_FocusManager::process_control_event(SwitchButton *controller)
+void MB_WidgetManager::process_control_event(SwitchButton *controller)
 {
     ControlEvent sw_event = controller->process_sample_event();
     process_control_event(sw_event);
 }
 
-void MB_FocusManager::process_control_event(ControlEvent event)
+void MB_WidgetManager::process_control_event(ControlEvent event)
 {
     switch (event)
     {

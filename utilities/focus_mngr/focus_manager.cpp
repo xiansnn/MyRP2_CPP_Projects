@@ -1,21 +1,21 @@
 #include "focus_manager.h"
 #include <string>
 
-FocusManager::FocusManager() : UI_FocusManager()
+KY_40_WidgetManager::KY_40_WidgetManager() : UI_WidgetManager()
 {
 }
 
-FocusManager::~FocusManager()
+KY_40_WidgetManager::~KY_40_WidgetManager()
 {
 }
 
-void FocusManager::process_control_event(SwitchButton *controller)
+void KY_40_WidgetManager::process_control_event(SwitchButton *controller)
 {
     ControlEvent sw_event = controller->process_sample_event();
     process_control_event(sw_event);
 }
 
-void FocusManager::process_control_event(ControlEvent event)
+void KY_40_WidgetManager::process_control_event(ControlEvent event)
 {
     switch (event)
     {
