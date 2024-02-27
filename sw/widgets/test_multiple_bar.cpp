@@ -1,4 +1,4 @@
-#include "ky_040.h"
+#include "rotary_encoder.h"
 #include "ssd1306.h"
 
 #include "widget_bar.h"
@@ -69,7 +69,7 @@ config_switch_button_t cfg_encoder_clk{
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
-KY040Encoder encoder = KY040Encoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
+RotaryEncoder encoder = RotaryEncoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
                                     shared_irq_call_back, cfg_encoder_clk);
 SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
 

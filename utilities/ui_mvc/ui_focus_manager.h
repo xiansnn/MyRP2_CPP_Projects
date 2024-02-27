@@ -13,7 +13,6 @@ protected:
 public:
     UI_FocusManager();
     ~UI_FocusManager();
-    // UI_ControlledObject* active_controlled_object; // TODO ui focus manager est aussi un controller
     UI_ControlledObject* controlled_object_under_focus;
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
