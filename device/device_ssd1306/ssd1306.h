@@ -5,6 +5,7 @@
 #include "pico/stdlib.h"
 #include "hw_i2c.h"
 #include "framebuffer.h"
+#include "ui_mvc.h"
 
 // Time_frame_interval
 #define _2_FRAMES 0b111
@@ -58,7 +59,7 @@ typedef struct struct_render_area
     size_t buflen{SSD1306_BUF_LEN};
 } render_area_t;
 
-class SSD1306 : public DisplayDevice
+class SSD1306 : public UI_DisplayDevice
 {
 private:
     hw_I2C_master *i2c_master;

@@ -88,16 +88,5 @@ public:
     void next_char();
 };
 
-class DisplayDevice : public Framebuffer
-{
-private:
-    /* data */
-public:
-    DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    ~DisplayDevice();
-    virtual void show() = 0;
-    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
-};
-
 
 #endif // FRAMEBUFFER_H

@@ -19,7 +19,7 @@ enum class ControlEvent
 };
 enum class ControlledObjectStatus
 {
-    NONE,
+    WAIT,
     HAS_FOCUS,
     IS_ACTIVE
 };
@@ -30,15 +30,15 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
-    ControlledObjectStatus status{ControlledObjectStatus::NONE};
+    ControlledObjectStatus status{ControlledObjectStatus::WAIT};
 
 protected:
-    bool status_has_changed{true};
-
     int value;
-    int increment{1};
     int min_value;
     int max_value;
+    int increment{1};
+    bool status_has_changed{true};
+
 
 public:
     uint8_t id;
@@ -97,5 +97,17 @@ public:
     UI_ControlledObject *get_active_displayed_object();
     virtual void draw() = 0;
 };
+
+class UI_DisplayDevice : public Framebuffer
+{
+private:
+    /* data */
+public:
+    UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    ~UI_DisplayDevice();
+    virtual void show() = 0;
+    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
+};
+
 
 #endif // UI_MVC_H

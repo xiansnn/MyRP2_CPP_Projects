@@ -9,7 +9,7 @@ class MB_WidgetManager : public UI_WidgetManager
 private:
     /* data */
 public:
-    MB_WidgetManager(DisplayDevice* screen);
+    MB_WidgetManager(UI_DisplayDevice* screen);
     ~MB_WidgetManager();
 
     void process_control_event(SwitchButton* controller);

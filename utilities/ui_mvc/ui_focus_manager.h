@@ -12,11 +12,11 @@ protected:
     std::vector<UI_ControlledObject *> controlled_objects;
 
 public:
-    UI_WidgetManager(DisplayDevice *screen = nullptr);
+    UI_WidgetManager(UI_DisplayDevice *screen = nullptr);
     ~UI_WidgetManager();
     UI_ControlledObject *controlled_object_under_focus;
     std::list<UI_Widget *> widgets;
-    DisplayDevice *screen_framebuffer;
+    UI_DisplayDevice *screen_framebuffer;
     void refresh();
 
     void add_controlled_object(UI_ControlledObject *cntrl_obj);

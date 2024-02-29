@@ -2,7 +2,7 @@
 #include "ui_mvc.h"
 #include <string>
 
-UI_WidgetManager::UI_WidgetManager(DisplayDevice *screen) : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
+UI_WidgetManager::UI_WidgetManager(UI_DisplayDevice *screen) : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
 {
     this->screen_framebuffer = screen;
     min_value = 0;
