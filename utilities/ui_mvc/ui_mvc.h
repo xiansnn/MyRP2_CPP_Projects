@@ -103,7 +103,7 @@ public:
 class UI_DisplayDevice : public Framebuffer
 {
 private:
-    /* data */
+
 public:
     UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     ~UI_DisplayDevice();

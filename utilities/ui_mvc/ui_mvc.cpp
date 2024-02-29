@@ -91,29 +91,26 @@ UI_ControlledObject *UI_Widget::get_active_displayed_object()
 
 void UI_ControlledObject::set_value_clipped(int new_value)
 {
-
-    if (wrap)
-    {
-        if (new_value > max_value)
-            value = min_value;
-        else if (new_value < min_value)
-            value = max_value;
-    }
-    else
-        this->value = std::min(max_value, std::max(min_value, value));
+    this->value = std::min(max_value, std::max(min_value, new_value));
     status_has_changed = true;
 }
 
 void UI_ControlledObject::increment_value()
 {
     value += increment;
-    set_value_clipped(value);
+    if ((wrap) and (value > max_value))
+        value = min_value;
+    this->value = std::min(max_value, std::max(min_value, value));
+    status_has_changed = true;
 }
 
 void UI_ControlledObject::decrement_value()
 {
     value -= increment;
-    set_value_clipped(value);
+    if ((wrap) and (value < min_value))
+        value = max_value;
+    this->value = std::min(max_value, std::max(min_value, value));
+    status_has_changed = true;
 }
 
 int UI_ControlledObject::get_value()
