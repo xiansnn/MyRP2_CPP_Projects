@@ -221,6 +221,7 @@ void MB_DrawFMFrequency::draw()
 }
 MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
 {
+    this->wrap = true;
 }
 
 MB_WidgetManager::~MB_WidgetManager()
@@ -265,25 +266,16 @@ void MB_WidgetManager::process_control_event(ControlEvent event)
         active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
-        value++; // TODO wrap peut etre inclu dans ui_controlled_object
-        if (value > max_value)
-            value = min_value;
-        value = std::min(max_value, std::max(min_value, value));
+        increment_value();
         controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
-
-        status_has_changed = true;
         break;
     case ControlEvent::DECREMENT:
-        value--;
-        if (value < min_value)
-            value = max_value;
-        value = std::min(max_value, std::max(min_value, value));
+        decrement_value();
         controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
-        status_has_changed = true;
         break;
 
     default:

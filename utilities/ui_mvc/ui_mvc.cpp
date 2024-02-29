@@ -22,13 +22,14 @@ UI_ControlledObject *UI_Controller::get_active_controlled_object()
     return this->active_controlled_object;
 }
 
-UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_value, int increment)
+UI_ControlledObject::UI_ControlledObject(uint8_t id, int min_value, int max_value, bool wrap, int increment)
 {
     this->value = 0;
     this->id = id;
     this->min_value = min_value;
     this->max_value = max_value;
     this->increment = increment;
+    this->wrap = wrap;
 }
 
 UI_ControlledObject::~UI_ControlledObject()
@@ -75,7 +76,7 @@ bool UI_Widget::refresh_requested()
 
 void UI_Widget::refresh_done()
 {
-    active_displayed_object->clear_status_change_flag(); //    status_has_changed = false;
+    active_displayed_object->clear_status_change_flag();
 }
 
 void UI_Widget::set_active_displayed_object(UI_ControlledObject *displayed_object)
@@ -90,8 +91,29 @@ UI_ControlledObject *UI_Widget::get_active_displayed_object()
 
 void UI_ControlledObject::set_value_clipped(int new_value)
 {
-    this->value = std::min(max_value, std::max(min_value, new_value));
+
+    if (wrap)
+    {
+        if (new_value > max_value)
+            value = min_value;
+        else if (new_value < min_value)
+            value = max_value;
+    }
+    else
+        this->value = std::min(max_value, std::max(min_value, value));
     status_has_changed = true;
+}
+
+void UI_ControlledObject::increment_value()
+{
+    value += increment;
+    set_value_clipped(value);
+}
+
+void UI_ControlledObject::decrement_value()
+{
+    value -= increment;
+    set_value_clipped(value);
 }
 
 int UI_ControlledObject::get_value()
@@ -120,11 +142,10 @@ void UI_ControlledObject::set_max_value(int value)
 }
 
 UI_DisplayDevice::UI_DisplayDevice(size_t width, size_t height,
-                             Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
+                                   Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
 }
 
 UI_DisplayDevice::~UI_DisplayDevice()
 {
 }
-
