@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "ui_mvc.h"
-#include "ui_focus_manager.h"
+#include "ui_widget_manager.h"
 #include "switch_button.h"
 
 class KY_40_WidgetManager : public UI_WidgetManager

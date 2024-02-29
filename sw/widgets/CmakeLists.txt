@@ -4,20 +4,12 @@ target_link_libraries(widget_bar pico_stdlib framebuffer ui_mvc)
 add_library(print_console print_console_line.cpp)
 target_link_libraries(print_console pico_stdlib ui_mvc)
 
-add_library(mb_focus_manager mb_focus_manager.cpp)
-target_link_libraries(mb_focus_manager pico_stdlib switch_button ui_focus_manager)
-
 add_library(widget_text widget_text.cpp)
-target_link_libraries(widget_text pico_stdlib framebuffer)
-
-
-# add_executable(test_single_bar test_single_bar.cpp)
-# target_link_libraries(test_single_bar widget_bar pico_stdlib ssd1306 ky040 switch_button)
-# pico_add_extra_outputs(test_single_bar)
+target_link_libraries(widget_text pico_stdlib framebuffer ui_mvc)
 
 add_executable(test_multiple_bar test_multiple_bar.cpp)
 target_link_libraries(test_multiple_bar  pico_stdlib ssd1306 
+                        ui_mvc print_console ui_widget_manager
                         rotary_encoder switch_button 
-                        mb_focus_manager ui_mvc print_console
                         widget_bar widget_text)
 pico_add_extra_outputs(test_multiple_bar)

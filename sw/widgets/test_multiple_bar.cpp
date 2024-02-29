@@ -4,8 +4,9 @@
 #include "widget_bar.h"
 #include "widget_text.h"
 #include "print_console_line.h"
-#include "mb_focus_manager.h"
+#include "ui_widget_manager.h"
 #include "ui_mvc.h"
+#include "switch_button.h"
 
 #include <string>
 #include <vector>
@@ -85,66 +86,37 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
         printf("unknown IRQ\n");
         break;
     };
-}
-class W_DisplayFocus : public WText
+};
+
+class MB_WidgetManager : public UI_WidgetManager
+{
+private:
+    /* data */
+public:
+    MB_WidgetManager(UI_DisplayDevice *screen);
+    ~MB_WidgetManager();
+
+    void process_control_event(SwitchButton *controller);
+    void process_control_event(ControlEvent event);
+};
+
+class MB_DisplayFocus : public WText
 {
 public:
-    W_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                   Framebuffer_format format = Framebuffer_format::MONO_VLSB,
-                   config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    MB_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                    Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+                    config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
 };
 
-W_DisplayFocus::W_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                               Framebuffer_format format,
-                               config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
-                                                                          format, txt_cnf)
-{
-}
-
-void W_DisplayFocus::draw()
-{
-    clear_text_buffer();
-    sprintf(text_buffer, "%d", active_displayed_object->get_value());
-    print_text();
-}
-
-class W_DrawFMFrequency : public WText
+class MB_DrawFMFrequency : public WText
 {
 public:
-    W_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                      Framebuffer_format format = Framebuffer_format::MONO_VLSB,
-                      config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                       Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+                       config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
 };
-
-W_DrawFMFrequency::W_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                                     Framebuffer_format format,
-                                     config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
-                                                                                format, txt_cnf)
-{
-}
-
-void W_DrawFMFrequency::draw()
-{
-
-    clear_text_buffer();
-    char status;
-    switch (active_displayed_object->get_status())
-    {
-    case ControlledObjectStatus::HAS_FOCUS:
-        status = '>';
-        break;
-    case ControlledObjectStatus::IS_ACTIVE:
-        status = '#';
-        break;
-    default:
-        status = ' ';
-        break;
-    }
-    sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
-    print_text();
-}
 
 ControlledValue fm_freq = ControlledValue(CONTROLLED_FMFREQ_ID, 876, 1079, 1, true);
 ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
@@ -155,9 +127,9 @@ hw_I2C_master master = hw_I2C_master(cfg_i2c);
 SSD1306 screen = SSD1306(&master, cfg_ssd1306);
 
 MB_WidgetManager widget_manager = MB_WidgetManager(&screen);
-W_DisplayFocus display_focus = W_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
+MB_DisplayFocus display_focus = MB_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
 
-W_DrawFMFrequency widget_fm_frequency = W_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
+MB_DrawFMFrequency widget_fm_frequency = MB_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
 W_Bar widget_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
 W_Bar widget_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
 W_Bar widget_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
@@ -188,6 +160,7 @@ int main()
 
     while (true)
     {
+        pr_D1.hi();
         widget_manager.process_control_event(&central_switch);
         widget_manager.refresh();
         if (widget_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
@@ -197,9 +170,123 @@ int main()
             widget_manager.clear_active_controlled_object_change_flag();
             pr_D4.lo();
         }
+        pr_D1.lo();
 
         sleep_ms(20);
     }
 
     return 0;
+}
+
+MB_DisplayFocus::MB_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                                 Framebuffer_format format,
+                                 config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
+                                                                            format, txt_cnf)
+{
+}
+
+void MB_DisplayFocus::draw()
+{
+    clear_text_buffer();
+    sprintf(text_buffer, "%d", active_displayed_object->get_value());
+    print_text();
+}
+
+MB_DrawFMFrequency::MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                                       Framebuffer_format format,
+                                       config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
+                                                                                  format, txt_cnf)
+{
+}
+
+void MB_DrawFMFrequency::draw()
+{
+
+    clear_text_buffer();
+    char status;
+    switch (active_displayed_object->get_status())
+    {
+    case ControlledObjectStatus::HAS_FOCUS:
+        status = '>';
+        break;
+    case ControlledObjectStatus::IS_ACTIVE:
+        status = '#';
+        break;
+    default:
+        status = ' ';
+        break;
+    }
+    sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
+    print_text();
+}
+MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+{
+}
+
+MB_WidgetManager::~MB_WidgetManager()
+{
+}
+
+void MB_WidgetManager::process_control_event(SwitchButton *controller)
+{
+    ControlEvent sw_event = controller->process_sample_event();
+    process_control_event(sw_event);
+}
+
+void MB_WidgetManager::process_control_event(ControlEvent event)
+{
+    switch (event)
+    {
+    case ControlEvent::NOOP:
+        /* code */
+        break;
+    case ControlEvent::PUSH:
+        /* code */
+        break;
+    case ControlEvent::DOUBLE_PUSH:
+        /* code */
+        break;
+    case ControlEvent::LONG_PUSH:
+        active_controlled_object->set_value_clipped(0);
+        break;
+    case ControlEvent::RELEASED_AFTER_LONG_TIME:
+        break;
+    case ControlEvent::RELEASED_AFTER_SHORT_TIME:
+        if (active_controlled_object->id == FOCUS_MANAGER_ID)
+        {
+            active_controlled_object->update_status(ControlledObjectStatus::WAIT);
+            active_controlled_object = controlled_objects[value];
+            active_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
+        }
+        else
+        {
+            active_controlled_object = this;
+        }
+        active_controlled_object_has_changed = true;
+        break;
+    case ControlEvent::INCREMENT:
+        value++; // TODO wrap peut etre inclu dans ui_controlled_object
+        if (value > max_value)
+            value = min_value;
+        value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus = controlled_objects[value];
+        controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
+
+        status_has_changed = true;
+        break;
+    case ControlEvent::DECREMENT:
+        value--;
+        if (value < min_value)
+            value = max_value;
+        value = std::min(max_value, std::max(min_value, value));
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus = controlled_objects[value];
+        controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
+        status_has_changed = true;
+        break;
+
+    default:
+        break;
+    }
 }

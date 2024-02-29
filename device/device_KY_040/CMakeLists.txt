@@ -2,7 +2,7 @@ add_library(rotary_encoder rotary_encoder.cpp)
 target_link_libraries(rotary_encoder pico_stdlib controlled_value ui_mvc )
 
 add_library( ky040_focus_manager KY_040_focus_manager.cpp)
-target_link_libraries(ky040_focus_manager ui_mvc switch_button ui_focus_manager)
+target_link_libraries(ky040_focus_manager ui_mvc switch_button ui_widget_manager)
 
 
 add_executable(test_ky040 test_ky_040.cpp)
