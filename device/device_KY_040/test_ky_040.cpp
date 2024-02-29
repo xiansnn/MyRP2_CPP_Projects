@@ -4,9 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "controlled_value.h"
 #include "print_console_line.h"
-#include "focus_manager.h"
+#include "KY_040_focus_manager.h"
 
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26

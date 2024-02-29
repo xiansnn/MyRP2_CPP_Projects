@@ -5,7 +5,7 @@ add_library(print_console print_console_line.cpp)
 target_link_libraries(print_console pico_stdlib ui_mvc)
 
 add_library(mb_focus_manager mb_focus_manager.cpp)
-target_link_libraries(mb_focus_manager pico_stdlib focus_manager)
+target_link_libraries(mb_focus_manager pico_stdlib switch_button ui_focus_manager)
 
 add_library(widget_text widget_text.cpp)
 target_link_libraries(widget_text pico_stdlib framebuffer)

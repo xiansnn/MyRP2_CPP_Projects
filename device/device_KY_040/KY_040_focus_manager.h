@@ -1,5 +1,5 @@
-#if !defined(FOCUS_MANAGER_H)
-#define FOCUS_MANAGER_H
+#if !defined(KY8_40_FOCUS_MANAGER_H)
+#define KY8_40_FOCUS_MANAGER_H
 
 #include <vector>
 #include "ui_mvc.h"
@@ -19,4 +19,4 @@ public:
 
 };
 
-#endif // FOCUS_MANAGER_H
+#endif // KY8_40_FOCUS_MANAGER_H

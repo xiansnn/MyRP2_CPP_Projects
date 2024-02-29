@@ -3,7 +3,6 @@
 
 #include <pico/stdio.h>
 #include "switch_button.h"
-#include "controlled_value.h"
 #include "ui_mvc.h"
 
 class RotaryEncoder : public SwitchButtonWithIRQ
