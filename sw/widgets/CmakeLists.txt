@@ -1,5 +1,8 @@
 add_library(widget_bar widget_bar.cpp)
-target_link_libraries(widget_bar pico_stdlib framebuffer ui_mvc)
+target_link_libraries(widget_bar pico_stdlib ui_mvc)
+
+add_library(widget_bargraph widget_bargraph.cpp)
+target_link_libraries(widget_bargraph pico_stdlib ui_mvc)
 
 add_library(print_console print_console_line.cpp)
 target_link_libraries(print_console pico_stdlib ui_mvc)
@@ -13,6 +16,14 @@ target_link_libraries(test_multiple_bar  pico_stdlib ssd1306
                         rotary_encoder switch_button 
                         widget_bar widget_text)
 pico_add_extra_outputs(test_multiple_bar)
+
+add_executable(test_bargraph test_bargraph.cpp)
+target_link_libraries(test_bargraph  pico_stdlib ssd1306 
+                        ui_mvc  ui_widget_manager
+                        rotary_encoder switch_button 
+                        widget_bar widget_text)
+pico_add_extra_outputs(test_bargraph)
+
 
 add_executable(test_font test_font.cpp)
 target_link_libraries(test_font  pico_stdlib ssd1306 

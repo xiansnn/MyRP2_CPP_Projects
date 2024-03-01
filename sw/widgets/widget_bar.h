@@ -5,19 +5,21 @@
 #include "controlled_value.h"
 #include "ui_mvc.h"
 
-typedef struct config_bar_widget
+typedef struct config_widget
 {
     size_t width{128};
     size_t height{8};
     bool with_border{true};
     bool with_label {false};
     const unsigned char *font{nullptr};
-} config_bar_widget_t;
+} config_widget_t;
+
+
 
 class W_Bar : public UI_Widget
 {
 private:
-    config_bar_widget_t config{};
+    config_widget_t config{};
     size_t label_value_max_width;
     uint8_t px_max;
     uint8_t px_min;
@@ -27,7 +29,7 @@ private:
     uint8_t convert_level_value_to_px(int level);
 
 public:
-    W_Bar(uint8_t id, ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_bar_widget_t bar_config ={});
+    W_Bar(uint8_t id, ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_widget_t bar_config ={});
     ~W_Bar();
     void draw();
     void draw_border();

@@ -9,7 +9,7 @@ uint8_t W_Bar::convert_level_value_to_px(int level)
     return position;
 }
 
-W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, uint8_t anchor_x, uint8_t anchor_y, config_bar_widget_t config) 
+W_Bar::W_Bar(uint8_t id, ControlledValue *cntrl_value, uint8_t anchor_x, uint8_t anchor_y, config_widget_t config) 
                 : UI_Widget(id,config.width, config.height, anchor_x, anchor_y)
 {
     active_displayed_object = cntrl_value;

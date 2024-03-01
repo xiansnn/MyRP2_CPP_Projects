@@ -26,16 +26,18 @@ Probe pr_D4 = Probe(4);
 #define CENTRAL_SWITCH_ID 12
 
 #define CONTROLLED_FMFREQ_ID 20
-#define CONTROLLED_VAL1_ID 21
-#define CONTROLLED_VAL2_ID 22
-#define CONTROLLED_VAL3_ID 23
+#define CONTROLLED_VAL0_ID 21
+// #define CONTROLLED_VAL2_ID 22
+// #define CONTROLLED_VAL3_ID 23
 
 #define FMFREQ_WIDGET_ID 30
-#define BAR1_WIDGET_ID 31
-#define BAR2_WIDGET_ID 32
-#define BAR3_WIDGET_ID 33
+#define BAR0_WIDGET_ID 31
+// #define BAR2_WIDGET_ID 32
+// #define BAR3_WIDGET_ID 33
 
 #define CONSOLE_WIDGET_ID 40
+
+#define BARGRAPH_NUMBER 7
 
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
@@ -55,7 +57,7 @@ config_SSD1306_t cfg_ssd1306{
 config_widget_t cfg_bar{
     .width = 128,
     .height = 8,
-    .with_border = true,
+    .with_border = false,
     .with_label = true,
     .font = font_5x8};
 
@@ -88,41 +90,53 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     };
 };
 
-class MB_WidgetManager : public UI_WidgetManager
+class BG_WidgetManager : public UI_WidgetManager
 {
 private:
     /* data */
 public:
-    MB_WidgetManager(UI_DisplayDevice *screen);
-    ~MB_WidgetManager();
+    BG_WidgetManager(UI_DisplayDevice *screen);
+    ~BG_WidgetManager();
 
     void process_control_event(SwitchButton *controller);
     void process_control_event(ControlEvent event);
 };
 
-class MB_DrawFMFrequency : public WText
-{
-public:
-    MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                       Framebuffer_format format = Framebuffer_format::MONO_VLSB,
-                       config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    void draw();
-};
+// class MB_DrawFMFrequency : public WText
+// {
+// public:
+//     MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+//                        Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+//                        config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+//     void draw();
+// };
 
 ControlledValue fm_freq = ControlledValue(CONTROLLED_FMFREQ_ID, 876, 1079, 1, true);
-ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
-ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
-ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
+
+ControlledValue values[] = {
+    ControlledValue(CONTROLLED_VAL0_ID, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 1, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 2, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 3, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 4, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 5, 0, 10),
+    ControlledValue(CONTROLLED_VAL0_ID + 6, 0, 10),
+};
 
 hw_I2C_master master = hw_I2C_master(cfg_i2c);
 SSD1306 screen = SSD1306(&master, cfg_ssd1306);
 
-MB_WidgetManager widget_manager = MB_WidgetManager(&screen);
+BG_WidgetManager widget_manager = BG_WidgetManager(&screen);
 
-MB_DrawFMFrequency widget_fm_frequency = MB_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
-W_Bar widget_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
-W_Bar widget_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
-W_Bar widget_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
+// MB_DrawFMFrequency widget_fm_frequency = MB_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
+
+W_Bar widget_val0 = W_Bar(BAR0_WIDGET_ID, &values[0], 0, 8 + 8 * 0, cfg_bar);
+W_Bar widget_val1 = W_Bar(BAR0_WIDGET_ID, &values[1], 0, 8 + 8 * 1, cfg_bar);
+W_Bar widget_val2 = W_Bar(BAR0_WIDGET_ID, &values[2], 0, 8 + 8 * 2, cfg_bar);
+W_Bar widget_val3 = W_Bar(BAR0_WIDGET_ID, &values[3], 0, 8 + 8 * 3, cfg_bar);
+W_Bar widget_val4 = W_Bar(BAR0_WIDGET_ID, &values[4], 0, 8 + 8 * 4, cfg_bar);
+W_Bar widget_val5 = W_Bar(BAR0_WIDGET_ID, &values[5], 0, 8 + 8 * 5, cfg_bar);
+W_Bar widget_val6 = W_Bar(BAR0_WIDGET_ID, &values[6], 0, 8 + 8 * 6, cfg_bar);
 
 int main()
 {
@@ -131,20 +145,32 @@ int main()
 
     encoder.set_active_controlled_object(&widget_manager);
 
-    widget_manager.add_controlled_object(&fm_freq);
-    widget_manager.add_controlled_object(&val1);
-    widget_manager.add_controlled_object(&val2);
-    widget_manager.add_controlled_object(&val3);
+    // widget_manager.add_controlled_object(&fm_freq);
+    widget_manager.add_controlled_object(&values[0]);
+    widget_manager.add_controlled_object(&values[1]);
+    widget_manager.add_controlled_object(&values[2]);
+    widget_manager.add_controlled_object(&values[3]);
+    widget_manager.add_controlled_object(&values[4]);
+    widget_manager.add_controlled_object(&values[5]);
+    widget_manager.add_controlled_object(&values[6]);
 
-    widget_fm_frequency.set_active_displayed_object(&fm_freq);
-    widget_val1.set_active_displayed_object(&val1);
-    widget_val2.set_active_displayed_object(&val2);
-    widget_val3.set_active_displayed_object(&val3);
+    // widget_fm_frequency.set_active_displayed_object(&fm_freq);
+    widget_val0.set_active_displayed_object(&values[0]);
+    widget_val1.set_active_displayed_object(&values[1]);
+    widget_val2.set_active_displayed_object(&values[2]);
+    widget_val3.set_active_displayed_object(&values[3]);
+    widget_val4.set_active_displayed_object(&values[4]);
+    widget_val5.set_active_displayed_object(&values[5]);
+    widget_val6.set_active_displayed_object(&values[6]);
 
-    widget_manager.add_widget(&widget_fm_frequency);
+    // widget_manager.add_widget(&widget_fm_frequency);
+    widget_manager.add_widget(&widget_val0);
     widget_manager.add_widget(&widget_val1);
     widget_manager.add_widget(&widget_val2);
     widget_manager.add_widget(&widget_val3);
+    widget_manager.add_widget(&widget_val4);
+    widget_manager.add_widget(&widget_val5);
+    widget_manager.add_widget(&widget_val6);
 
     encoder.set_active_controlled_object(widget_manager.get_active_controlled_object());
 
@@ -168,49 +194,49 @@ int main()
     return 0;
 }
 
-MB_DrawFMFrequency::MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                                       Framebuffer_format format,
-                                       config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
-                                                                                  format, txt_cnf)
+// MB_DrawFMFrequency::MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+//                                        Framebuffer_format format,
+//                                        config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
+//                                                                                   format, txt_cnf)
+// {
+// }
+
+// void MB_DrawFMFrequency::draw()
+// {
+
+//     clear_text_buffer();
+//     char status;
+//     switch (active_displayed_object->get_status())
+//     {
+//     case ControlledObjectStatus::HAS_FOCUS:
+//         status = '>';
+//         break;
+//     case ControlledObjectStatus::IS_ACTIVE:
+//         status = '#';
+//         break;
+//     default:
+//         status = ' ';
+//         break;
+//     }
+//     sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
+//     print_text();
+// }
+
+BG_WidgetManager::BG_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
 {
 }
 
-void MB_DrawFMFrequency::draw()
-{
-
-    clear_text_buffer();
-    char status;
-    switch (active_displayed_object->get_status())
-    {
-    case ControlledObjectStatus::HAS_FOCUS:
-        status = '>';
-        break;
-    case ControlledObjectStatus::IS_ACTIVE:
-        status = '#';
-        break;
-    default:
-        status = ' ';
-        break;
-    }
-    sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
-    print_text();
-}
-MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
-{
-    this->wrap = true;
-}
-
-MB_WidgetManager::~MB_WidgetManager()
+BG_WidgetManager::~BG_WidgetManager()
 {
 }
 
-void MB_WidgetManager::process_control_event(SwitchButton *controller)
+void BG_WidgetManager::process_control_event(SwitchButton *controller)
 {
     ControlEvent sw_event = controller->process_sample_event();
     process_control_event(sw_event);
 }
 
-void MB_WidgetManager::process_control_event(ControlEvent event)
+void BG_WidgetManager::process_control_event(ControlEvent event)
 {
     switch (event)
     {
