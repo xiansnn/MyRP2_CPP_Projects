@@ -26,14 +26,8 @@ Probe pr_D4 = Probe(4);
 #define CENTRAL_SWITCH_ID 12
 
 #define CHARFONT_ID 20
-// #define CONTROLLED_VAL1_ID 21
-// #define CONTROLLED_VAL2_ID 22
-// #define CONTROLLED_VAL3_ID 23
 
 #define FONT_WIDGET_ID 30
-// #define BAR1_WIDGET_ID 31
-// #define BAR2_WIDGET_ID 32
-// #define BAR3_WIDGET_ID 33
 
 #define CONSOLE_WIDGET_ID 40
 
@@ -52,7 +46,7 @@ config_SSD1306_t cfg_ssd1306{
     .frequency_divider = 1,
     .frequency_factor = 0};
 
-config_bar_widget_t cfg_bar{
+config_widget_t cfg_bar{
     .width = 128,
     .height = 8,
     .with_border = true,
@@ -147,7 +141,7 @@ int main()
         }
         pr_D1.lo();
 
-        sleep_ms(20);
+        sleep_ms(100);
     }
 
     return 0;
@@ -179,7 +173,7 @@ void DrawFont::draw()
     }
     uint8_t i = active_displayed_object->get_value();
     char c = i;
-    sprintf(text_buffer, "%c %d  %#x  %c", status, i,i, c );
+    sprintf(text_buffer, "%c %d  %#X  %c", status, i,i, c );
     print_text();
 }
 
