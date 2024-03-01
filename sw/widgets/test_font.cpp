@@ -25,15 +25,15 @@ Probe pr_D4 = Probe(4);
 #define ENCODER_ID 11
 #define CENTRAL_SWITCH_ID 12
 
-#define CONTROLLED_FMFREQ_ID 20
-#define CONTROLLED_VAL1_ID 21
-#define CONTROLLED_VAL2_ID 22
-#define CONTROLLED_VAL3_ID 23
+#define CHARFONT_ID 20
+// #define CONTROLLED_VAL1_ID 21
+// #define CONTROLLED_VAL2_ID 22
+// #define CONTROLLED_VAL3_ID 23
 
-#define FMFREQ_WIDGET_ID 30
-#define BAR1_WIDGET_ID 31
-#define BAR2_WIDGET_ID 32
-#define BAR3_WIDGET_ID 33
+#define FONT_WIDGET_ID 30
+// #define BAR1_WIDGET_ID 31
+// #define BAR2_WIDGET_ID 32
+// #define BAR3_WIDGET_ID 33
 
 #define CONSOLE_WIDGET_ID 40
 
@@ -88,51 +88,35 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
     };
 };
 
-class MB_WidgetManager : public UI_WidgetManager
+class TestFontWidgetManager : public UI_WidgetManager
 {
 private:
     /* data */
 public:
-    MB_WidgetManager(UI_DisplayDevice *screen);
-    ~MB_WidgetManager();
+    TestFontWidgetManager(UI_DisplayDevice *screen);
+    ~TestFontWidgetManager();
 
     void process_control_event(SwitchButton *controller);
     void process_control_event(ControlEvent event);
 };
 
-// class MB_DisplayFocus : public WText
-// {
-// public:
-//     MB_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-//                     Framebuffer_format format = Framebuffer_format::MONO_VLSB,
-//                     config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-//     void draw();
-// };
-
-class MB_DrawFMFrequency : public WText
+class DrawFont : public WText
 {
 public:
-    MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                       Framebuffer_format format = Framebuffer_format::MONO_VLSB,
-                       config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    DrawFont(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+             Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+             config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
 };
 
-ControlledValue fm_freq = ControlledValue(CONTROLLED_FMFREQ_ID, 876, 1079, 1, true);
-ControlledValue val1 = ControlledValue(CONTROLLED_VAL1_ID, -10, +10);
-ControlledValue val2 = ControlledValue(CONTROLLED_VAL2_ID, 5, 25);
-ControlledValue val3 = ControlledValue(CONTROLLED_VAL3_ID, -25, -5);
+ControlledValue char_number = ControlledValue(CHARFONT_ID, 32, 255);
 
 hw_I2C_master master = hw_I2C_master(cfg_i2c);
 SSD1306 screen = SSD1306(&master, cfg_ssd1306);
 
-MB_WidgetManager widget_manager = MB_WidgetManager(&screen);
-// MB_DisplayFocus display_focus = MB_DisplayFocus(CONSOLE_WIDGET_ID, 120, 8, 0, 0);
+TestFontWidgetManager widget_manager = TestFontWidgetManager(&screen);
 
-MB_DrawFMFrequency widget_fm_frequency = MB_DrawFMFrequency(FMFREQ_WIDGET_ID, 120, 8, 0, 16);
-W_Bar widget_val1 = W_Bar(BAR1_WIDGET_ID, &val1, 0, 32, cfg_bar);
-W_Bar widget_val2 = W_Bar(BAR2_WIDGET_ID, &val2, 0, 40, cfg_bar);
-W_Bar widget_val3 = W_Bar(BAR3_WIDGET_ID, &val3, 0, 48, cfg_bar);
+DrawFont widget_font = DrawFont(FONT_WIDGET_ID, 125, 8, 0, 16);
 
 int main()
 {
@@ -141,20 +125,11 @@ int main()
 
     encoder.set_active_controlled_object(&widget_manager);
 
-    widget_manager.add_controlled_object(&fm_freq);
-    widget_manager.add_controlled_object(&val1);
-    widget_manager.add_controlled_object(&val2);
-    widget_manager.add_controlled_object(&val3);
+    widget_manager.add_controlled_object(&char_number);
 
-    widget_fm_frequency.set_active_displayed_object(&fm_freq);
-    widget_val1.set_active_displayed_object(&val1);
-    widget_val2.set_active_displayed_object(&val2);
-    widget_val3.set_active_displayed_object(&val3);
+    widget_font.set_active_displayed_object(&char_number);
 
-    widget_manager.add_widget(&widget_fm_frequency);
-    widget_manager.add_widget(&widget_val1);
-    widget_manager.add_widget(&widget_val2);
-    widget_manager.add_widget(&widget_val3);
+    widget_manager.add_widget(&widget_font);
 
     encoder.set_active_controlled_object(widget_manager.get_active_controlled_object());
 
@@ -178,28 +153,14 @@ int main()
     return 0;
 }
 
-// MB_DisplayFocus::MB_DisplayFocus(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-//                                  Framebuffer_format format,
-//                                  config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
-//                                                                             format, txt_cnf)
-// {
-// }
-
-// void MB_DisplayFocus::draw()
-// {
-//     clear_text_buffer();
-//     sprintf(text_buffer, "%d", active_displayed_object->get_value());
-//     print_text();
-// }
-
-MB_DrawFMFrequency::MB_DrawFMFrequency(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
-                                       Framebuffer_format format,
-                                       config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
-                                                                                  format, txt_cnf)
+DrawFont::DrawFont(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
+                   Framebuffer_format format,
+                   config_framebuffer_text_t txt_cnf) : WText(id, width, height, anchor_x, anchor_y,
+                                                              format, txt_cnf)
 {
 }
 
-void MB_DrawFMFrequency::draw()
+void DrawFont::draw()
 {
 
     clear_text_buffer();
@@ -210,31 +171,34 @@ void MB_DrawFMFrequency::draw()
         status = '>';
         break;
     case ControlledObjectStatus::IS_ACTIVE:
-        status = '#';
+        status = '\xB2';
         break;
     default:
         status = ' ';
         break;
     }
-    sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
+    uint8_t i = active_displayed_object->get_value();
+    char c = i;
+    sprintf(text_buffer, "%c %d  %#x  %c", status, i,i, c );
     print_text();
 }
-MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+
+TestFontWidgetManager::TestFontWidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
 {
     this->wrap = true;
 }
 
-MB_WidgetManager::~MB_WidgetManager()
+TestFontWidgetManager::~TestFontWidgetManager()
 {
 }
 
-void MB_WidgetManager::process_control_event(SwitchButton *controller)
+void TestFontWidgetManager::process_control_event(SwitchButton *controller)
 {
     ControlEvent sw_event = controller->process_sample_event();
     process_control_event(sw_event);
 }
 
-void MB_WidgetManager::process_control_event(ControlEvent event)
+void TestFontWidgetManager::process_control_event(ControlEvent event)
 {
     switch (event)
     {

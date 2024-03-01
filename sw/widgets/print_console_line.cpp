@@ -21,7 +21,7 @@ void W_DisplayControlledValueOnTerminal::draw()
         printf("[%d] has focus\n",active_displayed_object->id);
         break;
     case ControlledObjectStatus::IS_ACTIVE:
-        printf("[%d] is active: %2d %*c\n", active_displayed_object->id, active_displayed_object->get_value(), display_value, '|');
+        printf("[%d] is active: %2d %*c\n", active_displayed_object->id, active_displayed_object->get_value(), display_value, '\120');
         break;
     default:
         break;
