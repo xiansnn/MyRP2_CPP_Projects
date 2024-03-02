@@ -72,7 +72,7 @@ void W_Bar::draw_level_value(int value)
         status = '>';
         break;
     case ControlledObjectStatus::IS_ACTIVE :
-        status = '#';
+        status = '\xDB';
         break;
     default:
         status = ' ';
