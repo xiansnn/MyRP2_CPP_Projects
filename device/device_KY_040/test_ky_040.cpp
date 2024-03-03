@@ -92,7 +92,7 @@ int main()
     {
         widget_manager.process_control_event(&central_switch);
         widget_manager.refresh();
-        if (widget_manager.active_controlled_object_has_changed) // TODO voir comment supprimer active_controlled_object_has_changed
+        if (widget_manager.active_controlled_object_has_changed)
         {
             encoder.set_active_controlled_object(widget_manager.get_active_controlled_object());
             widget_manager.clear_active_controlled_object_change_flag();

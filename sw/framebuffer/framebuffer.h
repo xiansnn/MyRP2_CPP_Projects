@@ -65,7 +65,8 @@ public:
     uint8_t max_line{0};
     uint8_t max_column{0};
 
-    Framebuffer(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    Framebuffer(size_t width, size_t height, 
+    Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});//TODO inverser ordre format et txt_cnf
     ~Framebuffer();
 
     /* graphic primitives*/
