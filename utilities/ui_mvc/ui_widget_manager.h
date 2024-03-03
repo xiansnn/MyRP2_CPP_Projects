@@ -6,7 +6,7 @@
 
 #include "ui_mvc.h"
 
-class UI_WidgetManager : public UI_ControlledObject, public UI_Controller
+class UI_WidgetManager : public UI_ControlledObject, public UI_Controller // TODO a inclure dans ui_mvc
 {
 protected:
     std::vector<UI_ControlledObject *> controlled_objects;

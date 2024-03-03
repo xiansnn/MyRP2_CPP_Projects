@@ -55,7 +55,7 @@ public:
     virtual void decrement_value();
 
     UI_ControlledObject(uint8_t id, int min_value = 0, int max_value = 10, bool wrap = false, int increment = 1);
-    ~UI_ControlledObject();
+    virtual ~UI_ControlledObject();
 
     bool has_status_changed();
     void clear_status_change_flag();
@@ -74,7 +74,7 @@ protected:
 public:
     uint8_t id;
     UI_Controller(uint8_t id);
-    ~UI_Controller();
+    virtual ~UI_Controller();
 
     void set_active_controlled_object(UI_ControlledObject *cntrl_obj);
     UI_ControlledObject *get_active_controlled_object();
@@ -93,7 +93,7 @@ public:
     UI_Widget(uint8_t id, size_t width, size_t height, uint8_t anchor_x = 0, uint8_t anchor_y = 0,
               Framebuffer_format format = Framebuffer_format::MONO_VLSB,
               config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    ~UI_Widget();
+    virtual ~UI_Widget();
     bool refresh_requested();
     void refresh_done();
 
@@ -108,7 +108,7 @@ private:
 
 public:
     UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    ~UI_DisplayDevice();
+    virtual ~UI_DisplayDevice();
     virtual void show() = 0;
     virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
 };
