@@ -10,16 +10,13 @@ typedef struct config_widget
     size_t width{128};
     size_t height{8};
     bool with_border{true};
-    bool with_label {false};
+    bool with_label{false};
     const unsigned char *font{nullptr};
 } config_widget_t;
-
-
 
 class W_Bar : public UI_Widget
 {
 private:
-    config_widget_t config{};
     size_t label_value_max_width;
     uint8_t px_max;
     uint8_t px_min;
@@ -28,8 +25,11 @@ private:
 
     uint8_t convert_level_value_to_px(int level);
 
+protected:
+    config_widget_t config{};
+
 public:
-    W_Bar(uint8_t id, ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_widget_t bar_config ={});
+    W_Bar(uint8_t id, ControlledValue *cntrl_value, uint8_t anchor_x, uint8_t anchor_y, config_widget_t bar_config = {});
     ~W_Bar();
     void draw();
     void draw_border();

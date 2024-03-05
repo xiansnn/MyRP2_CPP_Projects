@@ -3,10 +3,10 @@
 
 #include "widget_bar.h"
 #include "widget_text.h"
-#include "print_console_line.h"
 #include "ui_widget_manager.h"
 #include "ui_mvc.h"
 #include "switch_button.h"
+
 
 #include <string>
 #include <vector>
