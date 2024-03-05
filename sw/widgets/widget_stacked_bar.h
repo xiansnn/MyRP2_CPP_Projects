@@ -10,22 +10,6 @@
 
 #define BARGRAPH_BIN_NUMBER 7 // must be define at compile time
 
-#define CONTROLLED_VAL0_ID 21
-#define WIDGET_BAR0_ID 31
-#define CONSOLE_WIDGET_ID 40
-#define MIN_BIN_VALUE 0
-#define MAX_BIN_VALUE 10
-#define BARGRAPH_ANCHOR_X 0
-#define BARGRAPH_ANCHOR_Y 8
-#define BARGRAPH_WIDTH 120
-#define BARGRAPH_HEIGHT 56
-#define BARGRAPH_BIN_HEIGHT BARGRAPH_HEIGHT / BARGRAPH_BIN_NUMBER // font height if a label is written, otherwise totalBargraph height/BARGRAPH_BIN_NUMBER
-
-
-
-
-
-
 
 class StackedBarManager : public UI_WidgetManager
 {

@@ -16,6 +16,19 @@
 #define ENCODER_ID 11
 #define CENTRAL_SWITCH_ID 12
 
+#define CONTROLLED_VAL0_ID 21
+#define WIDGET_BAR0_ID 31
+#define CONSOLE_WIDGET_ID 40
+
+#define MIN_BIN_VALUE 0
+#define MAX_BIN_VALUE 10
+#define BARGRAPH_ANCHOR_X 0
+#define BARGRAPH_ANCHOR_Y 0
+#define BARGRAPH_WIDTH 120
+#define BARGRAPH_HEIGHT 56
+
+
+
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,
     .sda_pin = SSD1306_I2C_SDA_GPIO,
@@ -42,7 +55,7 @@ config_switch_button_t cfg_encoder_clk{
 
 config_widget_t cfg_bar{
     .width = BARGRAPH_WIDTH,
-    .height = BARGRAPH_BIN_HEIGHT,
+    .height = BARGRAPH_HEIGHT/BARGRAPH_BIN_NUMBER,  // warning: this is the size of a bin, not the size of the widget as it should be
     .with_border = false,
     .with_label = true,
     .font = font_5x8};

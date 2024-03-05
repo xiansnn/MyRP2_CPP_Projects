@@ -1,10 +1,9 @@
 #include "widget_stacked_bar.h"
 #include "widget_bar.h"
 
-
-W_StackedBar::W_StackedBar(uint8_t id,UI_DisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder , 
-            ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_widget_t bar_config) 
-            : W_Bar( id, cntrl_value, anchor_x, anchor_y,  bar_config)
+W_StackedBar::W_StackedBar(uint8_t id, UI_DisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder,
+                           ControlledValue *cntrl_value, uint8_t anchor_x, uint8_t anchor_y, config_widget_t bar_config)
+    : W_Bar(id, cntrl_value, anchor_x, anchor_y, bar_config)
 {
     widget_manager = new StackedBarManager(screen);
     this->validation_switch = central_switch;
@@ -42,7 +41,8 @@ void W_StackedBar::populate_values()
     for (size_t i = 0; i < BARGRAPH_BIN_NUMBER; i++)
     {
 
-        values[i] = new ControlledValue(CONTROLLED_VAL0_ID + i, MIN_BIN_VALUE, MAX_BIN_VALUE);
+        values[i] = new ControlledValue(this->id + i,
+                                        this->active_displayed_object->get_min_value(), this->active_displayed_object->get_max_value());
     }
 };
 
@@ -50,8 +50,9 @@ void W_StackedBar::populate_widget_values()
 {
     for (size_t i = 0; i < BARGRAPH_BIN_NUMBER; i++)
     {
-        w_bar_values[i] = new W_Bar(WIDGET_BAR0_ID + i, values[i],
-                                    BARGRAPH_ANCHOR_X, (BARGRAPH_ANCHOR_Y + BARGRAPH_BIN_HEIGHT * i), this->config);
+        w_bar_values[i] = new W_Bar(this->id + i, values[i],
+                                    this->anchor_x, (this->anchor_y + this->config.height * i), // TODO : the height of a bin must be enough to write label
+                                    this->config);
     }
 };
 
