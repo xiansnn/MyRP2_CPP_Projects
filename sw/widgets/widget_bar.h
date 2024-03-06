@@ -5,15 +5,6 @@
 #include "controlled_value.h"
 #include "ui_mvc.h"
 
-typedef struct config_widget
-{
-    size_t width{128};
-    size_t height{8};
-    bool with_border{true};
-    bool with_label{false};
-    const unsigned char *font{nullptr};
-} config_widget_t;
-
 class W_Bar : public UI_Widget
 {
 private:

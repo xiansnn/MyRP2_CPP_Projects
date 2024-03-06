@@ -49,12 +49,19 @@ target_link_libraries(test_multiple_bar
 pico_add_extra_outputs(test_multiple_bar)
 
 
-# add_executable(test_bargraph test_bargraph.cpp)
-# target_link_libraries(test_bargraph  pico_stdlib ssd1306 
-#                         ui_mvc  ui_widget_manager
-#                         rotary_encoder switch_button 
-#                         widget_bar widget_text)
-# pico_add_extra_outputs(test_bargraph)
+add_executable(test_h_bargraph test_h_bargraph.cpp)
+target_link_libraries(test_h_bargraph  
+                                pico_stdlib 
+                                ssd1306 
+                                ui_mvc 
+                                widget_bargraph 
+                                # ui_widget_manager
+                                rotary_encoder 
+                                # switch_button 
+                                widget_bar 
+                                # widget_text
+                                )
+pico_add_extra_outputs(test_h_bargraph)
 
 
 add_executable(test_font test_font.cpp)

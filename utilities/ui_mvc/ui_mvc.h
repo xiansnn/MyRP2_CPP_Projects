@@ -6,6 +6,14 @@
 
 #define FOCUS_MANAGER_ID 0
 
+typedef struct config_widget
+{
+    size_t width{128};
+    size_t height{8};
+    bool with_border{true};
+    bool with_label{false};
+    const unsigned char *font{nullptr};
+} config_widget_t;
 
 
 enum class ControlEvent
