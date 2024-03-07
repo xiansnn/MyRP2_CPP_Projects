@@ -109,7 +109,7 @@ W_HBargraph::W_HBargraph(uint8_t id, UI_DisplayDevice *screen, uint8_t anchor_x,
                          BargraphDisplayedObject *displayed_values, config_widget_t cnf_bar,
                          Framebuffer_format format, config_framebuffer_text_t txt_cnf)
     : UI_Widget(id, cnf_bar.width, cnf_bar.height, anchor_x, anchor_y, format, txt_cnf),
-      UI_ControlledObject(id, min_value, max_value, wrap, increment)
+      ControlledValue(id, min_value, max_value, wrap, increment) 
 {
     this->screen_framebuffer = screen;
     this->config = cnf_bar;

@@ -28,7 +28,7 @@ void W_DisplayControlledValueOnTerminal::draw()
     }
 }
 
-UI_ControlledObject *W_DisplayControlledValueOnTerminal::set_active_displayed_object(UI_ControlledObject *val)
+UI_ControlledObject *W_DisplayControlledValueOnTerminal::set_active_displayed_object(ControlledValue *val) 
 {
     this->active_displayed_object = val;
     slope = (max_line_width - 1.) / (active_displayed_object->get_max_value() - active_displayed_object->get_min_value());

@@ -17,7 +17,7 @@ public:
               config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     ~W_DisplayControlledValueOnTerminal();
     void draw();
-    UI_ControlledObject *set_active_displayed_object(UI_ControlledObject *val);
+    UI_ControlledObject *set_active_displayed_object(ControlledValue *val); 
 };
 
 #endif // PRINT_CONSOLE_LINE

@@ -4,6 +4,7 @@
 #include "rotary_encoder.h"
 #include "ui_mvc.h"
 #include "widget_bar.h"
+#include "controlled_value.h"
 #include <array>
 
 #define BARGRAPH_BIN_NUMBER 7
@@ -21,7 +22,7 @@ public:
     int max_value;
     bool status_has_changed{true};
 };
-class W_HBargraph : public UI_Widget, public UI_ControlledObject
+class W_HBargraph : public UI_Widget, public ControlledValue 
 {
 private:
     UI_DisplayDevice *screen_framebuffer;
