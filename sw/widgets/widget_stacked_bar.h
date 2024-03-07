@@ -20,6 +20,7 @@ public:
 
     void process_control_event(SwitchButton *controller);
     void process_control_event(ControlEvent event);
+    void set_value_clipped(int new_value);
 };
 
 

@@ -91,6 +91,7 @@ public:
 
     void process_control_event(SwitchButton *controller);
     void process_control_event(ControlEvent event);
+    void set_value_clipped(int new_value);
 };
 
 class DrawFont : public WText
@@ -184,6 +185,13 @@ TestFontWidgetManager::TestFontWidgetManager(UI_DisplayDevice *screen) : UI_Widg
 TestFontWidgetManager::~TestFontWidgetManager()
 {
 }
+
+void TestFontWidgetManager::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
+}
+
 
 void TestFontWidgetManager::process_control_event(SwitchButton *controller)
 {

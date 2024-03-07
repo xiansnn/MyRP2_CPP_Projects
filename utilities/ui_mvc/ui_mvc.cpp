@@ -89,11 +89,6 @@ UI_ControlledObject *UI_Widget::get_active_displayed_object()
     return this->active_displayed_object;
 }
 
-void UI_ControlledObject::set_value_clipped(int new_value)
-{
-    this->value = std::min(max_value, std::max(min_value, new_value));
-    status_has_changed = true;
-}
 
 void UI_ControlledObject::increment_value()
 {
@@ -150,7 +145,7 @@ UI_WidgetManager::UI_WidgetManager(UI_DisplayDevice *screen) : UI_ControlledObje
 {
     this->screen_framebuffer = screen;
     min_value = 0;
-    set_value_clipped(0);
+    value=0;
     active_controlled_object = this;
 }
 

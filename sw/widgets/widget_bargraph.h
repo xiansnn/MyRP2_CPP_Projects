@@ -36,6 +36,7 @@ private:
     uint8_t convert_level_value_to_px(int level);
     void draw();
     void draw_bar(uint8_t bin_number, uint8_t x, uint8_t y, size_t w, size_t h, bool with_border );
+    void set_value_clipped(int new_value);
 
 public:
     W_HBargraph(uint8_t id, UI_DisplayDevice *screen, uint8_t anchor_x, uint8_t anchor_y,

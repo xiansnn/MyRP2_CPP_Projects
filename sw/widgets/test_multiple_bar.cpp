@@ -6,7 +6,6 @@
 #include "ui_mvc.h"
 #include "switch_button.h"
 
-
 #include <string>
 #include <vector>
 #include <list>
@@ -97,6 +96,7 @@ public:
 
     void process_control_event(SwitchButton *controller);
     void process_control_event(ControlEvent event);
+    void set_value_clipped(int new_value);
 };
 
 class MB_DrawFMFrequency : public WText
@@ -201,6 +201,12 @@ MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(
 
 MB_WidgetManager::~MB_WidgetManager()
 {
+}
+
+void MB_WidgetManager::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
 }
 
 void MB_WidgetManager::process_control_event(SwitchButton *controller)

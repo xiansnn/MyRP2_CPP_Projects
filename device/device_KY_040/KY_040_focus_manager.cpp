@@ -1,12 +1,18 @@
 #include "KY_040_focus_manager.h"
 #include <string>
 
-KY_40_WidgetManager::KY_40_WidgetManager(UI_DisplayDevice* screen) : UI_WidgetManager( screen)
+KY_40_WidgetManager::KY_40_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
 {
 }
 
 KY_40_WidgetManager::~KY_40_WidgetManager()
 {
+}
+
+void KY_40_WidgetManager::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
 }
 
 void KY_40_WidgetManager::process_control_event(SwitchButton *controller)
@@ -66,7 +72,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         status_has_changed = true;
-       break;
+        break;
 
     default:
         break;

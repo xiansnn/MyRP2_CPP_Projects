@@ -45,6 +45,12 @@ void W_HBargraph::draw_bar(uint8_t bin_number, uint8_t x, uint8_t y, size_t w, s
         rect(bar_start, y, bar_end - bar_start, h, true);
 }
 
+void W_HBargraph::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
+}
+
 void W_HBargraph::process_control_event(ControlEvent event)
 {
     switch (event)

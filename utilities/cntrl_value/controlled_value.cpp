@@ -45,3 +45,9 @@ void ControlledValue::process_control_event(ControlEvent event)
         break;
     }
 }
+
+void ControlledValue::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
+}

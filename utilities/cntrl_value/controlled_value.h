@@ -11,6 +11,7 @@ public:
     ~ControlledValue();
 
     void process_control_event(ControlEvent event);
+    void set_value_clipped(int new_value);
 };
 
 #endif // CNTRL_VALUE_H

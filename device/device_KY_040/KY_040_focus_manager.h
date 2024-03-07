@@ -8,14 +8,13 @@
 class KY_40_WidgetManager : public UI_WidgetManager
 {
 private:
-    
 public:
-    KY_40_WidgetManager(UI_DisplayDevice* screen = nullptr);
+    KY_40_WidgetManager(UI_DisplayDevice *screen = nullptr);
     ~KY_40_WidgetManager();
-    
-    void process_control_event(SwitchButton* controller);
-    void process_control_event(ControlEvent event);
 
+    void process_control_event(SwitchButton *controller);
+    void process_control_event(ControlEvent event);
+    void set_value_clipped(int new_value);
 };
 
 #endif // KY8_40_FOCUS_MANAGER_H

@@ -60,15 +60,17 @@ public:
     virtual int get_max_value();
     virtual void set_max_value(int value);
     virtual int get_value();
-    virtual void set_value_clipped(int new_value);
     virtual void increment_value();
     virtual void decrement_value();
+
     UI_ControlledObject(uint8_t id, int min_value = 0, int max_value = 10, bool wrap = false, int increment = 1);
     virtual ~UI_ControlledObject();
     bool has_status_changed();
     void clear_status_change_flag();
     void update_status(ControlledObjectStatus status);
     ControlledObjectStatus get_status();
+
+    virtual void set_value_clipped(int new_value)=0;
     virtual void process_control_event(ControlEvent) = 0;
 };
 
