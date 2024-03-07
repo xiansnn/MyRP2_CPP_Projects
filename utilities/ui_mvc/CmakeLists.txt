@@ -1,5 +1,3 @@
 add_library( ui_mvc ui_mvc.cpp)
 target_link_libraries(ui_mvc pico_stdlib framebuffer)
 
-add_library( ui_widget_manager ui_widget_manager.cpp)
-target_link_libraries(ui_widget_manager pico_stdlib framebuffer)

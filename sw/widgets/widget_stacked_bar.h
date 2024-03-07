@@ -3,7 +3,6 @@
 #include "rotary_encoder.h"
 #include "switch_button.h"
 #include "ui_mvc.h"
-#include "ui_widget_manager.h"
 #include "widget_bar.h"
 
 #include <string>

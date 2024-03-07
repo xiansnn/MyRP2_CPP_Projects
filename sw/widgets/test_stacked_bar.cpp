@@ -2,7 +2,6 @@
 #include "ssd1306.h"
 
 #include "widget_bar.h"
-#include "ui_widget_manager.h"
 #include "widget_stacked_bar.h"
 
 #include <string>

@@ -3,7 +3,6 @@
 
 #include "widget_bar.h"
 #include "widget_text.h"
-#include "ui_widget_manager.h"
 #include "ui_mvc.h"
 #include "switch_button.h"
 
