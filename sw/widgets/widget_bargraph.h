@@ -9,6 +9,7 @@
 
 #define BARGRAPH_BIN_NUMBER 7
 
+//-----class BargraphDisplayedObject
 class BargraphDisplayedObject
 {
 private:
@@ -22,7 +23,9 @@ public:
     int max_value;
     bool status_has_changed{true};
 };
-class W_HBargraph : public UI_Widget, public ControlledValue 
+
+//---------class W_HBargraph : public UI_Widget
+class W_HBargraph : public UI_Widget , public UI_ControlledObject
 {
 private:
     UI_DisplayDevice *screen_framebuffer;

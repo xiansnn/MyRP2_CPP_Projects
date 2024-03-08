@@ -49,7 +49,7 @@ config_widget_t cfg_bar{
     .width = BARGRAPH_WIDTH,
     .height = BARGRAPH_HEIGHT,  
     .with_border = true,
-    .with_label = false,
+    .with_label = true,
     .font = font_5x8};
 
 
