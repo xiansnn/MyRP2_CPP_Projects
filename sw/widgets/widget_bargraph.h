@@ -8,6 +8,7 @@
 #include <array>
 
 #define BARGRAPH_BIN_NUMBER 7
+#define BARGRAPH_BIN_SPACING 1 // pixel
 
 //-----class BargraphDisplayedObject
 class BargraphDisplayedObject
@@ -22,6 +23,7 @@ public:
     int min_value;
     int max_value;
     bool status_has_changed{true};
+    void set_value_clipped(uint8_t index, int new_value);
 };
 
 //---------class W_HBargraph : public UI_Widget
@@ -33,7 +35,7 @@ private:
     config_widget_t config;
     uint8_t px_max;
     uint8_t px_min;
-    size_t label_value_max_width;
+    uint8_t bar_height;
     float level_coef;
     int level_offset;
 

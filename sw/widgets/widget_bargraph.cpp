@@ -9,22 +9,25 @@ uint8_t W_HBargraph::convert_level_value_to_px(int level)
 
 void W_HBargraph::draw()
 {
-
-    rect(0, 0, frame_width, frame_height, true, Framebuffer_color::black); // erase the whole widget area
-
-    for (size_t i = 0; i < BARGRAPH_BIN_NUMBER; i++)
+    for (int i = 0; i < BARGRAPH_BIN_NUMBER; i++)
     {
-        draw_bar(i, anchor_x, anchor_y + i * frame_height / BARGRAPH_BIN_NUMBER, frame_width, frame_height / BARGRAPH_BIN_NUMBER, false);
+        uint8_t bar_anchor_x = anchor_x + bar_height - BARGRAPH_BIN_SPACING;
+        size_t bar_width = frame_width - bar_height;
+        draw_bar(i, bar_anchor_x, anchor_y + i * bar_height, bar_width, bar_height, false);
     }
 }
 
-void W_HBargraph::draw_bar(uint8_t bin_number, uint8_t x, uint8_t y, size_t w, size_t h, bool with_border)
+void W_HBargraph::draw_bar(uint8_t bin_number, uint8_t bar_anchor_x, uint8_t bar_anchor_y, size_t bar_width, size_t bar_height, bool with_border)
 {
+    rect(anchor_x, bar_anchor_y, frame_width, bar_height, true, Framebuffer_color::black); // erase the previous bar area
+    if (bin_number == value)
+    {
+        rect(anchor_x, anchor_y + bin_number * bar_height, bar_height, bar_height, false);
+    }
     uint8_t px = convert_level_value_to_px(this->displayed_values->values[bin_number]);
-    rect(x, y, w, h, true, Framebuffer_color::black); // clear the full framebuffer
 
     if (with_border)
-        rect(x, y, frame_width, h);
+        rect(bar_anchor_x, bar_anchor_y, frame_width - 2, bar_height);
 
     uint8_t bar_start;
     uint8_t bar_end;
@@ -40,9 +43,9 @@ void W_HBargraph::draw_bar(uint8_t bin_number, uint8_t x, uint8_t y, size_t w, s
     }
 
     if (this->displayed_values->values[bin_number] == 0)
-        rect(bar_start, y, 1, h, true);
+        rect(bar_start, bar_anchor_y + BARGRAPH_BIN_SPACING, 1, bar_height - BARGRAPH_BIN_SPACING, true);
     else
-        rect(bar_start, y, bar_end - bar_start, h, true);
+        rect(bar_start, bar_anchor_y + BARGRAPH_BIN_SPACING, bar_end - bar_start, bar_height - BARGRAPH_BIN_SPACING, true);
 }
 
 void W_HBargraph::set_value_clipped(int new_value)
@@ -86,15 +89,15 @@ void W_HBargraph::process_control_event(ControlEvent event)
         // active_controlled_object_has_changed = true;
         break;
     case ControlEvent::INCREMENT:
-        printf("event INCREMENT: %d\n", event);
         increment_value();
+        printf("event INCREMENT: %d\n", value);
         // controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
         // controlled_object_under_focus = controlled_objects[value];
         // controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         break;
     case ControlEvent::DECREMENT:
-        printf("event DECREMENT: %d\n", event);
         decrement_value();
+        printf("event DECREMENT: %d\n", value);
         // controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
         // controlled_object_under_focus = controlled_objects[value];
         // controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
@@ -104,24 +107,20 @@ void W_HBargraph::process_control_event(ControlEvent event)
         break;
     }
 }
-#define MAX_LABEL_SIZE 8
+
 W_HBargraph::W_HBargraph(uint8_t id, UI_DisplayDevice *screen, uint8_t anchor_x, uint8_t anchor_y,
                          BargraphDisplayedObject *displayed_values, config_widget_t cnf_bar,
                          Framebuffer_format format, config_framebuffer_text_t txt_cnf)
     : UI_Widget(id, cnf_bar.width, cnf_bar.height, anchor_x, anchor_y, format, txt_cnf),
-      UI_ControlledObject(id, displayed_values->max_value, displayed_values->max_value)
+      UI_ControlledObject(id, 0, BARGRAPH_BIN_NUMBER - 1)
 {
     this->screen_framebuffer = screen;
     this->config = cnf_bar;
     this->displayed_values = displayed_values;
 
-    if (config.with_label)
-        label_value_max_width = MAX_LABEL_SIZE * config.font[FONT_WIDTH];
-    else
-        label_value_max_width = 0;
-
     px_max = frame_width;
-    px_min = label_value_max_width;
+    bar_height = std::max(5, frame_height / BARGRAPH_BIN_NUMBER); //less than 5 pixel height is unconfortable
+    px_min = bar_height + BARGRAPH_BIN_SPACING; // leaving room for status flag equal to the height of a bar
     level_coef = (float)(px_max - px_min) / (displayed_values->max_value - displayed_values->min_value);
     level_offset = px_max - level_coef * displayed_values->max_value;
 }
@@ -147,4 +146,10 @@ BargraphDisplayedObject::BargraphDisplayedObject(uint8_t id, int min_value, int 
 
 BargraphDisplayedObject::~BargraphDisplayedObject()
 {
+}
+
+void BargraphDisplayedObject::set_value_clipped(uint8_t index, int new_value)
+{
+    this->values[index] = std::min(max_value, std::max(min_value, new_value));
+    status_has_changed = true;
 }

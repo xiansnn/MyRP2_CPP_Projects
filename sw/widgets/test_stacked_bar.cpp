@@ -43,7 +43,7 @@ config_SSD1306_t cfg_ssd1306{
     .frequency_divider = 1,
     .frequency_factor = 0};
 
-config_switch_button_t central_switch_conf{
+config_switch_button_t cfg_central_switch{
     .debounce_delay_us = 5000,
     .long_release_delay_us = 1000000,
     .long_push_delay_us = 1000000,
@@ -64,7 +64,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
 RotaryEncoder encoder = RotaryEncoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO,
                                       shared_irq_call_back, cfg_encoder_clk);
-SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, central_switch_conf);
+SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, cfg_central_switch);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
