@@ -28,6 +28,10 @@ void W_DisplayControlledValueOnTerminal::draw()
     }
 }
 
+void W_DisplayControlledValueOnTerminal::draw_border()
+{// TODO draw border
+}
+
 UI_ControlledObject *W_DisplayControlledValueOnTerminal::set_active_displayed_object(ControlledValue *val) 
 {
     this->active_displayed_object = val;

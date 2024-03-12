@@ -101,6 +101,7 @@ public:
              Framebuffer_format format = Framebuffer_format::MONO_VLSB,
              config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
+    void draw_border();
 };
 
 ControlledValue char_number = ControlledValue(CHARFONT_ID, 32, 255);
@@ -175,6 +176,10 @@ void DrawFont::draw()
     char c = i;
     sprintf(text_buffer, "%c %d  %#X  %c", status, i,i, c );
     print_text();
+}
+
+void DrawFont::draw_border()
+{ // TODO draw border
 }
 
 TestFontWidgetManager::TestFontWidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)

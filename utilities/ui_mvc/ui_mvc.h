@@ -111,6 +111,7 @@ public:
     void set_active_displayed_object(UI_ControlledObject *displayed_object);
     UI_ControlledObject *get_active_displayed_object();
     virtual void draw() = 0;
+    virtual void draw_border()=0;
 };
 
 

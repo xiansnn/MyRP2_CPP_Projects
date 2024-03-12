@@ -106,6 +106,7 @@ public:
                        Framebuffer_format format = Framebuffer_format::MONO_VLSB,
                        config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     void draw();
+    void draw_border();
 };
 
 ControlledValue fm_freq = ControlledValue(CONTROLLED_FMFREQ_ID, 876, 1079, 1, true);
@@ -193,6 +194,9 @@ void MB_DrawFMFrequency::draw()
     }
     sprintf(text_buffer, "%c     %5.1f MHz", status, (float)active_displayed_object->get_value() / 10);
     print_text();
+}
+void MB_DrawFMFrequency::draw_border()
+{ // TODO draw border
 }
 MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
 {

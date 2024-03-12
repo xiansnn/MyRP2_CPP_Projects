@@ -47,6 +47,7 @@ private:
     bool with_border;
     uint8_t bargraph_bin_number;
     uint8_t bargraph_bin_spacing;
+    uint8_t bargraph_bin_flag_width;
 
 
     uint8_t px_max;
@@ -57,6 +58,7 @@ private:
 
     uint8_t convert_level_value_to_px(int level);
     void draw();
+    void draw_border();
     void draw_bar(uint8_t bin_number, uint8_t x, uint8_t y, size_t w, size_t h, bool with_border);
     void set_value_clipped(int new_value);
 

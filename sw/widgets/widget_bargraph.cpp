@@ -84,6 +84,10 @@ void W_HBargraph::set_value_clipped(int new_value)
     status_has_changed = true;
 }
 
+void W_HBargraph::draw_border()
+{//TODO draw border
+}
+
 void W_HBargraph::process_control_event(ControlEvent event)
 {
     switch (event)
