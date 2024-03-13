@@ -1,10 +1,7 @@
 #include "widget_bargraph.h"
-#include "widget_bar.h"
 #include "rotary_encoder.h"
 #include "ssd1306.h"
 #include "ui_mvc.h"
-#include "hardware/timer.h"
-#include "math.h"
 
 #include "probe.h"
 Probe pr_D1 = Probe(1);
@@ -48,7 +45,7 @@ config_switch_button_t cfg_encoder_clk{
 void shared_irq_call_back(uint gpio, uint32_t event_mask);
 
 hw_I2C_master master = hw_I2C_master(cfg_i2c);
-SSD1306 screen = SSD1306(&master, cfg_ssd1306);
+SSD1306 display_screen = SSD1306(&master, cfg_ssd1306);
 
 RotaryEncoder encoder = RotaryEncoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back, cfg_encoder_clk);
 SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, cfg_central_switch);
@@ -60,22 +57,24 @@ config_bargraph_widget_t cnf_bargraph{
     .bargraph_height = 35,
     .with_border = true,
     .with_status_flag = true,
+    .status_flag_mode = StatusFlagMode::BORDER_LIKE,
     .bargraph_bin_number = 7,
 };
-BargraphDisplayedObject bg_values = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
-W_HBargraph w_bargraph = W_HBargraph(&screen, &bg_values, cnf_bargraph);
+BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
+W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_bargraph);
 
 config_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 0,
-    .bargraph_anchor_y = 48, // 48
+    .bargraph_anchor_y = 48,
     .bargraph_width = 120,
-    .bargraph_height = 16, // 10
+    .bargraph_height = 16,
     .with_border = false,
-    .with_status_flag = false,
+    .with_status_flag = true,
+    .status_flag_mode = StatusFlagMode::SQUARE_LIKE,
     .bargraph_bin_number = 1,
 };
 BargraphDisplayedObject selected_bin = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
-W_HBargraph w_selected_bin = W_HBargraph(&screen, &selected_bin, cnf_selected_bin);
+W_HBargraph w_selected_bin = W_HBargraph(&display_screen, &selected_bin, cnf_selected_bin);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
@@ -96,10 +95,10 @@ void simulate_values();
 int main()
 {
     stdio_init_all();
-    screen.clear_pixel_buffer_and_show_full_screen();
+    display_screen.clear_pixel_buffer_and_show_full_screen();
     encoder.set_active_controlled_object(&w_bargraph);
     central_switch.set_active_controlled_object(&w_bargraph);
-    bg_values.values = {10, 20, 30, 40, 50, 60, 70}; // init bargraph
+    values_bargraph.values = {10, 20, 30, 40, 50, 60, 70}; // init bargraph
     selected_bin.values = {0};
 
     while (true)
@@ -107,7 +106,7 @@ int main()
         simulate_values();
         ControlEvent event = central_switch.process_sample_event();
         w_bargraph.process_control_event(event);
-        selected_bin.values[0] = bg_values.values[w_bargraph.current_active_index];
+        selected_bin.values[0] = values_bargraph.values[w_bargraph.current_active_index];
         pr_D1.hi();
         w_bargraph.refresh();
         w_selected_bin.refresh();
@@ -122,8 +121,8 @@ void simulate_values()
 {
     for (size_t i = 0; i < cnf_bargraph.bargraph_bin_number; i++)
     {
-        bg_values.values[i] += (1 + i);
-        if (bg_values.values[i] >= bg_values.max_value)
-            bg_values.values[i] = bg_values.min_value;
+        values_bargraph.values[i] += (1 + i);
+        if (values_bargraph.values[i] >= values_bargraph.max_value)
+            values_bargraph.values[i] = values_bargraph.min_value;
     }
 }

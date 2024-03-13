@@ -9,24 +9,26 @@ W_HBargraph::W_HBargraph(UI_DisplayDevice *screen, BargraphDisplayedObject *disp
     this->screen_framebuffer = screen;
     this->displayed_values = displayed_values;
 
-    this->with_status_flag = cnf_bargraph.with_status_flag;
-
-    this->with_border = cnf_bargraph.with_border;
     this->bargraph_bin_number = cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = cnf_bargraph.bargraph_bin_spacing;
-    this->bargraph_bin_flag_width = cnf_bargraph.bargraph_bin_flag_width;
 
+    this->with_border = cnf_bargraph.with_border;
     this->border_width = (with_border) ? cnf_bargraph.border_width : 0;
+    this->with_status_flag = cnf_bargraph.with_status_flag;
+    this->bargraph_bin_flag_width = (with_status_flag) ? cnf_bargraph.bargraph_bin_flag_width + bargraph_bin_spacing : 0;
+    this->status_flag_mode = cnf_bargraph.status_flag_mode;
+
     widget_start_x = border_width;
     widget_start_y = border_width;
     widget_width = frame_width - 2 * border_width;
-    widget_height = frame_height - 2 * border_width;
+    widget_height = frame_height - 2 * border_width + 1;
 
-    bar_height = std::max(5, widget_height / bargraph_bin_number);
+    bar_height = std::max(5, widget_height / bargraph_bin_number); //round sup
     widget_height = bar_height * bargraph_bin_number;
 
     px_max = frame_width - border_width;
-    px_min = border_width + bargraph_bin_flag_width + bargraph_bin_spacing;
+    px_min = border_width + bargraph_bin_flag_width;
+    bar_width = px_max - px_min + 1;
 
     level_coef = (float)(px_max - px_min) / (displayed_values->max_value - displayed_values->min_value);
     level_offset = px_max - level_coef * displayed_values->max_value;
@@ -46,38 +48,55 @@ void W_HBargraph::draw()
 {
     for (int i = 0; i < this->bargraph_bin_number; i++)
     {
-
-        // draw_bar(i, bar_anchor_x,  i * bar_height, bar_width, bar_height, (i==value));// HACK draw border if bar under focus
-        draw_bar(i, (i == current_active_index)); // HACK draw border if bar is selected
+        draw_bar(i, (i == current_active_index));
+        if (with_status_flag)
+            draw_status_flag(i);
     }
     if (with_border)
         draw_border();
 }
-
+void W_HBargraph::draw_status_flag(uint8_t bin_number)
+{
+    bool is_active = (bin_number == current_active_index) ? true : false;
+    bool is_under_focus = (bin_number == value) ? true : false;
+    uint8_t bar_start_y = bin_number * bar_height;
+    switch (this->status_flag_mode)
+    {
+    case StatusFlagMode::BORDER_LIKE:
+        if (is_active)
+            rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
+        if (is_under_focus)
+            rect(widget_start_x + bargraph_bin_flag_width, bar_start_y, bar_width, bar_height, false);
+        break;
+    case StatusFlagMode::SQUARE_LIKE:
+        if (is_active)
+            rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
+        if (is_under_focus)
+            rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, false);
+        break;
+    default:
+        break;
+    }
+}
 void W_HBargraph::draw_bar(uint8_t bin_number, bool bar_with_border)
 {
     uint8_t bar_start_y = bin_number * bar_height;
-    uint8_t bar_width = px_max - px_min;
-    rect(widget_start_x, bar_start_y, widget_width, bar_height, true, Framebuffer_color::black); // erase the previous bar area
-    if (with_status_flag)
-        draw_status_flag(bin_number);
+    rect(widget_start_x, bar_start_y, widget_width, bar_height, true, Framebuffer_color::black); // erase the bar area
 
     uint8_t px = convert_level_value_to_px(this->displayed_values->values[bin_number]);
-
-    if (bar_with_border)
-        rect(widget_start_x + bargraph_bin_flag_width + bargraph_bin_spacing, bar_start_y, bar_width, bar_height, false);
+    uint16_t p0 = convert_level_value_to_px(0);
 
     uint8_t bar_start;
     uint8_t bar_end;
     if (this->displayed_values->values[bin_number] >= 0)
     {
-        bar_start = convert_level_value_to_px(0);
+        bar_start = p0;
         bar_end = px;
     }
     else
     {
         bar_start = px;
-        bar_end = convert_level_value_to_px(0);
+        bar_end = p0;
     }
 
     if (this->displayed_values->values[bin_number] == 0)
@@ -139,20 +158,6 @@ void W_HBargraph::refresh()
 {
     draw();
     this->screen_framebuffer->show(this, this->anchor_x, this->anchor_y);
-}
-
-void W_HBargraph::draw_status_flag(uint8_t bin_number)
-{
-    uint8_t bar_start_y = bin_number * bar_height;
-    if (bin_number == current_active_index)
-    {
-        rect(widget_start_x, bar_start_y, bargraph_bin_flag_width, bar_height, true);
-    }
-    if (bin_number == value)
-    {
-        bool is_active = (bin_number == current_active_index) ? true : false;              // HACK draw filled square if bar is selected, otherwise draw empty square
-        rect(widget_start_x, bar_start_y, bargraph_bin_flag_width, bar_height, is_active); // hack
-    }
 }
 
 //---------------------------------------------------------------------

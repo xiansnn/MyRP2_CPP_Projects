@@ -8,8 +8,13 @@
 #include <array>
 #include <vector>
 
+enum class StatusFlagMode
+{
+    BORDER_LIKE,
+    SQUARE_LIKE
+};
 
-typedef struct config_bargraph_widget //HACK create a config_widget_t
+typedef struct config_bargraph_widget // HACK create a config_widget_t
 {
     // config UI_Widget
     uint8_t bargraph_anchor_x;
@@ -18,16 +23,16 @@ typedef struct config_bargraph_widget //HACK create a config_widget_t
     size_t bargraph_height;
     bool with_border{false};
     bool with_status_flag{true};
+    StatusFlagMode status_flag_mode{StatusFlagMode::BORDER_LIKE};
     uint8_t bargraph_bin_number;
     uint8_t bargraph_bin_spacing{1};
-    uint8_t bargraph_bin_flag_width{5}; 
+    uint8_t bargraph_bin_flag_width{5};
     uint8_t border_width{1};
 
     // config Framebuffer
     Framebuffer_format format{Framebuffer_format::MONO_VLSB};
     config_framebuffer_text_t txt_cnf{.font = font_8x8};
 } config_bargraph_widget_t;
-
 
 //-----class BargraphDisplayedObject
 class BargraphDisplayedObject
@@ -46,17 +51,18 @@ public:
 class W_HBargraph : public UI_Widget, public UI_ControlledObject
 {
 private:
-    UI_DisplayDevice *screen_framebuffer;//HACK move to UI_Widget
-    bool with_border; //HACK move to UI_Widget
-    uint8_t border_width; //HACK move to UI_Widget
-    uint8_t widget_start_x;//HACK move to UI_Widget
-    uint8_t widget_start_y;//HACK move to UI_Widget
-    uint8_t widget_width;//HACK move to UI_Widget
-    uint8_t widget_height;//HACK move to UI_Widget
+    UI_DisplayDevice *screen_framebuffer; // HACK move to UI_Widget
+    bool with_border;                     // HACK move to UI_Widget
+    uint8_t border_width;                 // HACK move to UI_Widget
+    uint8_t widget_start_x;               // HACK move to UI_Widget
+    uint8_t widget_start_y;               // HACK move to UI_Widget
+    uint8_t widget_width;                 // HACK move to UI_Widget
+    uint8_t widget_height;                // HACK move to UI_Widget
 
     BargraphDisplayedObject *displayed_values;
-    
+
     bool with_status_flag;
+    StatusFlagMode status_flag_mode;
     uint8_t bargraph_bin_number;
     uint8_t bargraph_bin_spacing;
     uint8_t bargraph_bin_flag_width;
@@ -65,12 +71,13 @@ private:
 
     uint8_t px_max;
     uint8_t px_min;
+    uint8_t bar_width;
     float level_coef;
     int level_offset;
 
     uint8_t convert_level_value_to_px(int level);
-    void draw(); //HACK pure virtual member function of UI_Widget
-    void draw_border(); //HACK move to UI_Widget
+    void draw();        // HACK pure virtual member function of UI_Widget
+    void draw_border(); // HACK move to UI_Widget
     void draw_bar(uint8_t bin_number, bool with_border);
     void draw_status_flag(uint8_t bin_number);
     void set_value_clipped(int new_value);
