@@ -13,7 +13,7 @@ typedef struct config_widget
     size_t width{128};
     size_t height{8};
     bool with_border{true};
-    bool with_label{false};
+    bool with_label{true};
     const unsigned char *font{nullptr};
 } config_widget_t;
 
@@ -40,12 +40,12 @@ enum class ControlledObjectStatus
 class UI_Controller;
 class UI_Widget;
 
-
 // ---- class UI_ControlledObject
 class UI_ControlledObject
 {
 private:
     ControlledObjectStatus status{ControlledObjectStatus::WAIT};
+
 protected:
     bool wrap;
     int value;
@@ -53,6 +53,7 @@ protected:
     int max_value;
     int increment{1};
     bool status_has_changed{true};
+
 public:
     uint8_t id;
     virtual int get_min_value();
@@ -70,10 +71,9 @@ public:
     void update_status(ControlledObjectStatus status);
     ControlledObjectStatus get_status();
 
-    virtual void set_value_clipped(int new_value)=0;
+    virtual void set_value_clipped(int new_value) = 0;
     virtual void process_control_event(ControlEvent) = 0;
 };
-
 
 // ---- class UI_Controller
 class UI_Controller
@@ -81,6 +81,7 @@ class UI_Controller
 private:
 protected:
     UI_ControlledObject *active_controlled_object;
+
 public:
     uint8_t id;
     UI_Controller(uint8_t id);
@@ -90,6 +91,43 @@ public:
     UI_ControlledObject *get_active_controlled_object();
 };
 
+// -------class UI_DisplayDevice : public Framebuffer
+class UI_DisplayDevice : public Framebuffer
+{
+private:
+public:
+    UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    virtual ~UI_DisplayDevice();
+    virtual void show() = 0;
+    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
+};
+
+// -------class AbstractWidget : public Framebuffer
+class AbstractWidget : public Framebuffer
+{
+private:
+protected:
+    UI_DisplayDevice *display_screen;
+    bool with_border;
+    uint8_t border_width;
+    uint8_t widget_start_x;
+    uint8_t widget_start_y;
+    uint8_t widget_width;
+    uint8_t widget_height;
+    /* data */
+public:
+    AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border,
+                   Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+                   config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    virtual ~AbstractWidget();
+
+    uint8_t anchor_x;
+    uint8_t anchor_y;
+
+    virtual void refresh();
+    virtual void draw_border();
+    virtual void draw() = 0;
+};
 
 // ---- class UI_Widget : public Framebuffer
 class UI_Widget : public Framebuffer
@@ -97,6 +135,7 @@ class UI_Widget : public Framebuffer
 private:
 protected:
     UI_ControlledObject *active_displayed_object;
+
 public:
     uint8_t id;
     uint8_t anchor_x;
@@ -111,28 +150,17 @@ public:
     void set_active_displayed_object(UI_ControlledObject *displayed_object);
     UI_ControlledObject *get_active_displayed_object();
     virtual void draw() = 0;
-    virtual void draw_border()=0;
+    virtual void draw_border() = 0;
 };
 
 
-// -------class UI_DisplayDevice : public Framebuffer
-class UI_DisplayDevice : public Framebuffer
-{
-private:
 
-public:
-    UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    virtual ~UI_DisplayDevice();
-    virtual void show() = 0;
-    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
-};
-
-
-// -----class UI_WidgetManager : public UI_ControlledObject, public UI_Controller 
-class UI_WidgetManager : public UI_ControlledObject, public UI_Controller 
+// -----class UI_WidgetManager : public UI_ControlledObject, public UI_Controller
+class UI_WidgetManager : public UI_ControlledObject, public UI_Controller
 {
 protected:
     std::vector<UI_ControlledObject *> controlled_objects;
+
 public:
     UI_WidgetManager(UI_DisplayDevice *screen = nullptr);
     ~UI_WidgetManager();

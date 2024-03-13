@@ -1,34 +1,28 @@
 #include "widget_bargraph.h"
 
-W_HBargraph::W_HBargraph(UI_DisplayDevice *screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
-    : UI_Widget(0, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
-                cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y,
+W_HBargraph::W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
+    : AbstractWidget(display_screen, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
+                cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border,
                 cnf_bargraph.format, cnf_bargraph.txt_cnf),
       UI_ControlledObject(0, 0, cnf_bargraph.bargraph_bin_number - 1)
 {
-    this->screen_framebuffer = screen;
     this->displayed_values = displayed_values;
 
     this->bargraph_bin_number = cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = cnf_bargraph.bargraph_bin_spacing;
 
-    this->with_border = cnf_bargraph.with_border;
-    this->border_width = (with_border) ? cnf_bargraph.border_width : 0;
+
     this->with_status_flag = cnf_bargraph.with_status_flag;
     this->bargraph_bin_flag_width = (with_status_flag) ? cnf_bargraph.bargraph_bin_flag_width + bargraph_bin_spacing : 0;
     this->status_flag_mode = cnf_bargraph.status_flag_mode;
 
-    widget_start_x = border_width;
-    widget_start_y = border_width;
-    widget_width = frame_width - 2 * border_width;
-    widget_height = frame_height - 2 * border_width + 1;
 
     bar_height = std::max(5, widget_height / bargraph_bin_number); //round sup
     widget_height = bar_height * bargraph_bin_number;
 
     px_max = frame_width - border_width;
     px_min = border_width + bargraph_bin_flag_width;
-    bar_width = px_max - px_min + 1;
+    bar_width = px_max - px_min;
 
     level_coef = (float)(px_max - px_min) / (displayed_values->max_value - displayed_values->min_value);
     level_offset = px_max - level_coef * displayed_values->max_value;
@@ -52,8 +46,7 @@ void W_HBargraph::draw()
         if (with_status_flag)
             draw_status_flag(i);
     }
-    if (with_border)
-        draw_border();
+
 }
 void W_HBargraph::draw_status_flag(uint8_t bin_number)
 {
@@ -111,10 +104,6 @@ void W_HBargraph::set_value_clipped(int new_value)
     status_has_changed = true;
 }
 
-void W_HBargraph::draw_border()
-{
-    rect(0, 0, frame_width, frame_height);
-}
 
 void W_HBargraph::process_control_event(ControlEvent event)
 {
@@ -154,11 +143,6 @@ void W_HBargraph::process_control_event(ControlEvent event)
     }
 }
 
-void W_HBargraph::refresh()
-{
-    draw();
-    this->screen_framebuffer->show(this, this->anchor_x, this->anchor_y);
-}
 
 //---------------------------------------------------------------------
 

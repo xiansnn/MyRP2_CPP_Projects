@@ -55,9 +55,9 @@ config_bargraph_widget_t cnf_bargraph{
     .bargraph_anchor_y = 0,
     .bargraph_width = 120,
     .bargraph_height = 35,
-    .with_border = true,
+    .with_border = false,
     .with_status_flag = true,
-    .status_flag_mode = StatusFlagMode::BORDER_LIKE,
+    .status_flag_mode = StatusFlagMode::SQUARE_LIKE,
     .bargraph_bin_number = 7,
 };
 BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);

@@ -48,16 +48,9 @@ public:
 };
 
 //---------class W_HBargraph : public UI_Widget
-class W_HBargraph : public UI_Widget, public UI_ControlledObject
+class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 {
 private:
-    UI_DisplayDevice *screen_framebuffer; // HACK move to UI_Widget
-    bool with_border;                     // HACK move to UI_Widget
-    uint8_t border_width;                 // HACK move to UI_Widget
-    uint8_t widget_start_x;               // HACK move to UI_Widget
-    uint8_t widget_start_y;               // HACK move to UI_Widget
-    uint8_t widget_width;                 // HACK move to UI_Widget
-    uint8_t widget_height;                // HACK move to UI_Widget
 
     BargraphDisplayedObject *displayed_values;
 
@@ -76,19 +69,17 @@ private:
     int level_offset;
 
     uint8_t convert_level_value_to_px(int level);
-    void draw();        // HACK pure virtual member function of UI_Widget
-    void draw_border(); // HACK move to UI_Widget
+    void draw();
     void draw_bar(uint8_t bin_number, bool with_border);
     void draw_status_flag(uint8_t bin_number);
     void set_value_clipped(int new_value);
 
 public:
-    W_HBargraph(UI_DisplayDevice *screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
+    W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
     ~W_HBargraph();
 
     uint8_t current_active_index;
     void process_control_event(ControlEvent event);
-    void refresh(); // HACK move to UI_Widget
 };
 
 #endif // WIDGET_BARGRAPH_H

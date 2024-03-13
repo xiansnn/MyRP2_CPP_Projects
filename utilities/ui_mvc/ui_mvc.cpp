@@ -89,7 +89,6 @@ UI_ControlledObject *UI_Widget::get_active_displayed_object()
     return this->active_displayed_object;
 }
 
-
 void UI_ControlledObject::increment_value()
 {
     value += increment;
@@ -145,7 +144,7 @@ UI_WidgetManager::UI_WidgetManager(UI_DisplayDevice *screen) : UI_ControlledObje
 {
     this->screen_framebuffer = screen;
     min_value = 0;
-    value=0;
+    value = 0;
     active_controlled_object = this;
 }
 
@@ -162,9 +161,9 @@ void UI_WidgetManager::refresh()
             w->draw();
             if (this->screen_framebuffer != nullptr)
             {
-            this->screen_framebuffer->show(w, w->anchor_x, w->anchor_y);
+                this->screen_framebuffer->show(w, w->anchor_x, w->anchor_y);
             }
-            
+
             w->refresh_done();
         }
     }
@@ -185,4 +184,36 @@ void UI_WidgetManager::add_widget(UI_Widget *widget)
 void UI_WidgetManager::clear_active_controlled_object_change_flag()
 {
     active_controlled_object_has_changed = false;
+}
+#define WIDGET_BORDER_WIDTH 1
+AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border,
+                               Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
+{
+    this->display_screen = display_screen;
+    this->anchor_x = anchor_x;
+    this->anchor_y = anchor_y;
+    this->with_border = with_border;
+    this->border_width = (with_border) ? WIDGET_BORDER_WIDTH : 0;
+
+    widget_start_x = border_width;
+    widget_start_y = border_width;
+    widget_width = frame_width - 2 * border_width;
+    widget_height = frame_height - 2 * border_width + 1;
+}
+
+AbstractWidget::~AbstractWidget()
+{
+}
+
+void AbstractWidget::refresh()
+{
+    draw();
+    if (with_border)
+        draw_border();
+    this->display_screen->show(this, this->anchor_x, this->anchor_y);
+}
+
+void AbstractWidget::draw_border()
+{
+    rect(0, 0, frame_width, frame_height);
 }
