@@ -53,26 +53,25 @@ SSD1306 screen = SSD1306(&master, cfg_ssd1306);
 RotaryEncoder encoder = RotaryEncoder(ENCODER_ID, ENCODER_CLK_GPIO, ENCODER_DT_GPIO, shared_irq_call_back, cfg_encoder_clk);
 SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPIO, cfg_central_switch);
 
-
-
 config_bargraph_widget_t cnf_bargraph{
     .bargraph_anchor_x = 0,
     .bargraph_anchor_y = 0,
     .bargraph_width = 120,
     .bargraph_height = 35,
-    .with_border = false,
+    .with_border = true,
+    .with_status_flag = true,
     .bargraph_bin_number = 7,
 };
 BargraphDisplayedObject bg_values = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_bargraph = W_HBargraph(&screen, &bg_values, cnf_bargraph);
 
-
 config_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 0,
-    .bargraph_anchor_y = 48, //48
+    .bargraph_anchor_y = 48, // 48
     .bargraph_width = 120,
-    .bargraph_height = 10, //10
-    .with_border = true,
+    .bargraph_height = 16, // 10
+    .with_border = false,
+    .with_status_flag = false,
     .bargraph_bin_number = 1,
 };
 BargraphDisplayedObject selected_bin = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
@@ -100,8 +99,8 @@ int main()
     screen.clear_pixel_buffer_and_show_full_screen();
     encoder.set_active_controlled_object(&w_bargraph);
     central_switch.set_active_controlled_object(&w_bargraph);
-    bg_values.values = {1, 2, 3, 4, 5, 6, 7}; // init bargraph
-    selected_bin.values={10,25};
+    bg_values.values = {10, 20, 30, 40, 50, 60, 70}; // init bargraph
+    selected_bin.values = {0};
 
     while (true)
     {
@@ -123,7 +122,7 @@ void simulate_values()
 {
     for (size_t i = 0; i < cnf_bargraph.bargraph_bin_number; i++)
     {
-        bg_values.values[i] += (1+i);
+        bg_values.values[i] += (1 + i);
         if (bg_values.values[i] >= bg_values.max_value)
             bg_values.values[i] = bg_values.min_value;
     }
