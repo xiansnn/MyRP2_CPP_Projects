@@ -10,11 +10,11 @@
 
 enum class StatusFlagMode
 {
-    BORDER_LIKE,
-    SQUARE_LIKE
+    BORDER_FLAG,
+    SQUARE_FLAG
 };
 
-typedef struct config_bargraph_widget // HACK create a config_widget_t
+typedef struct config_bargraph_widget
 {
     // config UI_Widget
     uint8_t bargraph_anchor_x;
@@ -23,7 +23,7 @@ typedef struct config_bargraph_widget // HACK create a config_widget_t
     size_t bargraph_height;
     bool with_border{false};
     bool with_status_flag{true};
-    StatusFlagMode status_flag_mode{StatusFlagMode::BORDER_LIKE};
+    StatusFlagMode status_flag_mode{StatusFlagMode::BORDER_FLAG};
     uint8_t bargraph_bin_number;
     uint8_t bargraph_bin_spacing{1};
     uint8_t bargraph_bin_flag_width{5};
@@ -51,7 +51,6 @@ public:
 class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 {
 private:
-
     BargraphDisplayedObject *displayed_values;
 
     bool with_status_flag;

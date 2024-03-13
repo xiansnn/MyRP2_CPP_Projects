@@ -53,11 +53,11 @@ SwitchButton central_switch = SwitchButton(CENTRAL_SWITCH_ID, CENTRAL_SWITCH_GPI
 config_bargraph_widget_t cnf_bargraph{
     .bargraph_anchor_x = 0,
     .bargraph_anchor_y = 0,
-    .bargraph_width = 120,
+    .bargraph_width = 80,
     .bargraph_height = 35,
     .with_border = false,
     .with_status_flag = true,
-    .status_flag_mode = StatusFlagMode::SQUARE_LIKE,
+    .status_flag_mode = StatusFlagMode::BORDER_FLAG,
     .bargraph_bin_number = 7,
 };
 BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
@@ -66,11 +66,11 @@ W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_barg
 config_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 0,
     .bargraph_anchor_y = 48,
-    .bargraph_width = 120,
-    .bargraph_height = 16,
-    .with_border = false,
-    .with_status_flag = true,
-    .status_flag_mode = StatusFlagMode::SQUARE_LIKE,
+    .bargraph_width = 128,
+    .bargraph_height = 5,
+    .with_border = true,
+    .with_status_flag = false,
+    .status_flag_mode = StatusFlagMode::SQUARE_FLAG,
     .bargraph_bin_number = 1,
 };
 BargraphDisplayedObject selected_bin = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);

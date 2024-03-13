@@ -2,8 +2,8 @@
 
 W_HBargraph::W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
     : AbstractWidget(display_screen, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
-                cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border,
-                cnf_bargraph.format, cnf_bargraph.txt_cnf),
+                     cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border, cnf_bargraph.border_width,
+                     cnf_bargraph.format, cnf_bargraph.txt_cnf),
       UI_ControlledObject(0, 0, cnf_bargraph.bargraph_bin_number - 1)
 {
     this->displayed_values = displayed_values;
@@ -11,13 +11,11 @@ W_HBargraph::W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObje
     this->bargraph_bin_number = cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = cnf_bargraph.bargraph_bin_spacing;
 
-
     this->with_status_flag = cnf_bargraph.with_status_flag;
     this->bargraph_bin_flag_width = (with_status_flag) ? cnf_bargraph.bargraph_bin_flag_width + bargraph_bin_spacing : 0;
     this->status_flag_mode = cnf_bargraph.status_flag_mode;
 
-
-    bar_height = std::max(5, widget_height / bargraph_bin_number); //round sup
+    bar_height = std::max(5, widget_height / bargraph_bin_number); // round sup
     widget_height = bar_height * bargraph_bin_number;
 
     px_max = frame_width - border_width;
@@ -46,7 +44,6 @@ void W_HBargraph::draw()
         if (with_status_flag)
             draw_status_flag(i);
     }
-
 }
 void W_HBargraph::draw_status_flag(uint8_t bin_number)
 {
@@ -55,13 +52,13 @@ void W_HBargraph::draw_status_flag(uint8_t bin_number)
     uint8_t bar_start_y = bin_number * bar_height;
     switch (this->status_flag_mode)
     {
-    case StatusFlagMode::BORDER_LIKE:
+    case StatusFlagMode::BORDER_FLAG:
         if (is_active)
             rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
         if (is_under_focus)
-            rect(widget_start_x + bargraph_bin_flag_width, bar_start_y, bar_width, bar_height, false);
+            rect(widget_start_x + bargraph_bin_flag_width, bar_start_y, bar_width-1, bar_height, false); // HACK
         break;
-    case StatusFlagMode::SQUARE_LIKE:
+    case StatusFlagMode::SQUARE_FLAG:
         if (is_active)
             rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
         if (is_under_focus)
@@ -74,7 +71,8 @@ void W_HBargraph::draw_status_flag(uint8_t bin_number)
 void W_HBargraph::draw_bar(uint8_t bin_number, bool bar_with_border)
 {
     uint8_t bar_start_y = bin_number * bar_height;
-    rect(widget_start_x, bar_start_y, widget_width, bar_height, true, Framebuffer_color::black); // erase the bar area
+    // rect(widget_start_x, bar_start_y, widget_width, bar_height, true, Framebuffer_color::black); // erase the bar area
+    rect(0, bar_start_y, frame_width, bar_height, true, Framebuffer_color::black); // erase the bar area
 
     uint8_t px = convert_level_value_to_px(this->displayed_values->values[bin_number]);
     uint16_t p0 = convert_level_value_to_px(0);
@@ -103,7 +101,6 @@ void W_HBargraph::set_value_clipped(int new_value)
     this->value = std::min(max_value, std::max(min_value, new_value));
     status_has_changed = true;
 }
-
 
 void W_HBargraph::process_control_event(ControlEvent event)
 {
@@ -142,7 +139,6 @@ void W_HBargraph::process_control_event(ControlEvent event)
         break;
     }
 }
-
 
 //---------------------------------------------------------------------
 

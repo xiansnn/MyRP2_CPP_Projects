@@ -185,15 +185,15 @@ void UI_WidgetManager::clear_active_controlled_object_change_flag()
 {
     active_controlled_object_has_changed = false;
 }
-#define WIDGET_BORDER_WIDTH 1
-AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border,
+
+AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border, uint8_t border_width,
                                Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
     this->display_screen = display_screen;
     this->anchor_x = anchor_x;
     this->anchor_y = anchor_y;
     this->with_border = with_border;
-    this->border_width = (with_border) ? WIDGET_BORDER_WIDTH : 0;
+    this->border_width = (with_border) ? border_width : 0;
 
     widget_start_x = border_width;
     widget_start_y = border_width;
