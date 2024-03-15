@@ -40,19 +40,6 @@ enum class ControlledObjectStatus
 class UI_Controller;
 class UI_Widget;
 
-// ---- class UI_ControlledObject
-class AbstractControlledValue
-{
-private:
-    /* data */
-public:
-    AbstractControlledValue(/* args */);
-    ~AbstractControlledValue();
-
-    
-};
-
-
 
 
 // ---- class UI_ControlledObject
