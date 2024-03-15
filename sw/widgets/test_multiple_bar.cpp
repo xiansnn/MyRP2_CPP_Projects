@@ -240,7 +240,7 @@ void MB_WidgetManager::process_control_event(ControlEvent event)
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
         {
-            active_controlled_object->update_status(ControlledObjectStatus::WAIT);
+            active_controlled_object->update_status(ControlledObjectStatus::WAITING);
             active_controlled_object = controlled_objects[value];
             active_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
         }
@@ -252,13 +252,13 @@ void MB_WidgetManager::process_control_event(ControlEvent event)
         break;
     case ControlEvent::INCREMENT:
         increment_value();
-        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAITING);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         break;
     case ControlEvent::DECREMENT:
         decrement_value();
-        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAITING);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         break;

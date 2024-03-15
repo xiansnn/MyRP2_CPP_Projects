@@ -42,7 +42,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         if (active_controlled_object->id == FOCUS_MANAGER_ID)
         {
-            active_controlled_object->update_status(ControlledObjectStatus::WAIT);
+            active_controlled_object->update_status(ControlledObjectStatus::WAITING);
             active_controlled_object = controlled_objects[value];
             active_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
         }
@@ -57,7 +57,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         if (value > max_value)
             value = min_value;
         value = std::min(max_value, std::max(min_value, value));
-        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAITING);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
 
@@ -68,7 +68,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         if (value < min_value)
             value = max_value;
         value = std::min(max_value, std::max(min_value, value));
-        controlled_object_under_focus->update_status(ControlledObjectStatus::WAIT);
+        controlled_object_under_focus->update_status(ControlledObjectStatus::WAITING);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
         status_has_changed = true;

@@ -14,6 +14,13 @@ enum class StatusFlagMode
     SQUARE_FLAG
 };
 
+typedef struct bargraph_values
+{
+    uint8_t value{0};
+    ControlledObjectStatus status {ControlledObjectStatus::WAITING};
+}bargraph_values_t;
+
+
 typedef struct config_bargraph_widget
 {
     // config UI_Widget
@@ -41,10 +48,11 @@ private:
 public:
     BargraphDisplayedObject(uint8_t id, int min_value = 0, int max_value = 10);
     ~BargraphDisplayedObject();
-    std::vector<uint8_t> values;
+    std::vector<uint8_t> values; // TODO associer un status NONE, IS_ACTIVE, IS_UNDER_FOCUS aux bin du bargraph
+    std::vector<bargraph_values_t> bargraph_value_vector;
     int min_value;
     int max_value;
-    void set_value_clipped(uint8_t index, int new_value);
+    // void set_value_clipped(uint8_t index, int new_value);
 };
 
 //---------class W_HBargraph : public UI_Widget

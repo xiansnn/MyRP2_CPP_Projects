@@ -32,7 +32,7 @@ enum class ControlEvent
 
 enum class ControlledObjectStatus
 {
-    WAIT,
+    WAITING,
     HAS_FOCUS,
     IS_ACTIVE
 };
@@ -41,10 +41,25 @@ class UI_Controller;
 class UI_Widget;
 
 // ---- class UI_ControlledObject
+class AbstractControlledValue
+{
+private:
+    /* data */
+public:
+    AbstractControlledValue(/* args */);
+    ~AbstractControlledValue();
+
+    
+};
+
+
+
+
+// ---- class UI_ControlledObject
 class UI_ControlledObject
 {
 private:
-    ControlledObjectStatus status{ControlledObjectStatus::WAIT};
+    ControlledObjectStatus status{ControlledObjectStatus::WAITING};
 
 protected:
     bool wrap;

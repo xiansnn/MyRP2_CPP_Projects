@@ -116,7 +116,7 @@ void W_HBargraph::process_control_event(ControlEvent event)
         /* code */
         break;
     case ControlEvent::LONG_PUSH:
-        this->set_value_clipped(0);
+        // this->set_value_clipped(0); // simuler TIME_OUT 
         // printf("event LONG_PUSH: %d\n", event);
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
@@ -152,7 +152,7 @@ BargraphDisplayedObject::~BargraphDisplayedObject()
 {
 }
 
-void BargraphDisplayedObject::set_value_clipped(uint8_t index, int new_value)
-{
-    this->values[index] = std::min(max_value, std::max(min_value, new_value));
-}
+// void BargraphDisplayedObject::set_value_clipped(uint8_t index, int new_value)
+// {
+//     this->values[index] = std::min(max_value, std::max(min_value, new_value));
+// }

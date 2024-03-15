@@ -217,3 +217,11 @@ void AbstractWidget::draw_border()
 {
     rect(0, 0, frame_width, frame_height);
 }
+
+AbstractControlledValue::AbstractControlledValue(/* args */)
+{
+}
+
+AbstractControlledValue::~AbstractControlledValue()
+{
+}

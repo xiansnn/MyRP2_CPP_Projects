@@ -99,6 +99,14 @@ int main()
     encoder.set_active_controlled_object(&w_bargraph);
     central_switch.set_active_controlled_object(&w_bargraph);
     values_bargraph.values = {10, 20, 30, 40, 50, 60, 70}; // init bargraph
+    values_bargraph.bargraph_value_vector = {   {10,ControlledObjectStatus::WAITING},
+                                                {20,ControlledObjectStatus::WAITING},
+                                                {30,ControlledObjectStatus::WAITING},
+                                                {40,ControlledObjectStatus::WAITING},
+                                                {50,ControlledObjectStatus::WAITING},
+                                                {60,ControlledObjectStatus::WAITING},
+                                                {70,ControlledObjectStatus::WAITING},};
+
     selected_bin.values = {0};
 
     while (true)
@@ -124,5 +132,8 @@ void simulate_values()
         values_bargraph.values[i] += (1 + i);
         if (values_bargraph.values[i] >= values_bargraph.max_value)
             values_bargraph.values[i] = values_bargraph.min_value;
+        values_bargraph.bargraph_value_vector[i].value += (1 + i);
+        if (values_bargraph.bargraph_value_vector[i].value >= values_bargraph.max_value)
+            values_bargraph.bargraph_value_vector[i].value = values_bargraph.min_value;
     }
 }
