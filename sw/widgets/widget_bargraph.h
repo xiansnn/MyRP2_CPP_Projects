@@ -41,7 +41,7 @@ private:
 public:
     BargraphDisplayedObject(uint8_t id, int min_value = 0, int max_value = 10);
     ~BargraphDisplayedObject();
-    std::vector<uint8_t> values; // TODO associer un status NONE, IS_ACTIVE, IS_UNDER_FOCUS aux bin du bargraph
+    std::vector<int> values;
     int min_value;
     int max_value;
 };

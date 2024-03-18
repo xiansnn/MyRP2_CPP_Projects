@@ -1,2 +1,2 @@
 add_subdirectory(servo)
-add_subdirectory(encoder_and_display)
+add_subdirectory(display_bargraph)
