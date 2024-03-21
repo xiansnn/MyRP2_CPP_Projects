@@ -1,4 +1,5 @@
 #include "widget_bargraph.h"
+#include "widget_simple_bargraph.h"
 #include "rotary_encoder.h"
 #include "ssd1306.h"
 #include "ui_mvc.h"
@@ -7,6 +8,9 @@
 #include "probe.h"
 Probe pr_D1 = Probe(1);
 Probe pr_D4 = Probe(4);
+Probe pr_D5 = Probe(5);
+
+
 #define CENTRAL_SWITCH_GPIO 6
 #define ENCODER_CLK_GPIO 26
 #define ENCODER_DT_GPIO 21
@@ -65,7 +69,7 @@ config_bargraph_widget_t cnf_bargraph{
     .status_flag_mode = StatusFlagMode::BORDER_FLAG,
     .bargraph_bin_number = 7,
 };
-BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
+BargraphDisplayedObject values_bargraph = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_bargraph);
 
 config_bargraph_widget_t cnf_selected_bin{
@@ -78,7 +82,7 @@ config_bargraph_widget_t cnf_selected_bin{
     .status_flag_mode = StatusFlagMode::SQUARE_FLAG,
     .bargraph_bin_number = 1,
 };
-BargraphDisplayedObject selected_bin = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
+BargraphDisplayedObject selected_bin = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_selected_bin = W_HBargraph(&display_screen, &selected_bin, cnf_selected_bin);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
@@ -118,7 +122,9 @@ int main()
         pr_D4.lo();
         ControlEvent event = central_switch.process_sample_event();
         w_bargraph.process_control_event(event);
-        selected_bin.values[0] = (values_bargraph.values[w_bargraph.current_active_index]>= MAX_BIN_VALUE*.8)?MAX_BIN_VALUE:MIN_BIN_VALUE;
+        bool above_threshold = values_bargraph.values[w_bargraph.current_active_index]>= w_bargraph.threshold;
+        pr_D5.copy(above_threshold);
+        selected_bin.values[0] = (above_threshold)?MAX_BIN_VALUE:MIN_BIN_VALUE;
         pr_D1.hi();
         w_bargraph.refresh();
         w_selected_bin.refresh();

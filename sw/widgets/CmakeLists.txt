@@ -3,6 +3,11 @@ target_link_libraries(widget_bar
                                 pico_stdlib 
                                 ui_mvc)
 
+add_library(widget_simple_bargraph widget_simple_bargraph.cpp)
+target_link_libraries(widget_simple_bargraph 
+                                pico_stdlib 
+                                ui_mvc)
+
 add_library(widget_bargraph widget_bargraph.cpp)
 target_link_libraries(widget_bargraph 
                                 pico_stdlib 
@@ -50,6 +55,7 @@ pico_add_extra_outputs(test_multiple_bar)
 add_executable(test_h_bargraph test_h_bargraph.cpp)
 target_link_libraries(test_h_bargraph  
                                 pico_stdlib 
+                                widget_simple_bargraph
                                 ssd1306 
                                 ui_mvc 
                                 widget_bargraph 
@@ -58,6 +64,14 @@ target_link_libraries(test_h_bargraph
                                 )
 pico_add_extra_outputs(test_h_bargraph)
 
+add_executable(test_simple_bargraph test_simple_bargraph.cpp)
+target_link_libraries(test_simple_bargraph  
+                                pico_stdlib 
+                                widget_simple_bargraph
+                                ssd1306 
+                                ui_mvc 
+                                )
+pico_add_extra_outputs(test_simple_bargraph)
 
 add_executable(test_font test_font.cpp)
 target_link_libraries(test_font  

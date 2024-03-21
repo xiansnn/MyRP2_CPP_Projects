@@ -4,9 +4,16 @@
 #include "rotary_encoder.h"
 #include "ui_mvc.h"
 #include "widget_bar.h"
+#include "widget_simple_bargraph.h"
 #include "controlled_value.h"
 #include <array>
 #include <vector>
+
+enum class ControlMode
+{
+    BAND_CONTROL,
+    THRESHOLD_CONTROL
+};
 
 enum class StatusFlagMode
 {
@@ -34,23 +41,16 @@ typedef struct config_bargraph_widget
     config_framebuffer_text_t txt_cnf{.font = font_8x8};
 } config_bargraph_widget_t;
 
-//-----class BargraphDisplayedObject
-class BargraphDisplayedObject
-{
-private:
-public:
-    BargraphDisplayedObject(uint8_t id, int min_value = 0, int max_value = 10);
-    ~BargraphDisplayedObject();
-    std::vector<int> values;
-    int min_value;
-    int max_value;
-};
 
 //---------class W_HBargraph : public UI_Widget
 class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 {
 private:
     BargraphDisplayedObject *displayed_values;
+    ControlMode control_mode{ControlMode::BAND_CONTROL};
+    int threshold_increment;
+    void increment_threshold();
+    void decrement_threshold();
 
     bool with_status_flag;
     StatusFlagMode status_flag_mode;
@@ -68,14 +68,16 @@ private:
 
     uint8_t convert_level_value_to_px(int level);
     void draw();
-    void draw_bar(uint8_t bin_number, bool with_border);
+    void draw_bar(uint8_t bin_number);
     void draw_status_flag(uint8_t bin_number);
+    void draw_threshold();
     void set_value_clipped(int new_value);
 
 public:
     W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
     ~W_HBargraph();
 
+    int threshold;
     uint8_t current_active_index;
     void process_control_event(ControlEvent event);
 };

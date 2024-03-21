@@ -1,4 +1,5 @@
 #include "widget_bargraph.h"
+#include "widget_simple_bargraph.h"
 #include "rotary_encoder.h"
 #include "ssd1306.h"
 #include "ui_mvc.h"
@@ -60,7 +61,7 @@ config_bargraph_widget_t cnf_bargraph{
     .status_flag_mode = StatusFlagMode::BORDER_FLAG,
     .bargraph_bin_number = 7,
 };
-BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
+BargraphDisplayedObject values_bargraph = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_bargraph);
 
 config_bargraph_widget_t cnf_selected_bin{
@@ -73,7 +74,7 @@ config_bargraph_widget_t cnf_selected_bin{
     .status_flag_mode = StatusFlagMode::SQUARE_FLAG,
     .bargraph_bin_number = 1,
 };
-BargraphDisplayedObject selected_bin = BargraphDisplayedObject(0, MIN_BIN_VALUE, MAX_BIN_VALUE);
+BargraphDisplayedObject selected_bin = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_selected_bin = W_HBargraph(&display_screen, &selected_bin, cnf_selected_bin);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)

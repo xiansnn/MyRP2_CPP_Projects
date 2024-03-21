@@ -186,8 +186,9 @@ void UI_WidgetManager::clear_active_controlled_object_change_flag()
     active_controlled_object_has_changed = false;
 }
 
-AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border, uint8_t border_width,
-                               Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
+AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, 
+                                bool with_border, uint8_t border_width,
+                                Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
     this->display_screen = display_screen;
     this->anchor_x = anchor_x;
@@ -211,6 +212,11 @@ void AbstractWidget::refresh()
     if (with_border)
         draw_border();
     this->display_screen->show(this, this->anchor_x, this->anchor_y);
+}
+
+Framebuffer_color AbstractWidget::blinking_us(uint32_t blink_time)
+{
+    return ((time_us_32() / blink_time) % 2) ? Framebuffer_color::white : Framebuffer_color::black;
 }
 
 void AbstractWidget::draw_border()

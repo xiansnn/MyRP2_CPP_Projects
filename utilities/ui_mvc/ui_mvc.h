@@ -116,11 +116,14 @@ protected:
     uint8_t widget_start_y;
     uint8_t widget_width;
     uint8_t widget_height;
-    /* data */
+
+
 public:
     AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border, uint8_t border_width = 1,
                    Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     virtual ~AbstractWidget();
+
+    static Framebuffer_color blinking_us(uint32_t blink_period);
 
     uint8_t anchor_x;
     uint8_t anchor_y;
