@@ -41,18 +41,18 @@ private:
 protected:
     uint8_t bargraph_bin_spacing;
     uint8_t bargraph_bin_flag_width;
-
-    uint8_t bar_height;
+    uint8_t bargraph_bin_height;
+    uint8_t bargraph_bin_width;
 
     uint8_t px_max;
     uint8_t px_min;
-    uint8_t bar_width;
     float level_coef;
     int level_offset;
 
     uint8_t convert_level_value_to_px(int level);
     void draw();
     void draw_bar(uint8_t bin_number);
+    void draw_border();
 
 public:
     W_SimpleHBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_simple_bargraph_widget_t cnf_bargraph);

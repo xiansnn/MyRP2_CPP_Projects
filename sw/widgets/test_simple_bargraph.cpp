@@ -8,9 +8,9 @@
 #define MIN_BIN_VALUE 0
 #define MAX_BIN_VALUE 100
 
-#define BIN_NUMBER 7
-#define BIN_HEIGHT 8
-#define BARGRAPH_HEIGHT BIN_HEIGHT *BIN_NUMBER
+#define BIN_NUMBER 5
+// #define BIN_HEIGHT 8
+#define BARGRAPH_HEIGHT 50
 
 config_master_i2c_t cfg_i2c{
     .i2c = i2c0,

@@ -21,8 +21,8 @@ W_HBargraph::W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObje
     bar_height = std::max(5, widget_height / bargraph_bin_number); // round sup
     widget_height = bar_height * bargraph_bin_number;
 
-    px_max = frame_width - border_width;
-    px_min = border_width + bargraph_bin_flag_width;
+    px_max = frame_width - widget_border_width;
+    px_min = widget_border_width + bargraph_bin_flag_width;
     bar_width = px_max - px_min;
 
     level_coef = (float)(px_max - px_min) / (displayed_values->max_value - displayed_values->min_value);

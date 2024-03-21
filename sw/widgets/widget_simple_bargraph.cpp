@@ -17,8 +17,8 @@ void W_SimpleHBargraph::draw()
 
 void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
 {
-    uint8_t bar_start_y = bin_number * bar_height;
-    rect(0, bar_start_y, frame_width, bar_height, true, Framebuffer_color::black); // erase the bar area
+    uint8_t bar_start_y = bin_number * bargraph_bin_height;
+    rect(0, bar_start_y, frame_width, bargraph_bin_height, true, Framebuffer_color::black); // erase the bar area
 
     uint8_t px = convert_level_value_to_px(this->displayed_values->values[bin_number]);
     uint16_t p0 = convert_level_value_to_px(0);
@@ -37,30 +37,35 @@ void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
     }
 
     if (this->displayed_values->values[bin_number] == 0)
-        rect(bar_start, bar_start_y + bargraph_bin_spacing, 1, bar_height - bargraph_bin_spacing, true);
+        rect(bar_start, bar_start_y + bargraph_bin_spacing, 1, bargraph_bin_height - bargraph_bin_spacing, true);
     else
-        rect(bar_start, bar_start_y + bargraph_bin_spacing, bar_end - bar_start, bar_height - 2 * bargraph_bin_spacing, true);
+        rect(bar_start, bar_start_y + bargraph_bin_spacing, bar_end - bar_start, bargraph_bin_height - 2 * bargraph_bin_spacing, true);
 }
 
-W_SimpleHBargraph::W_SimpleHBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_simple_bargraph_widget_t cnf_bargraph)
-    : AbstractWidget(display_screen, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
-                     cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border, cnf_bargraph.border_width,
-                     cnf_bargraph.format, cnf_bargraph.txt_cnf)
+void W_SimpleHBargraph::draw_border()
 {
-    this->displayed_values = displayed_values;
+    rect(0, 0, widget_width, widget_height-widget_border_width); // FIXME pb draw_border
+}
 
-    this->bargraph_bin_number = cnf_bargraph.bargraph_bin_number;
-    this->bargraph_bin_spacing = cnf_bargraph.bargraph_bin_spacing;
+W_SimpleHBargraph::W_SimpleHBargraph(UI_DisplayDevice *_display_screen, BargraphDisplayedObject *_displayed_values, config_simple_bargraph_widget_t _cnf_bargraph)
+    : AbstractWidget(_display_screen, _cnf_bargraph.bargraph_width, _cnf_bargraph.bargraph_height,
+                     _cnf_bargraph.bargraph_anchor_x, _cnf_bargraph.bargraph_anchor_y, _cnf_bargraph.with_border, _cnf_bargraph.border_width,
+                     _cnf_bargraph.format, _cnf_bargraph.txt_cnf)
+{
+    this->displayed_values = _displayed_values;
 
-    bar_height = std::max(5, widget_height / bargraph_bin_number); // round sup
-    widget_height = bar_height * bargraph_bin_number;
+    this->bargraph_bin_number = _cnf_bargraph.bargraph_bin_number;
+    this->bargraph_bin_spacing = _cnf_bargraph.bargraph_bin_spacing;
 
-    px_max = frame_width - border_width;
-    px_min = border_width + bargraph_bin_flag_width;
-    bar_width = px_max - px_min;
+    bargraph_bin_height = std::max(5, widget_height / bargraph_bin_number); // FIXME  less than 5 px height is hard to read!
+    widget_height = bargraph_bin_height * bargraph_bin_number;// FIXME pb avec draw_border qui a un bin de trop !
 
-    level_coef = (float)(px_max - px_min) / (displayed_values->max_value - displayed_values->min_value);
-    level_offset = px_max - level_coef * displayed_values->max_value;
+    px_max = frame_width - widget_border_width;
+    px_min = widget_border_width + bargraph_bin_flag_width; // FIXME pas de flag widht pout simple bargraph !!
+    bargraph_bin_width = px_max - px_min;
+
+    level_coef = (float)(px_max - px_min) / (_displayed_values->max_value - _displayed_values->min_value);
+    level_offset = px_max - level_coef * _displayed_values->max_value;
 }
 
 W_SimpleHBargraph::~W_SimpleHBargraph()

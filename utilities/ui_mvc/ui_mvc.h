@@ -110,8 +110,8 @@ class AbstractWidget : public Framebuffer
 private:
 protected:
     UI_DisplayDevice *display_screen;
-    bool with_border;
-    uint8_t border_width;
+    bool widget_with_border;
+    uint8_t widget_border_width;
     uint8_t widget_start_x;
     uint8_t widget_start_y;
     uint8_t widget_width;
@@ -119,14 +119,14 @@ protected:
 
 
 public:
-    AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, bool with_border, uint8_t border_width = 1,
-                   Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    AbstractWidget(UI_DisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
+                   Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
     virtual ~AbstractWidget();
 
     static Framebuffer_color blinking_us(uint32_t blink_period);
 
-    uint8_t anchor_x;
-    uint8_t anchor_y;
+    uint8_t widget_anchor_x;
+    uint8_t widget_anchor_y;
 
     virtual void refresh();
     virtual void draw_border();

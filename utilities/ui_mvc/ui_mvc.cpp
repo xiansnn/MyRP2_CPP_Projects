@@ -186,20 +186,20 @@ void UI_WidgetManager::clear_active_controlled_object_change_flag()
     active_controlled_object_has_changed = false;
 }
 
-AbstractWidget::AbstractWidget(UI_DisplayDevice *display_screen, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y, 
-                                bool with_border, uint8_t border_width,
-                                Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
+AbstractWidget::AbstractWidget(UI_DisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, 
+                                bool _widget_with_border, uint8_t _widget_border_width,
+                                Framebuffer_format _framebuffer_format, config_framebuffer_text_t _framebuffer_txt_cnf) : Framebuffer(_frame_width, _frame_height, _framebuffer_format, _framebuffer_txt_cnf)
 {
-    this->display_screen = display_screen;
-    this->anchor_x = anchor_x;
-    this->anchor_y = anchor_y;
-    this->with_border = with_border;
-    this->border_width = (with_border) ? border_width : 0;
+    this->display_screen = _display_screen;
+    this->widget_anchor_x = _widget_anchor_x;
+    this->widget_anchor_y = _widget_anchor_y;
+    this->widget_with_border = _widget_with_border;
+    this->widget_border_width = (widget_with_border) ? _widget_border_width : 0;
 
-    widget_start_x = border_width;
-    widget_start_y = border_width;
-    widget_width = frame_width - 2 * border_width;
-    widget_height = frame_height - 2 * border_width + 1;
+    widget_start_x = widget_border_width;
+    widget_start_y = widget_border_width;
+    widget_width = frame_width - 2 * widget_border_width;
+    widget_height = frame_height - 2 * widget_border_width;
 }
 
 AbstractWidget::~AbstractWidget()
@@ -209,9 +209,9 @@ AbstractWidget::~AbstractWidget()
 void AbstractWidget::refresh()
 {
     draw();
-    if (with_border)
+    if (widget_with_border)
         draw_border();
-    this->display_screen->show(this, this->anchor_x, this->anchor_y);
+    this->display_screen->show(this, this->widget_anchor_x, this->widget_anchor_y);
 }
 
 Framebuffer_color AbstractWidget::blinking_us(uint32_t blink_time)

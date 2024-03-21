@@ -5,20 +5,20 @@
 
 #define BYTE_SIZE 8
 
-Framebuffer::Framebuffer(size_t width, size_t height, Framebuffer_format format, config_framebuffer_text_t txt_cnf)
+Framebuffer::Framebuffer(size_t _frame_width, size_t _frame_height, Framebuffer_format _framebuffer_format, config_framebuffer_text_t _framebuffer_txt_cnf)
 {
-    assert(format == Framebuffer_format::MONO_VLSB); // works only for MONO_VLSB devices
-    this->format = format;
-    this->frame_height = height;
-    this->frame_width = width; // MONO_VLDB => 1 Byte = 1 column of 8 pixel
-    size_t nb_of_pages = height / BYTE_SIZE;
-    if (height % BYTE_SIZE != 0)
+    assert(_framebuffer_format == Framebuffer_format::MONO_VLSB); // works only for MONO_VLSB devices
+    this->frame_format = _framebuffer_format;
+    this->frame_height = _frame_height;
+    this->frame_width = _frame_width; // MONO_VLDB => 1 Byte = 1 column of 8 pixel
+    size_t nb_of_pages = _frame_height / BYTE_SIZE;
+    if (_frame_height % BYTE_SIZE != 0)
         nb_of_pages += 1;
-    this->pixel_buffer_size = width * nb_of_pages;
+    this->pixel_buffer_size = frame_width * nb_of_pages;
     this->pixel_buffer = new uint8_t[this->pixel_buffer_size];
     clear_pixel_buffer();
     this->text_buffer = nullptr;
-    this->set_text_config(txt_cnf);
+    this->set_text_config(_framebuffer_txt_cnf);
 }
 
 Framebuffer::~Framebuffer()
@@ -29,7 +29,7 @@ Framebuffer::~Framebuffer()
 
 void Framebuffer::fill(Framebuffer_color c)
 {
-    assert(this->format == Framebuffer_format::MONO_VLSB);
+    assert(this->frame_format == Framebuffer_format::MONO_VLSB);
     if (c == Framebuffer_color::black)
         memset(this->pixel_buffer, 0x00, this->pixel_buffer_size);
     else
@@ -49,17 +49,17 @@ void Framebuffer::clear_text_buffer()
     current_char_line = 0;
 }
 
-void Framebuffer::set_text_config(config_framebuffer_text_t device_config)
+void Framebuffer::set_text_config(config_framebuffer_text_t _framebuffer_txt_cnf)
 {
-    this->text_config = device_config;
-    set_font(device_config.font);
+    this->frame_text_config = _framebuffer_txt_cnf;
+    set_font(_framebuffer_txt_cnf.font);
 }
 
 void Framebuffer::set_font(const unsigned char *font)
 {
-    this->text_config.font = font;
-    this->max_column = this->frame_width / text_config.font[FONT_WIDTH];
-    this->max_line = this->frame_height / text_config.font[FONT_HEIGHT];
+    this->frame_text_config.font = font;
+    this->max_column = this->frame_width / frame_text_config.font[FONT_WIDTH];
+    this->max_line = this->frame_height / frame_text_config.font[FONT_HEIGHT];
     this->text_buffer_size = max_line * max_column + 1;
     if (text_buffer != nullptr)
         delete[] text_buffer;
@@ -79,7 +79,7 @@ void Framebuffer::next_char()
     current_char_column++;
     if (current_char_column >= max_column)
     {
-        if (this->text_config.wrap)
+        if (this->frame_text_config.wrap)
         {
             current_char_column = 0;
             next_line();
@@ -135,7 +135,7 @@ void Framebuffer::print_char(char c)
             clear_line(); // start a new line
         if (c == HORIZONTAL_TAB)
         {
-            for (uint8_t i = 0; i < text_config.tab_size; i++)
+            for (uint8_t i = 0; i < frame_text_config.tab_size; i++)
             {
                 drawChar(' ', current_char_column, current_char_line);
                 next_char();
@@ -143,7 +143,7 @@ void Framebuffer::print_char(char c)
         }
         else
         {
-            if (this->text_config.auto_next_char)
+            if (this->frame_text_config.auto_next_char)
             {
                 drawChar(c, current_char_column, current_char_line);
                 next_char();
@@ -160,7 +160,7 @@ void Framebuffer::print_char(char c)
 
 void Framebuffer::pixel(int x, int y, Framebuffer_color c)
 {
-    assert(format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
+    assert(frame_format == Framebuffer_format::MONO_VLSB); // works only if MONO_VLSB
 
     if (x >= 0 && x < this->frame_width && y >= 0 && y < this->frame_height) // avoid drawing outside the framebuffer
     {
@@ -313,9 +313,9 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
         for (uint8_t y = 0; y < font_height; y++)
         {
             if (font[seek] >> b_seek & 0b00000001)
-                this->pixel(x + anchor_x, y + anchor_y, this->text_config.fg_color);
+                this->pixel(x + anchor_x, y + anchor_y, this->frame_text_config.fg_color);
             else
-                this->pixel(x + anchor_x, y + anchor_y, this->text_config.bg_color);
+                this->pixel(x + anchor_x, y + anchor_y, this->frame_text_config.bg_color);
 
             b_seek++;
             if (b_seek == 8)
@@ -329,9 +329,9 @@ void Framebuffer::drawChar(const unsigned char *font, char c, uint8_t anchor_x, 
 
 void Framebuffer::drawChar(char c, uint8_t char_column, uint8_t char_line)
 {
-    uint8_t anchor_x = char_column * text_config.font[FONT_WIDTH];
-    uint8_t anchor_y = char_line * text_config.font[FONT_HEIGHT];
-    drawChar(this->text_config.font, c, anchor_x, anchor_y);
+    uint8_t anchor_x = char_column * frame_text_config.font[FONT_WIDTH];
+    uint8_t anchor_y = char_line * frame_text_config.font[FONT_HEIGHT];
+    drawChar(this->frame_text_config.font, c, anchor_x, anchor_y);
 }
 
 
