@@ -44,10 +44,10 @@ void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
 
 void W_SimpleHBargraph::draw_border()
 {
-    rect(0, 0, widget_width, widget_height-widget_border_width); // FIXME pb draw_border
+    rect(0, 0, widget_width, widget_height-widget_border_width);
 }
 
-W_SimpleHBargraph::W_SimpleHBargraph(UI_DisplayDevice *_display_screen, BargraphDisplayedObject *_displayed_values, config_simple_bargraph_widget_t _cnf_bargraph)
+W_SimpleHBargraph::W_SimpleHBargraph(AbstractDisplayDevice *_display_screen, BargraphDisplayedObject *_displayed_values, config_simple_bargraph_widget_t _cnf_bargraph)
     : AbstractWidget(_display_screen, _cnf_bargraph.bargraph_width, _cnf_bargraph.bargraph_height,
                      _cnf_bargraph.bargraph_anchor_x, _cnf_bargraph.bargraph_anchor_y, _cnf_bargraph.with_border, _cnf_bargraph.border_width,
                      _cnf_bargraph.format, _cnf_bargraph.txt_cnf)
@@ -57,8 +57,8 @@ W_SimpleHBargraph::W_SimpleHBargraph(UI_DisplayDevice *_display_screen, Bargraph
     this->bargraph_bin_number = _cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = _cnf_bargraph.bargraph_bin_spacing;
 
-    bargraph_bin_height = std::max(5, widget_height / bargraph_bin_number); // FIXME  less than 5 px height is hard to read!
-    widget_height = bargraph_bin_height * bargraph_bin_number;// FIXME pb avec draw_border qui a un bin de trop !
+    bargraph_bin_height = std::max(5, widget_height / bargraph_bin_number); // less than 5 px height is hard to read!
+    widget_height = bargraph_bin_height * bargraph_bin_number; // adjus effective widget height to an exact multiple of bin height
 
     px_max = frame_width - widget_border_width;
     px_min = widget_border_width + bargraph_bin_flag_width; // FIXME pas de flag widht pout simple bargraph !!

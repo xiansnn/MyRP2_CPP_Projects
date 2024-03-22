@@ -1,7 +1,7 @@
 #include "KY_040_focus_manager.h"
 #include <string>
 
-KY_40_WidgetManager::KY_40_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+KY_40_WidgetManager::KY_40_WidgetManager(AbstractDisplayDevice *screen) : UI_WidgetManager(screen)
 {
 }
 

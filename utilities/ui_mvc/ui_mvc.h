@@ -39,6 +39,10 @@ enum class ControlledObjectStatus
 
 class UI_Controller;
 class UI_Widget;
+class AbstractDisplayDevice;
+
+
+
 
 
 
@@ -46,7 +50,7 @@ class UI_Widget;
 class UI_ControlledObject
 {
 private:
-    ControlledObjectStatus status{ControlledObjectStatus::WAITING};
+    ControlledObjectStatus status{ControlledObjectStatus::WAITING};// TODO to move to an new AbstractDisplayedObject class
 
 protected:
     bool wrap;
@@ -54,7 +58,7 @@ protected:
     int min_value;
     int max_value;
     int increment{1};
-    bool status_has_changed{true};
+    bool status_has_changed{true};  // TODO to move to an new AbstractDisplayedObject class
 
 public:
     uint8_t id;
@@ -68,10 +72,10 @@ public:
 
     UI_ControlledObject(uint8_t id, int min_value = 0, int max_value = 10, bool wrap = false, int increment = 1);
     virtual ~UI_ControlledObject();
-    bool has_status_changed();
-    void clear_status_change_flag();
-    void update_status(ControlledObjectStatus status);
-    ControlledObjectStatus get_status();
+    bool has_status_changed(); // TODO to move to an new AbstractDisplayedObject class
+    void clear_status_change_flag(); // TODO to move to an new AbstractDisplayedObject class
+    void update_status(ControlledObjectStatus status); // TODO to move to an new AbstractDisplayedObject class
+    ControlledObjectStatus get_status();  // TODO to move to an new AbstractDisplayedObject class
 
     virtual void set_value_clipped(int new_value) = 0;
     virtual void process_control_event(ControlEvent) = 0;
@@ -93,45 +97,7 @@ public:
     UI_ControlledObject *get_active_controlled_object();
 };
 
-// -------class UI_DisplayDevice : public Framebuffer
-class UI_DisplayDevice : public Framebuffer
-{
-private:
-public:
-    UI_DisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
-    virtual ~UI_DisplayDevice();
-    virtual void show() = 0;
-    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
-};
 
-// -------class AbstractWidget : public Framebuffer
-class AbstractWidget : public Framebuffer
-{
-private:
-protected:
-    UI_DisplayDevice *display_screen;
-    bool widget_with_border;
-    uint8_t widget_border_width;
-    uint8_t widget_start_x;
-    uint8_t widget_start_y;
-    uint8_t widget_width;
-    uint8_t widget_height;
-
-
-public:
-    AbstractWidget(UI_DisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
-                   Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
-    virtual ~AbstractWidget();
-
-    static Framebuffer_color blinking_us(uint32_t blink_period);
-
-    uint8_t widget_anchor_x;
-    uint8_t widget_anchor_y;
-
-    virtual void refresh();
-    virtual void draw_border();
-    virtual void draw() = 0;
-};
 
 // ---- class UI_Widget : public Framebuffer
 class UI_Widget : public Framebuffer
@@ -148,11 +114,11 @@ public:
               Framebuffer_format format = Framebuffer_format::MONO_VLSB,
               config_framebuffer_text_t txt_cnf = {.font = font_8x8});
     virtual ~UI_Widget();
-    bool refresh_requested();
-    void refresh_done();
+    bool refresh_requested(); // TODO move to AbstractWidget
+    void refresh_done();// TODO move to AbstractWidget
 
-    void set_active_displayed_object(UI_ControlledObject *displayed_object);
-    UI_ControlledObject *get_active_displayed_object();
+    void set_active_displayed_object(UI_ControlledObject *displayed_object); // TODO move to AbstractWidget
+    UI_ControlledObject *get_active_displayed_object();// TODO move to AbstractWidget
     virtual void draw() = 0;
     virtual void draw_border() = 0;
 };
@@ -164,11 +130,11 @@ protected:
     std::vector<UI_ControlledObject *> controlled_objects;
 
 public:
-    UI_WidgetManager(UI_DisplayDevice *screen = nullptr);
+    UI_WidgetManager(AbstractDisplayDevice *screen = nullptr);
     ~UI_WidgetManager();
     UI_ControlledObject *controlled_object_under_focus;
     std::list<UI_Widget *> widgets;
-    UI_DisplayDevice *screen_framebuffer;
+    AbstractDisplayDevice *screen_framebuffer;
     void refresh();
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
     void add_widget(UI_Widget *widget);
@@ -176,5 +142,69 @@ public:
     void clear_active_controlled_object_change_flag();
     void process_control_event(ControlEvent event) = 0;
 };
+
+// -------class AbstractDisplayDevice : public Framebuffer
+class AbstractDisplayDevice : public Framebuffer
+{
+private:
+public:
+    AbstractDisplayDevice(size_t width, size_t height, Framebuffer_format format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    virtual ~AbstractDisplayDevice();
+    virtual void show() = 0;
+    virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
+};
+
+
+
+class AbstractDisplayedObject
+{
+private:
+    /* data */
+public:
+    AbstractDisplayedObject(/* args */);
+    ~AbstractDisplayedObject();
+};
+
+class AbstractControlledObject
+{
+private:
+    /* data */
+public:
+    AbstractControlledObject(/* args */);
+    ~AbstractControlledObject();
+};
+
+
+
+
+
+// -------class AbstractWidget : public Framebuffer
+class AbstractWidget : public Framebuffer
+{
+private:
+protected:
+    AbstractDisplayDevice *display_screen;
+    bool widget_with_border;
+    uint8_t widget_border_width;
+    uint8_t widget_start_x;
+    uint8_t widget_start_y;
+    uint8_t widget_width;
+    uint8_t widget_height;
+public:
+    AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
+                   Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
+    virtual ~AbstractWidget();
+
+    static Framebuffer_color blinking_us(uint32_t blink_period);
+
+    uint8_t widget_anchor_x;
+    uint8_t widget_anchor_y;
+
+    virtual void refresh();
+    virtual void draw_border();
+    virtual void draw() = 0;
+};
+
+
 
 #endif // UI_MVC_H

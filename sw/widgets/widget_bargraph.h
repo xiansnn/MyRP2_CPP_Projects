@@ -74,7 +74,7 @@ private:
     void set_value_clipped(int new_value);
 
 public:
-    W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
+    W_HBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
     ~W_HBargraph();
 
     int threshold;

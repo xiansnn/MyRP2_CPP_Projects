@@ -91,7 +91,7 @@ class MB_WidgetManager : public UI_WidgetManager
 private:
     /* data */
 public:
-    MB_WidgetManager(UI_DisplayDevice *screen);
+    MB_WidgetManager(AbstractDisplayDevice *screen);
     ~MB_WidgetManager();
 
     void process_control_event(SwitchButton *controller);
@@ -198,7 +198,7 @@ void MB_DrawFMFrequency::draw()
 void MB_DrawFMFrequency::draw_border()
 { // TODO draw border
 }
-MB_WidgetManager::MB_WidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+MB_WidgetManager::MB_WidgetManager(AbstractDisplayDevice *screen) : UI_WidgetManager(screen)
 {
     this->wrap = true;
 }

@@ -1,7 +1,7 @@
 #include "widget_stacked_bar.h"
 #include "widget_bar.h"
 
-W_StackedBar::W_StackedBar(uint8_t id, UI_DisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder,
+W_StackedBar::W_StackedBar(uint8_t id, AbstractDisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder,
                            ControlledValue *cntrl_value, uint8_t anchor_x, uint8_t anchor_y, config_widget_t bar_config)
     : W_Bar(id, cntrl_value, anchor_x, anchor_y, bar_config)
 {
@@ -78,7 +78,7 @@ void W_StackedBar::link_widgets_with_values()
     }
 };
 
-StackedBarManager::StackedBarManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+StackedBarManager::StackedBarManager(AbstractDisplayDevice *screen) : UI_WidgetManager(screen)
 {
 }
 

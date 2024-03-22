@@ -86,7 +86,7 @@ class TestFontWidgetManager : public UI_WidgetManager
 private:
     /* data */
 public:
-    TestFontWidgetManager(UI_DisplayDevice *screen);
+    TestFontWidgetManager(AbstractDisplayDevice *screen);
     ~TestFontWidgetManager();
 
     void process_control_event(SwitchButton *controller);
@@ -182,7 +182,7 @@ void DrawFont::draw_border()
 { // TODO draw border
 }
 
-TestFontWidgetManager::TestFontWidgetManager(UI_DisplayDevice *screen) : UI_WidgetManager(screen)
+TestFontWidgetManager::TestFontWidgetManager(AbstractDisplayDevice *screen) : UI_WidgetManager(screen)
 {
     this->wrap = true;
 }

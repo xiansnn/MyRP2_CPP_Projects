@@ -20,7 +20,7 @@ void SSD1306::send_buf(uint8_t buffer[], size_t buffer_size)
 }
 
 SSD1306::SSD1306(hw_I2C_master *master, config_SSD1306_t init_config)
-    : UI_DisplayDevice(SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
+    : AbstractDisplayDevice(SSD1306_WIDTH, SSD1306_HEIGHT, Framebuffer_format::MONO_VLSB)
 {
     this->i2c_master = master;
     this->device_config = init_config;

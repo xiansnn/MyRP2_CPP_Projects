@@ -55,7 +55,7 @@ protected:
     void draw_border();
 
 public:
-    W_SimpleHBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_simple_bargraph_widget_t cnf_bargraph);
+    W_SimpleHBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_simple_bargraph_widget_t cnf_bargraph);
     ~W_SimpleHBargraph();
     uint8_t bargraph_bin_number;
 };

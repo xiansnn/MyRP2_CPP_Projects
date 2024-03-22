@@ -1,6 +1,6 @@
 #include "widget_bargraph.h"
 
-W_HBargraph::W_HBargraph(UI_DisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
+W_HBargraph::W_HBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
     : AbstractWidget(display_screen, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
                      cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border, cnf_bargraph.border_width,
                      cnf_bargraph.format, cnf_bargraph.txt_cnf),

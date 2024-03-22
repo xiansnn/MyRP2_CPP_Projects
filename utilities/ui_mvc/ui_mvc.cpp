@@ -71,7 +71,7 @@ UI_Widget::~UI_Widget()
 
 bool UI_Widget::refresh_requested()
 {
-    return (active_displayed_object->has_status_changed()) ? true : false;
+    return (active_displayed_object->has_status_changed()) ? true : false; 
 }
 
 void UI_Widget::refresh_done()
@@ -132,15 +132,15 @@ void UI_ControlledObject::set_max_value(int value)
     this->max_value = value;
 }
 
-UI_DisplayDevice::UI_DisplayDevice(size_t width, size_t height,
+AbstractDisplayDevice::AbstractDisplayDevice(size_t width, size_t height,
                                    Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
 }
 
-UI_DisplayDevice::~UI_DisplayDevice()
+AbstractDisplayDevice::~AbstractDisplayDevice()
 {
 }
-UI_WidgetManager::UI_WidgetManager(UI_DisplayDevice *screen) : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
+UI_WidgetManager::UI_WidgetManager(AbstractDisplayDevice *screen) : UI_ControlledObject(FOCUS_MANAGER_ID), UI_Controller(FOCUS_MANAGER_ID)
 {
     this->screen_framebuffer = screen;
     min_value = 0;
@@ -186,7 +186,7 @@ void UI_WidgetManager::clear_active_controlled_object_change_flag()
     active_controlled_object_has_changed = false;
 }
 
-AbstractWidget::AbstractWidget(UI_DisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, 
+AbstractWidget::AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, 
                                 bool _widget_with_border, uint8_t _widget_border_width,
                                 Framebuffer_format _framebuffer_format, config_framebuffer_text_t _framebuffer_txt_cnf) : Framebuffer(_frame_width, _frame_height, _framebuffer_format, _framebuffer_txt_cnf)
 {
@@ -222,4 +222,21 @@ Framebuffer_color AbstractWidget::blinking_us(uint32_t blink_time)
 void AbstractWidget::draw_border()
 {
     rect(0, 0, frame_width, frame_height);
+}
+
+
+AbstractDisplayedObject::AbstractDisplayedObject(/* args */)
+{
+}
+
+AbstractDisplayedObject::~AbstractDisplayedObject()
+{
+}
+
+AbstractControlledObject::AbstractControlledObject(/* args */)
+{
+}
+
+AbstractControlledObject::~AbstractControlledObject()
+{
 }

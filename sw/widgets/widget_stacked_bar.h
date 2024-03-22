@@ -15,7 +15,7 @@ class StackedBarManager : public UI_WidgetManager
 private:
     /* data */
 public:
-    StackedBarManager(UI_DisplayDevice *screen);
+    StackedBarManager(AbstractDisplayDevice *screen);
     ~StackedBarManager();
 
     void process_control_event(SwitchButton *controller);
@@ -39,7 +39,7 @@ private:
     StackedBarManager *widget_manager;
 
 public:
-    W_StackedBar(uint8_t id,UI_DisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder , 
+    W_StackedBar(uint8_t id,AbstractDisplayDevice *screen, SwitchButton *central_switch, RotaryEncoder *encoder , 
     ControlledValue* cntrl_value, uint8_t anchor_x, uint8_t anchor_y,  config_widget_t bar_config ={});
     ~W_StackedBar();
     void refresh();
