@@ -210,7 +210,7 @@ MB_WidgetManager::~MB_WidgetManager()
 void MB_WidgetManager::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    status_has_changed = true;
+    refresh_requested = true;
 }
 
 void MB_WidgetManager::process_control_event(SwitchButton *controller)

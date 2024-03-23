@@ -12,7 +12,7 @@ KY_40_WidgetManager::~KY_40_WidgetManager()
 void KY_40_WidgetManager::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    status_has_changed = true;
+    refresh_requested = true;
 }
 
 void KY_40_WidgetManager::process_control_event(SwitchButton *controller)
@@ -61,7 +61,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
 
-        status_has_changed = true;
+        refresh_requested = true;
         break;
     case ControlEvent::DECREMENT:
         value--;
@@ -71,7 +71,7 @@ void KY_40_WidgetManager::process_control_event(ControlEvent event)
         controlled_object_under_focus->update_status(ControlledObjectStatus::WAITING);
         controlled_object_under_focus = controlled_objects[value];
         controlled_object_under_focus->update_status(ControlledObjectStatus::HAS_FOCUS);
-        status_has_changed = true;
+        refresh_requested = true;
         break;
 
     default:

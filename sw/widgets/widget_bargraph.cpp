@@ -125,7 +125,7 @@ void W_HBargraph::draw_bar(uint8_t bin_number)
 void W_HBargraph::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    status_has_changed = true;
+    refresh_requested = true;
 }
 
 void W_HBargraph::process_control_event(ControlEvent event)

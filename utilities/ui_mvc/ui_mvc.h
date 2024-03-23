@@ -40,6 +40,7 @@ enum class ControlledObjectStatus
 class UI_Controller;
 class UI_Widget;
 class AbstractDisplayDevice;
+class AbstractWidget;
 
 
 
@@ -58,7 +59,7 @@ protected:
     int min_value;
     int max_value;
     int increment{1};
-    bool status_has_changed{true};  // TODO to move to an new AbstractDisplayedObject class
+    bool refresh_requested{true};  // TODO to move to an new AbstractDisplayedObject class
 
 public:
     uint8_t id;
@@ -130,15 +131,16 @@ protected:
     std::vector<UI_ControlledObject *> controlled_objects;
 
 public:
-    UI_WidgetManager(AbstractDisplayDevice *screen = nullptr);
-    ~UI_WidgetManager();
+    bool active_controlled_object_has_changed;
     UI_ControlledObject *controlled_object_under_focus;
     std::list<UI_Widget *> widgets;
     AbstractDisplayDevice *screen_framebuffer;
+
+    UI_WidgetManager(AbstractDisplayDevice *screen = nullptr);
+    ~UI_WidgetManager();
     void refresh();
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
     void add_widget(UI_Widget *widget);
-    bool active_controlled_object_has_changed;
     void clear_active_controlled_object_change_flag();
     void process_control_event(ControlEvent event) = 0;
 };
@@ -159,10 +161,18 @@ public:
 class AbstractDisplayedObject
 {
 private:
-    /* data */
+    ControlledObjectStatus status{ControlledObjectStatus::WAITING};
+    AbstractWidget* current_active_widget;
 public:
+    bool refresh_requested{true};
     AbstractDisplayedObject(/* args */);
     ~AbstractDisplayedObject();
+
+    bool has_status_changed(); 
+    void update_status(ControlledObjectStatus new_status); 
+    ControlledObjectStatus get_status();  
+    void clear_status_change_flag();
+    void set_active_widget(AbstractWidget* new_widget);
 };
 
 class AbstractControlledObject
@@ -184,6 +194,7 @@ class AbstractWidget : public Framebuffer
 private:
 protected:
     AbstractDisplayDevice *display_screen;
+    AbstractDisplayedObject *active_displayed_object;
     bool widget_with_border;
     uint8_t widget_border_width;
     uint8_t widget_start_x;
@@ -191,15 +202,16 @@ protected:
     uint8_t widget_width;
     uint8_t widget_height;
 public:
-    AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
-                   Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
-    virtual ~AbstractWidget();
-
-    static Framebuffer_color blinking_us(uint32_t blink_period);
-
     uint8_t widget_anchor_x;
     uint8_t widget_anchor_y;
+    static Framebuffer_color blinking_us(uint32_t blink_period);
 
+    AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
+                   Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
+    // virtual void set_active_displayed_object(AbstractDisplayedObject* new_active_displayed_object);
+    virtual void set_active_displayed_object(AbstractDisplayedObject *new_active_displayed_object);
+    virtual AbstractDisplayedObject* get_active_displayed_object();
+    virtual ~AbstractWidget();
     virtual void refresh();
     virtual void draw_border();
     virtual void draw() = 0;

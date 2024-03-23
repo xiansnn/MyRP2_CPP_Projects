@@ -38,12 +38,12 @@ UI_ControlledObject::~UI_ControlledObject()
 
 bool UI_ControlledObject::has_status_changed()
 {
-    return status_has_changed;
+    return refresh_requested;
 }
 
 void UI_ControlledObject::update_status(ControlledObjectStatus new_status)
 {
-    this->status_has_changed = (this->status != new_status) ? true : false;
+    this->refresh_requested = (this->status != new_status) ? true : false;
     this->status = new_status;
 }
 
@@ -54,7 +54,7 @@ ControlledObjectStatus UI_ControlledObject::get_status()
 
 void UI_ControlledObject::clear_status_change_flag()
 {
-    this->status_has_changed = false;
+    this->refresh_requested = false;
 }
 
 UI_Widget::UI_Widget(uint8_t id, size_t width, size_t height, uint8_t anchor_x, uint8_t anchor_y,
@@ -71,7 +71,7 @@ UI_Widget::~UI_Widget()
 
 bool UI_Widget::refresh_requested()
 {
-    return (active_displayed_object->has_status_changed()) ? true : false; 
+    return (active_displayed_object->has_status_changed()) ? true : false;
 }
 
 void UI_Widget::refresh_done()
@@ -95,7 +95,7 @@ void UI_ControlledObject::increment_value()
     if ((wrap) and (value > max_value))
         value = min_value;
     this->value = std::min(max_value, std::max(min_value, value));
-    status_has_changed = true;
+    refresh_requested = true;
 }
 
 void UI_ControlledObject::decrement_value()
@@ -104,7 +104,7 @@ void UI_ControlledObject::decrement_value()
     if ((wrap) and (value < min_value))
         value = max_value;
     this->value = std::min(max_value, std::max(min_value, value));
-    status_has_changed = true;
+    refresh_requested = true;
 }
 
 int UI_ControlledObject::get_value()
@@ -133,7 +133,7 @@ void UI_ControlledObject::set_max_value(int value)
 }
 
 AbstractDisplayDevice::AbstractDisplayDevice(size_t width, size_t height,
-                                   Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
+                                             Framebuffer_format format, config_framebuffer_text_t txt_cnf) : Framebuffer(width, height, format, txt_cnf)
 {
 }
 
@@ -186,9 +186,9 @@ void UI_WidgetManager::clear_active_controlled_object_change_flag()
     active_controlled_object_has_changed = false;
 }
 
-AbstractWidget::AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, 
-                                bool _widget_with_border, uint8_t _widget_border_width,
-                                Framebuffer_format _framebuffer_format, config_framebuffer_text_t _framebuffer_txt_cnf) : Framebuffer(_frame_width, _frame_height, _framebuffer_format, _framebuffer_txt_cnf)
+AbstractWidget::AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y,
+                               bool _widget_with_border, uint8_t _widget_border_width,
+                               Framebuffer_format _framebuffer_format, config_framebuffer_text_t _framebuffer_txt_cnf) : Framebuffer(_frame_width, _frame_height, _framebuffer_format, _framebuffer_txt_cnf)
 {
     this->display_screen = _display_screen;
     this->widget_anchor_x = _widget_anchor_x;
@@ -202,12 +202,25 @@ AbstractWidget::AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _f
     widget_height = frame_height - 2 * widget_border_width;
 }
 
+void AbstractWidget::set_active_displayed_object(AbstractDisplayedObject *new_active_displayed_object)
+{
+    this->active_displayed_object = new_active_displayed_object;
+    active_displayed_object->set_active_widget(this);
+    active_displayed_object->refresh_requested = true;
+}
+
+AbstractDisplayedObject* AbstractWidget::get_active_displayed_object()
+{
+    return this->active_displayed_object;
+}
+
 AbstractWidget::~AbstractWidget()
 {
 }
 
 void AbstractWidget::refresh()
 {
+
     draw();
     if (widget_with_border)
         draw_border();
@@ -224,13 +237,38 @@ void AbstractWidget::draw_border()
     rect(0, 0, frame_width, frame_height);
 }
 
-
 AbstractDisplayedObject::AbstractDisplayedObject(/* args */)
 {
 }
 
 AbstractDisplayedObject::~AbstractDisplayedObject()
 {
+}
+
+bool AbstractDisplayedObject::has_status_changed()
+{
+    return refresh_requested;
+}
+
+void AbstractDisplayedObject::clear_status_change_flag()
+{
+    this->refresh_requested = false;
+}
+
+void AbstractDisplayedObject::set_active_widget(AbstractWidget *new_widget)
+{
+    this->current_active_widget = new_widget;
+}
+
+void AbstractDisplayedObject::update_status(ControlledObjectStatus new_status)
+{
+    this->refresh_requested = (this->status != new_status) ? true : false;
+    this->status = new_status;
+}
+
+ControlledObjectStatus AbstractDisplayedObject::get_status()
+{
+    return this->status;
 }
 
 AbstractControlledObject::AbstractControlledObject(/* args */)
@@ -240,3 +278,4 @@ AbstractControlledObject::AbstractControlledObject(/* args */)
 AbstractControlledObject::~AbstractControlledObject()
 {
 }
+
