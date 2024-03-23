@@ -21,7 +21,7 @@ typedef struct config_simple_bargraph_widget
 } config_simple_bargraph_widget_t;
 
 //-----class BargraphDisplayedObject
-class BargraphDisplayedObject
+class BargraphDisplayedObject : public AbstractDisplayedObject
 {
 private:
 public:

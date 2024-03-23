@@ -44,7 +44,7 @@ void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
 
 void W_SimpleHBargraph::draw_border()
 {
-    rect(0, 0, widget_width, widget_height-widget_border_width);
+    rect(0, 0, widget_width, widget_height - widget_border_width);
 }
 
 W_SimpleHBargraph::W_SimpleHBargraph(AbstractDisplayDevice *_display_screen, BargraphDisplayedObject *_displayed_values, config_simple_bargraph_widget_t _cnf_bargraph)
@@ -58,7 +58,7 @@ W_SimpleHBargraph::W_SimpleHBargraph(AbstractDisplayDevice *_display_screen, Bar
     this->bargraph_bin_spacing = _cnf_bargraph.bargraph_bin_spacing;
 
     bargraph_bin_height = std::max(5, widget_height / bargraph_bin_number); // less than 5 px height is hard to read!
-    widget_height = bargraph_bin_height * bargraph_bin_number; // adjus effective widget height to an exact multiple of bin height
+    widget_height = bargraph_bin_height * bargraph_bin_number;              // adjus effective widget height to an exact multiple of bin height
 
     px_max = frame_width - widget_border_width;
     px_min = widget_border_width + bargraph_bin_flag_width; // FIXME pas de flag widht pout simple bargraph !!
@@ -74,6 +74,7 @@ W_SimpleHBargraph::~W_SimpleHBargraph()
 
 //---------------------------------------------------------------------
 BargraphDisplayedObject::BargraphDisplayedObject(int min_value, int max_value)
+    : AbstractDisplayedObject()
 {
     this->min_value = min_value;
     this->max_value = max_value;

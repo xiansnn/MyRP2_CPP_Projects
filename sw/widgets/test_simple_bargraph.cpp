@@ -48,6 +48,7 @@ int main()
     stdio_init_all();
     display_screen.clear_pixel_buffer_and_show_full_screen();
     values_bargraph.values = {0}; // init bargraph
+    w_bargraph.set_current_displayed_object(&values_bargraph);
 
     while (true)
     {
@@ -67,4 +68,5 @@ void simulate_values()
         if ((values_bargraph.values[i] >= values_bargraph.max_value) or (values_bargraph.values[i] <= values_bargraph.min_value))
             values_bargraph.values[i] = values_bargraph.min_value;
     }
+    values_bargraph.set_refresh_requested_flag(true);
 }
