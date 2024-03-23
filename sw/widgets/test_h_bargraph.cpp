@@ -61,21 +61,20 @@ config_bargraph_widget_t cnf_bargraph{
     .status_flag_mode = StatusFlagMode::BORDER_FLAG,
     .bargraph_bin_number = 7,
 };
-BargraphDisplayedObject values_bargraph = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
+
+Bargraph values_bargraph = Bargraph(MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_bargraph);
 
-config_bargraph_widget_t cnf_selected_bin{
+config_simple_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 0,
     .bargraph_anchor_y = 48,
     .bargraph_width = 128,
     .bargraph_height = 5,
     .with_border = true,
-    .with_status_flag = false,
-    .status_flag_mode = StatusFlagMode::SQUARE_FLAG,
     .bargraph_bin_number = 1,
 };
-BargraphDisplayedObject selected_bin = BargraphDisplayedObject( MIN_BIN_VALUE, MAX_BIN_VALUE);
-W_HBargraph w_selected_bin = W_HBargraph(&display_screen, &selected_bin, cnf_selected_bin);
+Bargraph selected_bin = Bargraph(MIN_BIN_VALUE, MAX_BIN_VALUE);
+W_SimpleHBargraph w_selected_bin = W_SimpleHBargraph(&display_screen, &selected_bin, cnf_selected_bin);
 
 void shared_irq_call_back(uint gpio, uint32_t event_mask)
 {
@@ -92,6 +91,7 @@ void shared_irq_call_back(uint gpio, uint32_t event_mask)
 };
 
 void simulate_values();
+void update_selected_value();
 
 int main()
 {
@@ -100,7 +100,9 @@ int main()
     encoder.set_active_controlled_object(&w_bargraph);
     central_switch.set_active_controlled_object(&w_bargraph);
     values_bargraph.values = {10, 20, 30, 40, 50, 60, 70}; // init bargraph
+    values_bargraph.set_current_widget(&w_bargraph);
 
+    selected_bin.set_current_widget(&w_selected_bin);
     selected_bin.values = {0};
 
     while (true)
@@ -108,7 +110,7 @@ int main()
         simulate_values();
         ControlEvent event = central_switch.process_sample_event();
         w_bargraph.process_control_event(event);
-        selected_bin.values[0] = values_bargraph.values[w_bargraph.current_active_index];
+        update_selected_value();
         pr_D1.hi();
         w_bargraph.refresh();
         w_selected_bin.refresh();
@@ -127,4 +129,11 @@ void simulate_values()
         if (values_bargraph.values[i] >= values_bargraph.max_value)
             values_bargraph.values[i] = values_bargraph.min_value;
     }
+    values_bargraph.set_change_flag();
+}
+
+void update_selected_value()
+{
+    selected_bin.values[0] = values_bargraph.values[w_bargraph.current_active_index];
+    selected_bin.set_change_flag();
 }

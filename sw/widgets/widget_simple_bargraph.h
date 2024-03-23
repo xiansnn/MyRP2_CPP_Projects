@@ -21,12 +21,12 @@ typedef struct config_simple_bargraph_widget
 } config_simple_bargraph_widget_t;
 
 //-----class BargraphDisplayedObject
-class BargraphDisplayedObject : public AbstractDisplayedObject
+class Bargraph : public AbstractModelObject
 {
 private:
 public:
-    BargraphDisplayedObject(int min_value = 0, int max_value = 10);
-    ~BargraphDisplayedObject();
+    Bargraph( int min_value = 0, int max_value = 10);
+    ~Bargraph();
     std::vector<int> values;
     int min_value;
     int max_value;
@@ -36,7 +36,7 @@ public:
 class W_SimpleHBargraph : public AbstractWidget
 {
 private:
-    BargraphDisplayedObject *displayed_values;
+    Bargraph *current_displayed_object;
 
 protected:
     uint8_t bargraph_bin_spacing;
@@ -55,7 +55,8 @@ protected:
     void draw_border();
 
 public:
-    W_SimpleHBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_simple_bargraph_widget_t cnf_bargraph);
+    W_SimpleHBargraph(AbstractDisplayDevice *display_screen, Bargraph *displayed_values, 
+                        config_simple_bargraph_widget_t cnf_bargraph);
     ~W_SimpleHBargraph();
     uint8_t bargraph_bin_number;
 };

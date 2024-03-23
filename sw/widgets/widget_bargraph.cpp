@@ -1,6 +1,6 @@
 #include "widget_bargraph.h"
 
-W_HBargraph::W_HBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph)
+W_HBargraph::W_HBargraph(AbstractDisplayDevice *display_screen, Bargraph *displayed_values, config_bargraph_widget_t cnf_bargraph)
     : AbstractWidget(display_screen, cnf_bargraph.bargraph_width, cnf_bargraph.bargraph_height,
                      cnf_bargraph.bargraph_anchor_x, cnf_bargraph.bargraph_anchor_y, cnf_bargraph.with_border, cnf_bargraph.border_width,
                      cnf_bargraph.format, cnf_bargraph.txt_cnf),
@@ -74,7 +74,7 @@ void W_HBargraph::decrement_threshold()
 }
 void W_HBargraph::draw_status_flag(uint8_t bin_number)
 {
-    bool is_active = (bin_number == current_active_index) ? true : false; // HACK can use UI_ControlledObjectstatus because we need a status for each bar
+    bool is_active = (bin_number == current_active_index) ? true : false; // cannot use UI_ControlledObjectstatus because we need a status for each bar
     bool is_under_focus = (bin_number == value) ? true : false;
     uint8_t bar_start_y = bin_number * bar_height;
     switch (this->status_flag_mode)
@@ -125,7 +125,7 @@ void W_HBargraph::draw_bar(uint8_t bin_number)
 void W_HBargraph::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    refresh_requested = true;
+    this->displayed_object->set_change_flag();  
 }
 
 void W_HBargraph::process_control_event(ControlEvent event)

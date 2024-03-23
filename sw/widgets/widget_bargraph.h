@@ -3,7 +3,6 @@
 
 #include "rotary_encoder.h"
 #include "ui_mvc.h"
-#include "widget_bar.h"
 #include "widget_simple_bargraph.h"
 #include "controlled_value.h"
 #include <array>
@@ -46,7 +45,7 @@ typedef struct config_bargraph_widget
 class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 {
 private:
-    BargraphDisplayedObject *displayed_values;
+    Bargraph *displayed_values;
     ControlMode control_mode{ControlMode::BAND_CONTROL};
     int threshold_increment;
     void increment_threshold();
@@ -74,7 +73,7 @@ private:
     void set_value_clipped(int new_value);
 
 public:
-    W_HBargraph(AbstractDisplayDevice *display_screen, BargraphDisplayedObject *displayed_values, config_bargraph_widget_t cnf_bargraph);
+    W_HBargraph(AbstractDisplayDevice *display_screen, Bargraph *displayed_values, config_bargraph_widget_t cnf_bargraph);
     ~W_HBargraph();
 
     int threshold;

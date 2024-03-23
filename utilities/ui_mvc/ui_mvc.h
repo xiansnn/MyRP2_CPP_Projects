@@ -149,61 +149,54 @@ public:
     virtual void show(Framebuffer *frame, uint8_t anchor_x, uint8_t anchor_y) = 0;
 };
 
-class AbstractDisplayedObject
+class AbstractModelObject
 {
 private:
+    AbstractWidget *displaying_widget;
     ControlledObjectStatus status{ControlledObjectStatus::WAITING};
-    AbstractWidget *current_active_widget;
-    bool refresh_requested{true};
-
+    bool has_changed_flag{true}; // a flag that trigger the execution of refresh, the flag is set by the requester and clear after refresh is done
 public:
-    AbstractDisplayedObject(/* args */);
-    ~AbstractDisplayedObject();
+    AbstractModelObject();
+    ~AbstractModelObject();
 
-    void set_active_widget(AbstractWidget *new_widget);
-    bool is_refresh_requested();
+    void set_current_widget(AbstractWidget *new_widget);
     void update_status(ControlledObjectStatus new_status);
     ControlledObjectStatus get_status();
-    void set_refresh_requested_flag(bool _refresh_requested);
-    // void clear_refresh_requested_flag();
-};
-
-class AbstractControlledObject
-{
-private:
-    /* data */
-public:
-    AbstractControlledObject(/* args */);
-    ~AbstractControlledObject();
+    bool has_changed();
+    void set_change_flag();
+    void clear_change_flag();
 };
 
 // -------class AbstractWidget : public Framebuffer
 class AbstractWidget : public Framebuffer
 {
 private:
-protected:
     AbstractDisplayDevice *display_screen;
-    AbstractDisplayedObject *current_displayed_object;
+    uint8_t widget_anchor_x;
+    uint8_t widget_anchor_y;
     bool widget_with_border;
-    uint8_t widget_border_width;
+
+protected:
     uint8_t widget_start_x;
     uint8_t widget_start_y;
     uint8_t widget_width;
     uint8_t widget_height;
+    uint8_t widget_border_width;
+    AbstractModelObject *displayed_object;
+    virtual void draw_border();
 
 public:
-    uint8_t widget_anchor_x;
-    uint8_t widget_anchor_y;
     static Framebuffer_color blinking_us(uint32_t blink_period);
 
-    AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height, uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
+    AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height,
+                   uint8_t _widget_anchor_x, uint8_t _widget_anchor_y, bool _widget_with_border, uint8_t _widget_border_width = 1,
                    Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
     virtual ~AbstractWidget();
-    
-    virtual void set_current_displayed_object(AbstractDisplayedObject *new_displayed_object);
-    virtual AbstractDisplayedObject *get_current_displayed_object();
+
+    void set_displayed_object(AbstractModelObject *_displayed_object);
+
     virtual void refresh();
-    virtual void draw_border();
+
     virtual void draw() = 0;
 };
 

@@ -160,10 +160,7 @@ void UI_WidgetManager::refresh()
         {
             w->draw();
             if (this->screen_framebuffer != nullptr)
-            {
                 this->screen_framebuffer->show(w, w->anchor_x, w->anchor_y);
-            }
-
             w->refresh_done();
         }
     }
@@ -202,31 +199,25 @@ AbstractWidget::AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _f
     widget_height = frame_height - 2 * widget_border_width;
 }
 
-void AbstractWidget::set_current_displayed_object(AbstractDisplayedObject *new_displayed_object)
-{
-    this->current_displayed_object = new_displayed_object;
-    current_displayed_object->set_active_widget(this);
-    current_displayed_object->set_refresh_requested_flag(true);
-}
-
-AbstractDisplayedObject *AbstractWidget::get_current_displayed_object()
-{
-    return this->current_displayed_object;
-}
-
 AbstractWidget::~AbstractWidget()
 {
 }
 
+void AbstractWidget::set_displayed_object(AbstractModelObject *_displayed_object)
+{
+    this->displayed_object = _displayed_object;
+}
+
 void AbstractWidget::refresh()
 {
-    if (current_displayed_object->is_refresh_requested())
+
+    if (this->displayed_object->has_changed())
     {
         draw();
         if (widget_with_border)
             draw_border();
         this->display_screen->show(this, this->widget_anchor_x, this->widget_anchor_y);
-        current_displayed_object->set_refresh_requested_flag(false);
+        this->displayed_object->clear_change_flag();
     }
 }
 
@@ -240,44 +231,45 @@ void AbstractWidget::draw_border()
     rect(0, 0, frame_width, frame_height);
 }
 
-AbstractDisplayedObject::AbstractDisplayedObject(/* args */)
+AbstractModelObject::AbstractModelObject()
 {
 }
 
-AbstractDisplayedObject::~AbstractDisplayedObject()
+AbstractModelObject::~AbstractModelObject()
 {
 }
 
-bool AbstractDisplayedObject::is_refresh_requested()
+void AbstractModelObject::set_current_widget(AbstractWidget *_displaying_widget)
 {
-    return refresh_requested;
+    this->displaying_widget = _displaying_widget;
+    this->displaying_widget->set_displayed_object(this);
 }
 
-void AbstractDisplayedObject::set_active_widget(AbstractWidget *new_widget)
+void AbstractModelObject::update_status(ControlledObjectStatus new_status)
 {
-    this->current_active_widget = new_widget;
-}
-
-void AbstractDisplayedObject::update_status(ControlledObjectStatus new_status)
-{
-    this->refresh_requested = (this->status != new_status) ? true : false;
+    if (this->status != new_status)
+        this->set_change_flag();
+    else
+        this->clear_change_flag();
     this->status = new_status;
 }
 
-ControlledObjectStatus AbstractDisplayedObject::get_status()
+ControlledObjectStatus AbstractModelObject::get_status()
 {
     return this->status;
 }
 
-void AbstractDisplayedObject::set_refresh_requested_flag(bool _refresh_requested)
+bool AbstractModelObject::has_changed()
 {
-    this->refresh_requested = _refresh_requested;
+    return this->has_changed_flag;
 }
 
-AbstractControlledObject::AbstractControlledObject(/* args */)
+void AbstractModelObject::set_change_flag()
 {
+    this->has_changed_flag = true;
 }
 
-AbstractControlledObject::~AbstractControlledObject()
+void AbstractModelObject::clear_change_flag()
 {
+    this->has_changed_flag = false;
 }

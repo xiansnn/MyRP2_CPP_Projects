@@ -9,7 +9,6 @@
 #define MAX_BIN_VALUE 100
 
 #define BIN_NUMBER 5
-// #define BIN_HEIGHT 8
 #define BARGRAPH_HEIGHT 50
 
 config_master_i2c_t cfg_i2c{
@@ -38,7 +37,7 @@ config_simple_bargraph_widget_t cnf_bargraph{
     .with_border = true,
     .bargraph_bin_number = BIN_NUMBER,
 };
-BargraphDisplayedObject values_bargraph = BargraphDisplayedObject(MIN_BIN_VALUE, MAX_BIN_VALUE);
+Bargraph values_bargraph = Bargraph( MIN_BIN_VALUE, MAX_BIN_VALUE);
 W_SimpleHBargraph w_bargraph = W_SimpleHBargraph(&display_screen, &values_bargraph, cnf_bargraph);
 
 void simulate_values();
@@ -48,7 +47,7 @@ int main()
     stdio_init_all();
     display_screen.clear_pixel_buffer_and_show_full_screen();
     values_bargraph.values = {0}; // init bargraph
-    w_bargraph.set_current_displayed_object(&values_bargraph);
+    values_bargraph.set_current_widget(&w_bargraph);
 
     while (true)
     {
@@ -68,5 +67,5 @@ void simulate_values()
         if ((values_bargraph.values[i] >= values_bargraph.max_value) or (values_bargraph.values[i] <= values_bargraph.min_value))
             values_bargraph.values[i] = values_bargraph.min_value;
     }
-    values_bargraph.set_refresh_requested_flag(true);
+    values_bargraph.set_change_flag();
 }
