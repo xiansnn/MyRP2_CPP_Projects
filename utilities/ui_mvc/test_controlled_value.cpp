@@ -6,7 +6,7 @@
 int main()
 {
     stdio_init_all();
-    SingleControlledValue val0 = SingleControlledValue( 0, 5, 1, true);
+    AbstractControlledValue val0 = AbstractControlledValue( 0, 5, 1, true);
 
     for (size_t i = 0; i < 8; i++)
     {

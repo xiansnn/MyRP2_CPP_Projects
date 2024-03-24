@@ -6,5 +6,12 @@ target_link_libraries(ky040_focus_manager ui_mvc switch_button )
 
 
 add_executable(test_ky040 test_ky_040.cpp)
-target_link_libraries(test_ky040  controlled_value pico_stdlib  rotary_encoder debug_probe switch_button print_console ky040_focus_manager)
+target_link_libraries(test_ky040  
+                        # controlled_value 
+                        pico_stdlib  
+                        rotary_encoder 
+                        debug_probe 
+                        switch_button 
+                        print_console 
+                        ky040_focus_manager)
 pico_add_extra_outputs(test_ky040)

@@ -273,3 +273,83 @@ void AbstractModelObject::clear_change_flag()
 {
     this->has_changed_flag = false;
 }
+
+
+AbstractControlledValue::AbstractControlledValue(int min_value, int max_value, bool wrap, int increment)
+    : AbstractModelObject()
+{
+    this->value = 0;
+    this->min_value = min_value;
+    this->max_value = max_value;
+    this->increment = increment;
+    this->wrap = wrap;
+}
+
+AbstractControlledValue::~AbstractControlledValue()
+{
+}
+
+int AbstractControlledValue::get_min_value()
+{
+    return min_value;
+}
+
+void AbstractControlledValue::set_min_value(int value)
+{
+    this->min_value = value;
+}
+
+int AbstractControlledValue::get_max_value()
+{
+    return max_value;
+}
+
+void AbstractControlledValue::set_max_value(int value)
+{
+    this->max_value = value;
+}
+
+int AbstractControlledValue::get_value()
+{
+    return value;
+}
+
+void AbstractControlledValue::increment_value()
+{
+    value += increment;
+    if ((wrap) and (value > max_value))
+        value = min_value;
+    this->value = std::min(max_value, std::max(min_value, value));
+    this->set_change_flag();
+}
+
+void AbstractControlledValue::decrement_value()
+{
+    value -= increment;
+    if ((wrap) and (value < min_value))
+        value = max_value;
+    this->value = std::min(max_value, std::max(min_value, value));
+    this->set_change_flag();
+}
+
+void AbstractControlledValue::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    this->set_change_flag();
+}
+
+void AbstractControlledValue::process_control_event(ControlEvent event)
+{
+    switch (event)
+    {
+    case ControlEvent::INCREMENT:
+        increment_value();
+        break;
+    case ControlEvent::DECREMENT:
+        decrement_value();
+        break;
+
+    default:
+        break;
+    }
+}
