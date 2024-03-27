@@ -20,12 +20,12 @@ void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
     uint8_t bar_start_y = bin_number * bargraph_bin_height;
     rect(0, bar_start_y, frame_width, bargraph_bin_height, true, Framebuffer_color::black); // erase the bar area
 
-    uint8_t px = convert_level_value_to_px(this->current_displayed_object->values[bin_number]);
+    uint8_t px = convert_level_value_to_px(this->current_displayed_bargraph->values[bin_number]);
     uint16_t p0 = convert_level_value_to_px(0);
 
     uint8_t bar_start;
     uint8_t bar_end;
-    if (this->current_displayed_object->values[bin_number] >= 0)
+    if (this->current_displayed_bargraph->values[bin_number] >= 0)
     {
         bar_start = p0;
         bar_end = px;
@@ -36,7 +36,7 @@ void W_SimpleHBargraph::draw_bar(uint8_t bin_number)
         bar_end = p0;
     }
 
-    if (this->current_displayed_object->values[bin_number] == 0)
+    if (this->current_displayed_bargraph->values[bin_number] == 0)
         rect(bar_start, bar_start_y + bargraph_bin_spacing, 1, bargraph_bin_height - bargraph_bin_spacing, true);
     else
         rect(bar_start, bar_start_y + bargraph_bin_spacing, bar_end - bar_start, bargraph_bin_height - 2 * bargraph_bin_spacing, true);
@@ -52,7 +52,8 @@ W_SimpleHBargraph::W_SimpleHBargraph(AbstractDisplayDevice *_display_screen, Bar
                      _cnf_bargraph.bargraph_anchor_x, _cnf_bargraph.bargraph_anchor_y, _cnf_bargraph.with_border, _cnf_bargraph.border_width,
                      _cnf_bargraph.format, _cnf_bargraph.txt_cnf)
 {
-    this->current_displayed_object = _displayed_values;
+    this->current_displayed_bargraph = _displayed_values;
+    set_displayed_object(_displayed_values); // FIXME pb avec displayed_value, double declaration dans la classe abstraite et dans la classe dérivée
 
     this->bargraph_bin_number = _cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = _cnf_bargraph.bargraph_bin_spacing;

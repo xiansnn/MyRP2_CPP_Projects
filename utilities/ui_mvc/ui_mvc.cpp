@@ -353,3 +353,30 @@ void AbstractControlledValue::process_control_event(ControlEvent event)
         break;
     }
 }
+
+AbstractController::AbstractController()
+{
+}
+
+AbstractController::~AbstractController()
+{
+}
+
+void AbstractController::activate_controlled_object(AbstractModelObject *_controled_object)
+{
+    current_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
+    this->current_controlled_object = _controled_object;
+    current_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
+
+}
+
+void AbstractController::set_focus_on_controlled_object(AbstractModelObject *_controled_object)
+{
+    this->current_controlled_object = _controled_object;
+    current_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
+}
+
+AbstractModelObject *AbstractController::get_current_controlled_object()
+{
+    return current_controlled_object;
+}

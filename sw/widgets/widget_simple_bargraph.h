@@ -36,7 +36,7 @@ public:
 class W_SimpleHBargraph : public AbstractWidget
 {
 private:
-    Bargraph *current_displayed_object;
+    Bargraph *current_displayed_bargraph;
 
 protected:
     uint8_t bargraph_bin_spacing;

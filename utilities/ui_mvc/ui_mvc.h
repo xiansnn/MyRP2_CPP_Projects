@@ -41,20 +41,21 @@ class UI_Controller;
 class UI_Widget;
 class AbstractDisplayDevice;
 class AbstractWidget;
+class AbstractModelObject;
 
 // ---- class UI_ControlledObject
 class UI_ControlledObject
 {
 private:
-    ControlledObjectStatus status{ControlledObjectStatus::WAITING}; // TODO to move to an new AbstractDisplayedObject class
+    ControlledObjectStatus status{ControlledObjectStatus::WAITING}; // TODO moved to AbstractDisplayedObject
 
 protected:
-    bool wrap;
-    int value;
-    int min_value;
-    int max_value;
-    int increment{1};
-    bool refresh_requested{true}; // TODO to move to an new AbstractDisplayedObject class
+    bool wrap;                    // TODO moved to  AbstractControlledValue
+    int value;                    // TODO moved to  AbstractControlledValue
+    int min_value;                // TODO moved to  AbstractControlledValue
+    int max_value;                // TODO moved to  AbstractControlledValue
+    int increment{1};             // TODO moved to  AbstractControlledValue
+    bool refresh_requested{true}; // TODO moved to AbstractDisplayedObject
 
 public:
     uint8_t id;
@@ -77,6 +78,21 @@ public:
     virtual void process_control_event(ControlEvent) = 0;
 };
 
+class AbstractController
+{
+private:
+AbstractModelObject* current_controlled_object;
+    /* data */
+public:
+    AbstractController(/* args */);
+    ~AbstractController();
+
+    void activate_controlled_object(AbstractModelObject *_controled_object);
+    void set_focus_on_controlled_object(AbstractModelObject *_controled_object);
+    AbstractModelObject *get_current_controlled_object();
+
+};
+
 // ---- class UI_Controller
 class UI_Controller
 {
@@ -94,7 +110,7 @@ public:
 };
 
 // ---- class UI_Widget : public Framebuffer
-class UI_Widget : public Framebuffer
+class UI_Widget : public Framebuffer // TODO replaced by AbstractWidget
 {
 private:
 protected:
@@ -153,6 +169,7 @@ class AbstractModelObject
 {
 private:
     AbstractWidget *displaying_widget;
+    AbstractController* controller;
     ControlledObjectStatus status{ControlledObjectStatus::WAITING};
     bool has_changed_flag{true}; // a flag that trigger the execution of refresh, the flag is set by the requester and clear after refresh is done
 public:
@@ -186,6 +203,7 @@ protected:
     virtual void draw_border();
 
 public:
+    void set_displayed_object(AbstractModelObject *_displayed_object);
     static Framebuffer_color blinking_us(uint32_t blink_period);
 
     AbstractWidget(AbstractDisplayDevice *_display_screen, size_t _frame_width, size_t _frame_height,
@@ -193,7 +211,6 @@ public:
                    Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
     virtual ~AbstractWidget();
 
-    void set_displayed_object(AbstractModelObject *_displayed_object);
 
     virtual void refresh();
 
@@ -224,7 +241,7 @@ public:
     virtual void decrement_value();
 
     virtual void set_value_clipped(int new_value);
-    virtual void process_control_event(ControlEvent);
+    virtual void process_control_event(ControlEvent); // TODO voir si besoin pure virtual member
 
 
 };
