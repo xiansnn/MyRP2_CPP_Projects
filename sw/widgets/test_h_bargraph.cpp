@@ -60,6 +60,7 @@ config_bargraph_widget_t cnf_bargraph{
     .with_status_flag = true,
     .status_flag_mode = StatusFlagMode::BORDER_FLAG,
     .bargraph_bin_number = 7,
+    .with_threshold = true,
 };
 
 Bargraph values_bargraph = Bargraph(MIN_BIN_VALUE, MAX_BIN_VALUE);

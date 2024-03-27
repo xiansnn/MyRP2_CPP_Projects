@@ -34,12 +34,12 @@ typedef struct config_bargraph_widget
     uint8_t bargraph_bin_spacing{1};
     uint8_t bargraph_bin_flag_width{5};
     uint8_t border_width{1};
+    bool with_threshold{true};
 
     // config Framebuffer
     Framebuffer_format format{Framebuffer_format::MONO_VLSB};
     config_framebuffer_text_t txt_cnf{.font = font_8x8};
 } config_bargraph_widget_t;
-
 
 //---------class W_HBargraph : public UI_Widget
 class W_HBargraph : public AbstractWidget, public UI_ControlledObject
@@ -47,6 +47,8 @@ class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 private:
     Bargraph *displayed_values;
     ControlMode control_mode{ControlMode::BAND_CONTROL};
+
+    bool with_threshold;
     int threshold_increment;
     void increment_threshold();
     void decrement_threshold();

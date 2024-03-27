@@ -8,6 +8,7 @@ W_HBargraph::W_HBargraph(AbstractDisplayDevice *display_screen, Bargraph *displa
 {
     this->displayed_values = displayed_values;
 
+    this->with_threshold = cnf_bargraph.with_threshold;
     this->threshold = this->displayed_values->max_value * 0.9;
     this->threshold_increment = this->displayed_values->max_value * 0.01;
 
@@ -60,7 +61,8 @@ void W_HBargraph::draw()
         if (with_status_flag)
             draw_status_flag(i);
     }
-    draw_threshold();
+    if (with_threshold)
+        draw_threshold();
 }
 void W_HBargraph::increment_threshold()
 {
@@ -125,7 +127,7 @@ void W_HBargraph::draw_bar(uint8_t bin_number)
 void W_HBargraph::set_value_clipped(int new_value)
 {
     this->value = std::min(max_value, std::max(min_value, new_value));
-    this->displayed_object->set_change_flag();  
+    this->displayed_object->set_change_flag();
 }
 
 void W_HBargraph::process_control_event(ControlEvent event)
@@ -139,10 +141,14 @@ void W_HBargraph::process_control_event(ControlEvent event)
     case ControlEvent::DOUBLE_PUSH:
         break;
     case ControlEvent::LONG_PUSH:
-        if (control_mode == ControlMode::BAND_CONTROL)
-            control_mode = ControlMode::THRESHOLD_CONTROL;
-        else if (control_mode == ControlMode::THRESHOLD_CONTROL)
-            control_mode = ControlMode::BAND_CONTROL;
+        if (with_threshold)
+        {
+            if (control_mode == ControlMode::BAND_CONTROL)
+                control_mode = ControlMode::THRESHOLD_CONTROL;
+            else if (control_mode == ControlMode::THRESHOLD_CONTROL)
+                control_mode = ControlMode::BAND_CONTROL;
+        }else control_mode = ControlMode::BAND_CONTROL;
+
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         break;
@@ -178,5 +184,3 @@ void W_HBargraph::process_control_event(ControlEvent event)
         break;
     }
 }
-
-
