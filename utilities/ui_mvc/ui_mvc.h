@@ -87,9 +87,10 @@ public:
     AbstractController(/* args */);
     ~AbstractController();
 
-    void activate_controlled_object(AbstractModelObject *_controled_object);
-    void set_focus_on_controlled_object(AbstractModelObject *_controled_object);
+    void activate_controlled_object(AbstractModelObject *_controlled_object);
+    void set_focus_on_controlled_object(AbstractModelObject *_controlled_object);
     AbstractModelObject *get_current_controlled_object();
+    void set_current_controlled_object(AbstractModelObject * _model_object);
 
 };
 
@@ -177,6 +178,7 @@ public:
     ~AbstractModelObject();
 
     void set_current_widget(AbstractWidget *new_widget);
+    void set_current_controller(AbstractController * new_controller);
     void update_status(ControlledObjectStatus new_status);
     ControlledObjectStatus get_status();
     bool has_changed();

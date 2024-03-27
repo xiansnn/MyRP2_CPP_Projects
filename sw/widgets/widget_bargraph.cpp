@@ -6,11 +6,11 @@ W_HBargraph::W_HBargraph(AbstractDisplayDevice *display_screen, Bargraph *displa
                      cnf_bargraph.format, cnf_bargraph.txt_cnf),
       UI_ControlledObject(0, 0, cnf_bargraph.bargraph_bin_number - 1)
 {
-    this->displayed_values = displayed_values;
+    this->displayed_bargraph = displayed_values;
 
     this->with_threshold = cnf_bargraph.with_threshold;
-    this->threshold = this->displayed_values->max_value * 0.9;
-    this->threshold_increment = this->displayed_values->max_value * 0.01;
+    this->threshold = this->displayed_bargraph->max_value * 0.9;
+    this->threshold_increment = this->displayed_bargraph->max_value * 0.01;
 
     this->bargraph_bin_number = cnf_bargraph.bargraph_bin_number;
     this->bargraph_bin_spacing = cnf_bargraph.bargraph_bin_spacing;
@@ -67,12 +67,12 @@ void W_HBargraph::draw()
 void W_HBargraph::increment_threshold()
 {
     threshold += threshold_increment;
-    threshold = std::min(displayed_values->max_value, std::max(displayed_values->min_value, threshold));
+    threshold = std::min(displayed_bargraph->max_value, std::max(displayed_bargraph->min_value, threshold));
 }
 void W_HBargraph::decrement_threshold()
 {
     threshold -= threshold_increment;
-    threshold = std::min(displayed_values->max_value, std::max(displayed_values->min_value, threshold));
+    threshold = std::min(displayed_bargraph->max_value, std::max(displayed_bargraph->min_value, threshold));
 }
 void W_HBargraph::draw_status_flag(uint8_t bin_number)
 {
@@ -102,12 +102,12 @@ void W_HBargraph::draw_bar(uint8_t bin_number)
     uint8_t bar_start_y = bin_number * bar_height;
     rect(0, bar_start_y, frame_width, bar_height, true, Framebuffer_color::black); // erase the bar area
 
-    uint8_t px = convert_level_value_to_px(this->displayed_values->values[bin_number]);
+    uint8_t px = convert_level_value_to_px(this->displayed_bargraph->values[bin_number]);
     uint16_t p0 = convert_level_value_to_px(0);
 
     uint8_t bar_start;
     uint8_t bar_end;
-    if (this->displayed_values->values[bin_number] >= 0)
+    if (this->displayed_bargraph->values[bin_number] >= 0)
     {
         bar_start = p0;
         bar_end = px;
@@ -118,7 +118,7 @@ void W_HBargraph::draw_bar(uint8_t bin_number)
         bar_end = p0;
     }
 
-    if (this->displayed_values->values[bin_number] == 0)
+    if (this->displayed_bargraph->values[bin_number] == 0)
         rect(bar_start, bar_start_y + bargraph_bin_spacing, 1, bar_height - bargraph_bin_spacing, true);
     else
         rect(bar_start, bar_start_y + bargraph_bin_spacing, bar_end - bar_start, bar_height - 2 * bargraph_bin_spacing, true);

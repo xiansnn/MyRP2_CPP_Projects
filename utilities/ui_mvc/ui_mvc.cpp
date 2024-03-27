@@ -245,6 +245,12 @@ void AbstractModelObject::set_current_widget(AbstractWidget *_displaying_widget)
     this->displaying_widget->set_displayed_object(this);
 }
 
+void AbstractModelObject::set_current_controller(AbstractController *_controller)
+{
+    this->controller = _controller;
+    this->controller->set_current_controlled_object(this);
+}
+
 void AbstractModelObject::update_status(ControlledObjectStatus new_status)
 {
     if (this->status != new_status)
@@ -379,4 +385,9 @@ void AbstractController::set_focus_on_controlled_object(AbstractModelObject *_co
 AbstractModelObject *AbstractController::get_current_controlled_object()
 {
     return current_controlled_object;
+}
+
+void AbstractController::set_current_controlled_object(AbstractModelObject *_model_object)
+{
+    this->current_controlled_object = _model_object;
 }

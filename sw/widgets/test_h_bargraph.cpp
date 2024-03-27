@@ -70,7 +70,7 @@ config_simple_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 0,
     .bargraph_anchor_y = 48,
     .bargraph_width = 128,
-    .bargraph_height = 5,
+    .bargraph_height = 10,
     .with_border = true,
     .bargraph_bin_number = 1,
 };

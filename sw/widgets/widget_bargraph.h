@@ -45,7 +45,7 @@ typedef struct config_bargraph_widget
 class W_HBargraph : public AbstractWidget, public UI_ControlledObject
 {
 private:
-    Bargraph *displayed_values;
+    Bargraph *displayed_bargraph;
     ControlMode control_mode{ControlMode::BAND_CONTROL};
 
     bool with_threshold;
