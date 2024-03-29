@@ -42,6 +42,8 @@ class UI_Widget;
 class AbstractDisplayDevice;
 class AbstractWidget;
 class AbstractModelObject;
+class AbstractController;
+class AbstractWidgetManager;
 
 // ---- class UI_ControlledObject
 class UI_ControlledObject
@@ -78,21 +80,7 @@ public:
     virtual void process_control_event(ControlEvent) = 0;
 };
 
-class AbstractController
-{
-private:
-AbstractModelObject* current_controlled_object;
-    /* data */
-public:
-    AbstractController(/* args */);
-    ~AbstractController();
 
-    void activate_controlled_object(AbstractModelObject *_controlled_object);
-    void set_focus_on_controlled_object(AbstractModelObject *_controlled_object);
-    AbstractModelObject *get_current_controlled_object();
-    void set_current_controlled_object(AbstractModelObject * _model_object);
-
-};
 
 // ---- class UI_Controller
 class UI_Controller
@@ -152,7 +140,7 @@ public:
     void add_controlled_object(UI_ControlledObject *cntrl_obj);
     void add_widget(UI_Widget *widget);
     void clear_active_controlled_object_change_flag();
-    void process_control_event(ControlEvent event) = 0;
+    void process_control_event(ControlEvent event)=0;
 };
 
 // -------class AbstractDisplayDevice : public Framebuffer
@@ -213,9 +201,9 @@ public:
                    Framebuffer_format _framebuffer_format = Framebuffer_format::MONO_VLSB, config_framebuffer_text_t _framebuffer_txt_cnf = {.font = font_8x8});
     virtual ~AbstractWidget();
 
+    // void set_current_controller(AbstractWidgetManager * _current_widget_manager);
 
     virtual void refresh();
-
     virtual void draw() = 0;
 };
 
@@ -247,6 +235,34 @@ public:
 
 
 };
+class AbstractController
+{
+private:
+AbstractModelObject* current_controlled_object;
+    /* data */
+public:
+    AbstractController(/* args */);
+    ~AbstractController();
+
+    void activate_controlled_object(AbstractModelObject *_controlled_object);
+    void set_focus_on_controlled_object(AbstractModelObject *_controlled_object);
+    AbstractModelObject *get_current_controlled_object();
+    void set_current_controlled_object(AbstractModelObject * _model_object);
+
+};
+
+class AbstractWidgetManager : public AbstractControlledValue
+{
+private:
+    std::vector<AbstractModelObject *> controlled_Models;
+public:
+    AbstractWidgetManager(/* args */);
+    ~AbstractWidgetManager();
+    void add_model(AbstractModelObject* _model);
+    void process_control_event(ControlEvent event) = 0;
+};
+
+
 
 
 #endif // UI_MVC_H

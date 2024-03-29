@@ -280,7 +280,6 @@ void AbstractModelObject::clear_change_flag()
     this->has_changed_flag = false;
 }
 
-
 AbstractControlledValue::AbstractControlledValue(int min_value, int max_value, bool wrap, int increment)
     : AbstractModelObject()
 {
@@ -373,7 +372,6 @@ void AbstractController::activate_controlled_object(AbstractModelObject *_contro
     current_controlled_object->update_status(ControlledObjectStatus::HAS_FOCUS);
     this->current_controlled_object = _controled_object;
     current_controlled_object->update_status(ControlledObjectStatus::IS_ACTIVE);
-
 }
 
 void AbstractController::set_focus_on_controlled_object(AbstractModelObject *_controled_object)
@@ -391,3 +389,20 @@ void AbstractController::set_current_controlled_object(AbstractModelObject *_mod
 {
     this->current_controlled_object = _model_object;
 }
+
+AbstractWidgetManager::AbstractWidgetManager(/* args */)
+    : AbstractControlledValue(/*int min_value = 0, int max_value = 10, bool wrap = false, int increment = 1*/)
+{
+}
+
+AbstractWidgetManager::~AbstractWidgetManager()
+{
+}
+
+void AbstractWidgetManager::add_model(AbstractModelObject *_model)
+{
+    this->controlled_Models.push_back(_model);
+    this->max_value = this->controlled_Models.size() - 1;
+}
+
+

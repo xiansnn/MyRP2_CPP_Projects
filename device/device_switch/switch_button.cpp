@@ -3,7 +3,7 @@
 #include "hardware/timer.h"
 
 
-SwitchButton::SwitchButton(uint8_t id, uint gpio, config_switch_button_t conf) : AbstractController()
+SwitchButton::SwitchButton(uint8_t id, uint gpio, config_switch_button_t conf) : UI_Controller(id) // TODO subclass AbstractController
 {
     this->gpio = gpio;
     this->debounce_delay_us = conf.debounce_delay_us;
