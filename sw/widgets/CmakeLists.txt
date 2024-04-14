@@ -1,13 +1,84 @@
 add_library(widget_bar widget_bar.cpp)
-target_link_libraries(widget_bar pico_stdlib framebuffer)
+target_link_libraries(widget_bar 
+                                pico_stdlib 
+                                ui_mvc)
+
+add_library(widget_simple_bargraph widget_simple_bargraph.cpp)
+target_link_libraries(widget_simple_bargraph 
+                                pico_stdlib 
+                                ui_mvc)
+
+add_library(widget_bargraph widget_bargraph.cpp)
+target_link_libraries(widget_bargraph 
+                                pico_stdlib 
+                                ui_mvc)
 
 add_library(print_console print_console_line.cpp)
-target_link_libraries(print_console pico_stdlib ui_mvc)
+target_link_libraries(print_console 
+                                pico_stdlib 
+                                ui_mvc)
 
-# add_executable(test_single_bar test_single_bar.cpp)
-# target_link_libraries(test_single_bar widget_bar pico_stdlib ssd1306 ky040 switch_button)
-# pico_add_extra_outputs(test_single_bar)
+add_library(widget_text widget_text.cpp)
+target_link_libraries(widget_text 
+                                pico_stdlib 
+                                ui_mvc)
 
-# add_executable(test_multiple_bar test_multiple_bar.cpp)
-# target_link_libraries(test_multiple_bar widget_bar pico_stdlib ssd1306 ky040 switch_button focus_manager)
-# pico_add_extra_outputs(test_multiple_bar)
+add_library(widget_stacked_bar widget_stacked_bar.cpp)
+target_link_libraries(widget_stacked_bar 
+                                pico_stdlib 
+                                widget_bar)
+
+add_executable(test_stacked_bar test_stacked_bar.cpp)
+target_link_libraries(test_stacked_bar  
+                                pico_stdlib 
+                                ssd1306 
+                                hw_i2c
+                                rotary_encoder 
+                                switch_button 
+                                widget_stacked_bar
+                        )
+pico_add_extra_outputs(test_stacked_bar)
+
+add_executable(test_multiple_bar test_multiple_bar.cpp)
+target_link_libraries(test_multiple_bar  
+                                pico_stdlib 
+                                ssd1306 
+                                hw_i2c
+                                print_console 
+                                rotary_encoder 
+                                switch_button
+                                widget_bar 
+                                widget_text )
+pico_add_extra_outputs(test_multiple_bar)
+
+
+add_executable(test_h_bargraph test_h_bargraph.cpp)
+target_link_libraries(test_h_bargraph  
+                                pico_stdlib 
+                                widget_simple_bargraph
+                                ssd1306 
+                                ui_mvc 
+                                widget_bargraph 
+                                rotary_encoder 
+                                widget_bar 
+                                )
+pico_add_extra_outputs(test_h_bargraph)
+
+add_executable(test_simple_bargraph test_simple_bargraph.cpp)
+target_link_libraries(test_simple_bargraph  
+                                pico_stdlib 
+                                widget_simple_bargraph
+                                ssd1306 
+                                ui_mvc 
+                                )
+pico_add_extra_outputs(test_simple_bargraph)
+
+add_executable(test_font test_font.cpp)
+target_link_libraries(test_font  
+                                pico_stdlib 
+                                ssd1306 
+                                print_console 
+                                rotary_encoder 
+                                widget_bar 
+                                widget_text)
+pico_add_extra_outputs(test_font)

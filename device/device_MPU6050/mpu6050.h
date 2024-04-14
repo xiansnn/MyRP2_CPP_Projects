@@ -80,9 +80,9 @@ private:
     void read_registers_all_raw_data();
     void calibrate();
     void convert_raw_to_measure();
-    void read_FIFO_all_raw_data();               // TODO check FIFO data reading.... seems not working well
-    void read_FIFO_g_accel_raw_data();           // TODO check FIFO data reading.... seems not working well
-    void read_FIFO_accel_raw_data();             // TODO check FIFO data reading.... seems not working well
+    void read_FIFO_all_raw_data();               // FIXME check FIFO data reading.... seems not working well
+    void read_FIFO_g_accel_raw_data();           // FIXME check FIFO data reading.... seems not working well
+    void read_FIFO_accel_raw_data();             // FIXME check FIFO data reading.... seems not working well
 
 public:
     // MPU6050(i2c_inst_t *i2c, uint sda, uint scl, uint baud_rate);

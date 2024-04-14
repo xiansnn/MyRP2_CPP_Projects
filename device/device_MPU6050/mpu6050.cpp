@@ -48,7 +48,7 @@ void MPU6050::read_registers_all_raw_data()
 
 }
 
-void MPU6050::read_FIFO_all_raw_data()// TODO check FIFO data reading.... seems not working well
+void MPU6050::read_FIFO_all_raw_data()
 {
     uint8_t read_buf[14];
     this->master->burst_byte_read(this->device_config.MPU_ADDR, FIFO_R_W_RA, read_buf, 14);
@@ -139,7 +139,7 @@ void MPU6050::init_mpu()
     this->master->single_byte_write(this->device_config.MPU_ADDR, INT_ENABLE_RA, this->device_config.INT_ENABLE);
 }
 
-void MPU6050::read_FIFO_g_accel_raw_data() // TODO check FIFO data reading.... seems not working well
+void MPU6050::read_FIFO_g_accel_raw_data() 
 {
     uint8_t read_buf[12];
     this->master->burst_byte_read(this->device_config.MPU_ADDR, FIFO_R_W_RA, read_buf, 12);
@@ -152,7 +152,7 @@ void MPU6050::read_FIFO_g_accel_raw_data() // TODO check FIFO data reading.... s
     this->raw.gyro_z = (read_buf[10] << 8) + read_buf[11];
 
 }
-void MPU6050::read_FIFO_accel_raw_data() // TODO check FIFO data reading.... seems not working well
+void MPU6050::read_FIFO_accel_raw_data()
 {
     uint8_t read_buf[6];
     this->master->burst_byte_read(this->device_config.MPU_ADDR, FIFO_R_W_RA, read_buf, 6);

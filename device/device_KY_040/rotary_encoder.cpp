@@ -1,9 +1,9 @@
-#include "ky_040.h"
+#include "rotary_encoder.h"
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
 #include <string>
 
-KY040Encoder::KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
+RotaryEncoder::RotaryEncoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gpio, gpio_irq_callback_t call_back,
                            config_switch_button_t clk_conf)
     : SwitchButtonWithIRQ(id, encoder_clk_gpio, call_back, clk_conf)
 {
@@ -14,11 +14,11 @@ KY040Encoder::KY040Encoder(uint8_t id, uint encoder_clk_gpio, uint encoder_dt_gp
     gpio_pull_up(this->dt_gpio);
 }
 
-KY040Encoder::~KY040Encoder()
+RotaryEncoder::~RotaryEncoder()
 {
 }
 
-void KY040Encoder::interrupt_service_routine(uint32_t current_irq_event_mask)
+void RotaryEncoder::interrupt_service_routine(uint32_t current_irq_event_mask)
 {
     irq_enabled(false);
     ControlEvent clk_event = process_IRQ_event(current_irq_event_mask);

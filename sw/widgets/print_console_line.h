@@ -4,9 +4,7 @@
 #include "ui_mvc.h"
 #include "controlled_value.h"
 
-
-
-class DisplayControlledValueOnTerminal : public UI_Widget
+class W_DisplayControlledValueOnTerminal : public UI_Widget
 {
 private:
     float slope;
@@ -14,11 +12,13 @@ private:
     uint8_t max_line_width = 21;
 
 public:
-    DisplayControlledValueOnTerminal(uint8_t id);
-    ~DisplayControlledValueOnTerminal();
+    W_DisplayControlledValueOnTerminal(uint8_t id, size_t width, size_t height, uint8_t anchor_x = 0, uint8_t anchor_y = 0,
+              Framebuffer_format format = Framebuffer_format::MONO_VLSB,
+              config_framebuffer_text_t txt_cnf = {.font = font_8x8});
+    ~W_DisplayControlledValueOnTerminal();
     void draw();
-    UI_ControlledObject* set_active_displayed_object(UI_ControlledObject *val);
+    void draw_border();
+    UI_ControlledObject *set_active_displayed_object(ControlledValue *val); 
 };
-
 
 #endif // PRINT_CONSOLE_LINE

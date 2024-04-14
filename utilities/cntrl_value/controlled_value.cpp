@@ -35,21 +35,19 @@ void ControlledValue::process_control_event(ControlEvent event)
         /* code */
         break;
     case ControlEvent::INCREMENT:
-        value += increment;
-        if ((wrap) and (value > max_value))
-            value = min_value;
-        value = std::min(max_value, std::max(min_value, value));
-        value_has_changed = true;
+        increment_value();
         break;
     case ControlEvent::DECREMENT:
-        value -= increment;
-        if ((wrap) and (value < min_value))
-            value = max_value;
-        value = std::min(max_value, std::max(min_value, value));
-        value_has_changed = true;
+        decrement_value();
         break;
 
     default:
         break;
     }
+}
+
+void ControlledValue::set_value_clipped(int new_value)
+{
+    this->value = std::min(max_value, std::max(min_value, new_value));
+    refresh_requested = true;
 }

@@ -29,7 +29,7 @@ typedef struct switch_button_config
     bool active_lo = true;
 } config_switch_button_t;
 
-class SwitchButton : public UI_Controller
+class SwitchButton : public UI_Controller    // TODO subclass AbstractController
 {
 protected:
     uint gpio;

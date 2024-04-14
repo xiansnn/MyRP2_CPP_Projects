@@ -6,16 +6,14 @@
 class ControlledValue : public UI_ControlledObject
 {
 private:
-    bool wrap;
-    UI_Controller* controller;
-    UI_Widget* widget;
-
 public:
-    ControlledValue(uint8_t id, int min_value, int max_value, int increment = 1, bool wrap = false) ;
+    ControlledValue(uint8_t id, int min_value, int max_value, int increment = 1, bool wrap = false);
     ~ControlledValue();
 
     void process_control_event(ControlEvent event);
-
+    void set_value_clipped(int new_value);
 };
+
+
 
 #endif // CNTRL_VALUE_H
