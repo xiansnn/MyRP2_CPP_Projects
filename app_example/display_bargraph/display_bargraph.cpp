@@ -74,10 +74,10 @@ W_HBargraph w_bargraph = W_HBargraph(&display_screen, &values_bargraph, cnf_barg
 
 config_bargraph_widget_t cnf_selected_bin{
     .bargraph_anchor_x = 100,
-    .bargraph_anchor_y = 48,
+    .bargraph_anchor_y = 16,
     .bargraph_width = 10,
-    .bargraph_height = 5,
-    .with_border = false,
+    .bargraph_height = 9,
+    .with_border = true,
     .with_status_flag = false,
     .status_flag_mode = StatusFlagMode::SQUARE_FLAG,
     .bargraph_bin_number = 1,
@@ -120,8 +120,8 @@ int main()
         for (size_t i = 0; i < 7; i++)
             values_bargraph.values[i] = spectrum[i];
         pr_D4.lo();
-        ControlEvent event = central_switch.process_sample_event();
-        w_bargraph.process_control_event(event);
+        ControlEvent central_switch_event = central_switch.process_sample_event();
+        w_bargraph.process_control_event(central_switch_event);
         bool above_threshold = values_bargraph.values[w_bargraph.current_active_index]>= w_bargraph.threshold;
         pr_D5.copy(above_threshold);
         selected_bin.values[0] = (above_threshold)?MAX_BIN_VALUE:MIN_BIN_VALUE;

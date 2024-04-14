@@ -83,9 +83,9 @@ void W_HBargraph::draw_status_flag(uint8_t bin_number)
     {
     case StatusFlagMode::BORDER_FLAG:
         if (is_active)
-            rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
-        if (is_under_focus)
             rect(widget_start_x + bargraph_bin_flag_width, bar_start_y, bar_width - 1, bar_height, false); // HACK
+        if (is_under_focus)
+            rect(widget_start_x, bar_start_y, bargraph_bin_flag_width - bargraph_bin_spacing, bar_height, true);
         break;
     case StatusFlagMode::SQUARE_FLAG:
         if (is_active)
@@ -147,13 +147,16 @@ void W_HBargraph::process_control_event(ControlEvent event)
                 control_mode = ControlMode::THRESHOLD_CONTROL;
             else if (control_mode == ControlMode::THRESHOLD_CONTROL)
                 control_mode = ControlMode::BAND_CONTROL;
-        }else control_mode = ControlMode::BAND_CONTROL;
+        }
+        else
+            control_mode = ControlMode::BAND_CONTROL;
 
         break;
     case ControlEvent::RELEASED_AFTER_LONG_TIME:
         break;
     case ControlEvent::RELEASED_AFTER_SHORT_TIME:
         current_active_index = value;
+        break;
     case ControlEvent::INCREMENT:
         switch (control_mode)
         {
